@@ -31,7 +31,7 @@ The UI never owns pool logic, classification, or validation. Session state is a 
 | `lib/randomizer` | Seeded RNG, defaults, later engine |
 | `lib/validation` | EV/IV/set rules and user-facing errors |
 | `lib/showdown/exportSet.ts` | Deterministic Showdown text |
-| `scripts/import` | Repeatable catalog generation |
+| `scripts/import` | Repeatable PokéAPI + `@pkmn/dex` snapshot into `data/generated/catalog.json` |
 
 ## Data sources
 

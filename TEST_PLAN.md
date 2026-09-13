@@ -5,7 +5,7 @@
 - Vitest: unit tests for classification, RNG, validation, Showdown export.
 - Playwright: browser smoke of the app shell, later the full user flow.
 
-## Current coverage (Phase 1)
+## Current coverage (Phase 2)
 
 - EV total 510, EV total over 510, single-stat cap.
 - Missing Nature, too few / too many moves, IV range.
@@ -13,6 +13,8 @@
 - Full set validation, including unconfirmed EVs.
 - Showdown golden text for Swampert, plus gender / level / shiny / Tera variants.
 - Form type, evolution depth, pseudo-legendary list, seeded unique picks, insufficient pools.
+- Showdown catalog filters (mega/Gmax kept, CAP/Z/Max excluded).
+- Generated catalog integrity: dual ids, unique form ids, fixture species (Mewtwo, Articuno, Nihilego, Walking Wake, Dragonite, Pichu, Alolan Raichu, Mega Venusaur).
 - Home → randomizer navigation.
 
 ## Upcoming

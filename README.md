@@ -4,7 +4,7 @@ A polished web app for generating a unique Pokémon, building a complete set by 
 
 ## Status
 
-Phase 1 foundation: Next.js app shell, normalized TypeScript models, validation, Showdown export formatting, and import scaffolding. Pokémon catalogs are generated in Phase 2.
+Phase 2 data layer: Next.js app shell plus a generated PokéAPI + Showdown catalog at `data/generated/catalog.json`. The UI still does not load catalogs or randomize Pokémon.
 
 ## Quick start
 
@@ -25,7 +25,7 @@ Open the URL printed in the terminal (usually `http://localhost:3000`).
 | `npm test` | Vitest unit tests |
 | `npm run test:e2e` | Playwright smoke tests |
 | `npm run build` | Production build |
-| `npm run import:data` | Catalog importer (full snapshot in Phase 2) |
+| `npm run import:data` | Snapshot PokéAPI + Showdown into `data/generated/catalog.json` |
 
 ## Documentation
 

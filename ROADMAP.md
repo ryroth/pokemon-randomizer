@@ -4,17 +4,17 @@
 
 Architecture review. Complete.
 
-## Phase 1 — Foundation (current)
+## Phase 1 — Foundation
 
 Next.js, TypeScript, Tailwind, shadcn/ui, docs, data model, validation, export formatting, import scaffolding, tests.
 
-Exit gate: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+Exit gate: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Complete.
 
 ## Phase 2 — Data layer
 
-Full PokéAPI + Showdown snapshot into `data/generated/catalog.json`, plus integrity tests.
+Full PokéAPI + Showdown snapshot into `data/generated/catalog.json`, unmatched-join report, and integrity tests. Complete.
 
-## Phase 3 — Filtering engine
+## Phase 3 — Filtering engine (current)
 
 All Pokémon filters, including combinations.
 

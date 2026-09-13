@@ -13,7 +13,17 @@ Stored as generated JSON (`data/generated/catalog.json` after Phase 2):
 - `Item`
 - `Nature`
 
-Every entity keeps both `pokeApiSlug` and `showdownName`.
+Every entity keeps both `pokeApiSlug` and `showdownName`. Catalog `id` values are Showdown ids for Pokémon forms, abilities, moves, items, and natures. Species ids are PokéAPI slugs (`raichu` is shared by Kanto and Alolan Raichu).
+
+## Import
+
+`npm run import:data` snapshots PokéAPI over HTTP (cached in `data/cache/pokeapi/`, gitignored) and joins `@pkmn/dex` at import time.
+
+- Pokémon rows start from Showdown teambuilder species (including Past mega/Gmax formes; excluding CAP, LGPE, and cosmetic-only formes).
+- PokéAPI supplies dex text, official artwork URLs, evolution chains, gender, and baby flags.
+- Unmatched records are written to `data/generated/join-report.json` instead of being dropped silently. Showdown-only Pokémon stay in the catalog with empty dex/sprite fields. Typical leftovers are plate/drive/Tera/cosmetic formes that PokéAPI stores as form records rather than `/pokemon` varieties.
+- Sprites are stored as PokéAPI official-artwork URLs. Images are not vendored.
+- The app must not call PokéAPI in the browser. Re-run the importer when source data changes.
 
 ## Classification
 

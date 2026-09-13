@@ -46,3 +46,6 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+# PokéAPI HTTP cache used by the catalog importer
+/data/cache/
