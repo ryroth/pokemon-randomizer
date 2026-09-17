@@ -1,6 +1,10 @@
-# Pokemon Randomizer
+# Pokémon Randomizer
 
-A starter web app created with [Vite](https://vite.dev/) — Ryan's next project in Cursor, connected to GitHub.
+A polished web app for generating a unique Pokémon, building a complete set by hand, and copying it into [Pokémon Showdown](https://pokemonshowdown.com/).
+
+## Status
+
+Phase 1 foundation: Next.js app shell, normalized TypeScript models, validation, Showdown export formatting, and import scaffolding. Pokémon catalogs are generated in Phase 2.
 
 ## Quick start
 
@@ -9,32 +13,29 @@ npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (usually `http://localhost:5173`).
+Open the URL printed in the terminal (usually `http://localhost:3000`).
 
-## What's in this repo
+## Scripts
 
-- **Vite** — fast dev server with hot module reload
-- **Vanilla JavaScript** — no framework yet, easy to learn
-- **Git** — version control for your code
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Local Next.js server |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | Vitest unit tests |
+| `npm run test:e2e` | Playwright smoke tests |
+| `npm run build` | Production build |
+| `npm run import:data` | Catalog importer (full snapshot in Phase 2) |
 
-## Useful commands
+## Documentation
 
-| Command | What it does |
-|---------|--------------|
-| `npm run dev` | Start the local dev server |
-| `npm run build` | Create a production build in `dist/` |
-| `npm run preview` | Preview the production build locally |
-| `git status` | See which files changed |
-| `git add .` | Stage all changes |
-| `git commit -m "message"` | Save a snapshot locally |
-| `git push` | Upload commits to GitHub |
+- [PROJECT_SPEC.md](PROJECT_SPEC.md) — product requirements
+- [ARCHITECTURE.md](ARCHITECTURE.md) — system design
+- [DATA_MODEL.md](DATA_MODEL.md) — catalogs and classification rules
+- [ROADMAP.md](ROADMAP.md) — phased delivery
+- [TEST_PLAN.md](TEST_PLAN.md) — test strategy
+- [AGENTS.md](AGENTS.md) — persistent contributor instructions
 
-## Connect to GitHub
+## License and trademarks
 
-This repo is meant to live on GitHub. After signing in with `gh auth login`, create the remote repo:
-
-```bash
-gh repo create pokemon-randomizer --public --source=. --remote=origin --push
-```
-
-Or use **GitHub Desktop** → *File → Add local repository* and publish from there.
+Pokémon and Pokémon character names are trademarks of Nintendo. This fan project is not affiliated with Nintendo, Game Freak, or The Pokémon Company.
