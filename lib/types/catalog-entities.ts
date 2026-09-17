@@ -42,6 +42,7 @@ export interface Item {
 
 export interface Nature {
   id: string;
+  pokeApiSlug: string;
   name: string;
   showdownName: string;
   plusStat: StatId | null;
