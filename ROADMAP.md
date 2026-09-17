@@ -14,11 +14,11 @@ Exit gate: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Com
 
 Full PokéAPI + Showdown snapshot into `data/generated/catalog.json`, unmatched-join report, and integrity tests. Complete.
 
-## Phase 3 — Filtering engine (current)
+## Phase 3 — Filtering engine
 
-All Pokémon filters, including combinations.
+All Pokémon filters, including combinations. Complete.
 
-## Phase 4 — Randomization engine
+## Phase 4 — Randomization engine (current)
 
 Seeded unique Pokémon / ability / move / item draws and insufficient-pool errors.
 

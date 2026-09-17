@@ -60,6 +60,15 @@ Dynamax is not a form.
 
 Generation on a form is the **form introduction generation**.
 
+## Pokémon filters
+
+`filterPokemonForms(pokemon, config)` in `lib/filters` is the only pool builder. It reads `PokemonForm` fields and `RandomizerConfig` filter keys; it does not use raw PokéAPI or Showdown objects.
+
+- Generation, form type, and evolution stage are membership checks.
+- Type OR: at least one of the form's types is selected. Type AND: every selected type is on the form.
+- Special classifications are independent exclusions. Unchecking legendary does not affect mythicals, and so on.
+- Empty generation / type / form-type / evolution-stage selections yield an empty pool.
+
 ## Set draft vs finalized set
 
 `PokemonSetDraft` allows unset fields. `PokemonSet` is only produced by `validateSet`. Required builder fields: ability, four unique moves, item or explicit none, confirmed EVs, IVs, Nature, Tera type, gender when mixed, level, shiny.
