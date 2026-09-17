@@ -2,10 +2,10 @@
 
 ## Tools
 
-- Vitest: unit tests for classification, RNG, validation, Showdown export.
+- Vitest: unit tests for classification, RNG, validation, Showdown export, Pokémon filters.
 - Playwright: browser smoke of the app shell, later the full user flow.
 
-## Current coverage (Phase 2)
+## Current coverage (Phase 3)
 
 - EV total 510, EV total over 510, single-stat cap.
 - Missing Nature, too few / too many moves, IV range.
@@ -16,10 +16,11 @@
 - Showdown catalog filters (mega/Gmax kept, CAP/Z/Max excluded).
 - Generated catalog integrity: dual ids, unique form ids, fixture species (Mewtwo, Articuno, Nihilego, Walking Wake, Dragonite, Pichu, Alolan Raichu, Mega Venusaur).
 - Home → randomizer navigation.
+- Pokémon filters: generation, type OR/AND, form type, evolution stage, special exclusions.
+- Filter combinations against the generated catalog (defaults, Alolan Raichu, Mega Venusaur, Charizard types, Primal Kyogre, Galarian Articuno).
 
 ## Upcoming
 
-- Filter combinations (Phase 3).
 - Ability / move / item randomizer uniqueness (Phase 4).
 - Builder and recap end-to-end, clipboard export (Phases 6–7).
 

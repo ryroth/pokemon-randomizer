@@ -19,17 +19,17 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete | **Phase 2 — Data layer** |
-| Next phase | **Phase 3 — Filtering engine** |
-| Branch | `feat/phase-2-data-layer` (local; **not pushed**) |
-| Parent | `feat/phase-1-foundation` at `89caa89` (tracks `origin/feat/phase-1-foundation`) |
-| Latest **committed** | `89caa89` — `docs: add handoff guide for continuing work in new chats` |
-| Phase 2 code | **Uncommitted** on `feat/phase-2-data-layer` — commit only if the user asks |
+| Phase complete | **Phase 3 — Filtering engine** |
+| Next phase | **Phase 4 — Randomization engine** |
+| Branch | `feat/phase-3-filtering-engine` |
+| Parent | `feat/phase-2-data-layer` at `508ee0f` (tracks `origin/feat/phase-2-data-layer`) |
+| Latest **committed** | Phase 3 filtering engine on this branch |
+| Phase 3 code | **Committed** on `feat/phase-3-filtering-engine` |
 | Base branch | `master` still has the original Vite starter only |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
 | PR | Not created yet |
 
-Phase 2 exit gates already passed on this working tree: `npm run lint`, `npm run typecheck`, `npm test` (36 tests), `npm run build`.
+Phase 3 exit gates already passed on this working tree: `npm run lint`, `npm run typecheck`, `npm test` (55 tests), `npm run build`.
 
 The UI is a navigable shell (`/`, `/randomizer`, `/builder`, `/recap`). It does **not** yet load the catalog, filter, or randomize. Do not polish the randomizer UI until Phase 5.
 
@@ -138,6 +138,7 @@ components/ui/               shadcn button + card
 lib/types/                   Normalized catalogs + session
 lib/data/classify.ts         Form type, evolution depth, pseudo-legendaries
 lib/data/loadCatalog.ts      Node loader for catalog.json (tests; not used by UI yet)
+lib/filters/                 Pokémon pool filters from RandomizerConfig
 lib/randomizer/              defaults + seeded RNG (engine not built yet)
 lib/validation/              EV/IV/nature/ability/moves/item/tera/gender/level/shiny/set
 lib/showdown/exportSet.ts    Deterministic Showdown text
@@ -148,7 +149,7 @@ scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot
   normalize.ts               Build Catalog + join report
 data/generated/              catalog.json (~4.7MB) + join-report.json
 data/cache/pokeapi/          Gitignored HTTP cache
-tests/unit/                  Classification, RNG, validation, export, defaults, catalog integrity
+tests/unit/                  Classification, RNG, validation, export, defaults, catalog integrity, filters
 tests/e2e/home.spec.ts       Shell navigation smoke
 ```
 
@@ -175,21 +176,34 @@ Re-run `npm run import:data` only when PokéAPI or Showdown source data needs re
 
 ---
 
-## What Phase 3 must do
+## Phase 3 filtering (do not rebuild)
 
-Implement the filtering engine in `lib/`. Do **not** polish the randomizer UI yet. Do not rebuild Phase 1 or 2.
+`filterPokemonForms` / `matchesPokemonFilters` in `lib/filters` apply `RandomizerConfig` to `PokemonForm[]`.
 
-1. Filter Pokémon forms by generation, type (default OR), form type, evolution stage, and special classifications.
-2. Respect locked defaults from `lib/randomizer/defaults.ts` (base formes on; mega/regional/gmax/other off; all specials allowed).
-3. Combination tests for those filters.
-4. Insufficient-pool behavior can wait for Phase 4 unless the filter API naturally returns a pool size.
-5. Keep pool logic out of UI components. Load `Catalog` / `PokemonForm` types, not raw PokéAPI or Showdown objects.
+- Generation, form type, and evolution stage are membership checks.
+- Type OR: the form has at least one selected type. Type AND: the form has every selected type.
+- Special flags are independent exclusions (`allowLegendary: false` drops Restricted Legendaries only).
+- Empty generation / type / form-type / evolution-stage lists return `[]`. Pool size is the array length; do not throw here.
+- Defaults: base formes only; mega / regional / primal / gmax / other off; all specials allowed.
+
+Do not put this logic in UI components. Do not re-run the catalog importer.
+
+---
+
+## What Phase 4 must do
+
+Implement the seeded randomizer in `lib/randomizer`. Do **not** polish the randomizer UI yet. Do not rebuild Phases 1–3.
+
+1. Draw unique Pokémon by form id from `filterPokemonForms`, using `lib/randomizer/randomUtils.ts` only (no `Math.random()`).
+2. Throw `InsufficientPoolError` when the filtered pool is smaller than `pokemonCount`. Never return a silent short list.
+3. Optional ability / move / item randomizers, independently, using existing catalog collections. Ability ON = all standard abilities; move ON = all standard moves (Z/Max/CAP already excluded by import); item ON = holdables + explicit None.
+4. Tests for uniqueness, seed reproducibility, and insufficient pools.
+5. Keep pool and RNG logic out of UI. Wire results into `RandomizerSession` types if needed, but do not build the configure/generate UI (Phase 5).
 
 ---
 
 ## Later phases (do not skip ahead unless asked)
 
-- **4** Seeded Pokémon / ability / move / item randomizers + insufficient-pool errors
 - **5** Polished randomizer UI
 - **6** Builder UI with live validation (Tera, gender, level, shiny included)
 - **7** Recap card + Copy to Showdown
@@ -215,8 +229,9 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Leftovers / watchouts
 
-- Phase 2 is **uncommitted**. A new chat should keep working on `feat/phase-2-data-layer` (or commit first if the user asks) rather than branching from `feat/phase-1-foundation`.
-- `data/generated/catalog.json` (~4.7MB) should be committed with Phase 2 so CI tests do not need network.
+- Phase 3 is **committed** on `feat/phase-3-filtering-engine`. Continue from this branch rather than `feat/phase-2-data-layer`.
+- Phase 2 is committed and pushed on `origin/feat/phase-2-data-layer`.
+- `data/generated/catalog.json` (~4.7MB) is already in Phase 2 so CI tests do not need network.
 - `data/cache/pokeapi/` is gitignored. Safe to keep locally; do not commit.
 - Untracked `public/*.svg` files are leftover create-next-app assets and were **intentionally not committed**.
 - `node_modules.bak` (if present) is a leftover Vite install; gitignored; safe to delete.
@@ -230,4 +245,4 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. Phase 2 (catalog import) is done but **uncommitted** on `feat/phase-2-data-layer`. We are starting Phase 3 (filtering engine). Do not rebuild Phase 1 or 2.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. Phase 3 (filtering engine) is done and committed on `feat/phase-3-filtering-engine`. We are starting Phase 4 (randomization engine). Do not rebuild Phases 1–3.

@@ -28,6 +28,7 @@ The UI never owns pool logic, classification, or validation. Session state is a 
 | --- | --- |
 | `lib/types` | Normalized catalogs and session types |
 | `lib/data/classify.ts` | Form type, evolution stage, pseudo-legendary |
+| `lib/filters` | Pokémon pool filters from `RandomizerConfig` |
 | `lib/randomizer` | Seeded RNG, defaults, later engine |
 | `lib/validation` | EV/IV/set rules and user-facing errors |
 | `lib/showdown/exportSet.ts` | Deterministic Showdown text |
@@ -42,10 +43,12 @@ The UI never owns pool logic, classification, or validation. Session state is a 
 ## Defaults
 
 - Pokémon count 1–12, default 6.
-- Type match mode OR.
-- Form types: base on; Mega, regional, Gmax, and other off.
+- Type match mode OR (form has at least one selected type). AND requires every selected type.
+- Form types: base on; Mega, regional, Primal, Gmax, and other off.
 - All special classifications allowed.
 - Ability/move/item randomization off until the user enables them.
+
+`filterPokemonForms` in `lib/filters` applies those rules to `PokemonForm[]`. Empty generation, type, form-type, or evolution-stage lists match nothing. Special flags are exclusions (`allowLegendary: false` drops Restricted Legendaries); they do not require those classifications. The function returns the matching pool (possibly empty); insufficient-pool errors belong to the randomizer.
 
 ## Showdown export
 
