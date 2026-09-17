@@ -21,15 +21,14 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 | --- | --- |
 | Phase complete | **Phase 3 — Filtering engine** |
 | Next phase | **Phase 4 — Randomization engine** |
-| Branch | `feat/phase-3-filtering-engine` |
-| Parent | `feat/phase-2-data-layer` at `508ee0f` (tracks `origin/feat/phase-2-data-layer`) |
-| Latest **committed** | Phase 3 filtering engine on this branch |
-| Phase 3 code | **Committed** on `feat/phase-3-filtering-engine` |
-| Base branch | `master` still has the original Vite starter only |
+| Current branch | `master` (tracks `origin/master`) |
+| Latest on `master` | `f2cb48f` — Merge pull request #3 (`feat/phase-3-filtering-engine`) |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| PR | Not created yet |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3 |
+| Next feature branch | Create `feat/phase-4-randomization-engine` from up-to-date `master` |
+| Rename `master` → `main` | Still pending |
 
-Phase 3 exit gates already passed on this working tree: `npm run lint`, `npm run typecheck`, `npm test` (55 tests), `npm run build`.
+Phase 3 exit gates passed: `npm run lint`, `npm run typecheck`, `npm test` (55 tests), `npm run build`.
 
 The UI is a navigable shell (`/`, `/randomizer`, `/builder`, `/recap`). It does **not** yet load the catalog, filter, or randomize. Do not polish the randomizer UI until Phase 5.
 
@@ -91,8 +90,8 @@ These were approved after Phase 0. Do not silently reverse them.
 | Form generation | Form **introduction** gen (Alolan Raichu = Gen 7) |
 | Form types | `base \| regional \| mega \| primal \| gmax \| other` |
 | Dynamax | Not a form. Gigantamax **is** a form |
-| Default form filter | **Base on.** Mega, regional, gmax, other **off** |
-| Type filter | Default OR; advanced AND later |
+| Default form filter | **Base on.** Mega, regional, primal, gmax, other **off** |
+| Type filter | Default OR; AND is already implemented in `lib/filters` |
 | Specials default | All allowed (user unchecks to exclude) |
 | Ability random ON | All standard abilities (legal-only is a future pool mode) |
 | Move random ON | All standard moves; exclude Z/Max/CAP; learnset later |
@@ -125,7 +124,7 @@ PokéAPI + Showdown → scripts/import → data/generated/catalog.json
 
 UI must not own randomization, filtering, classification, or validation. UI must not consume raw PokéAPI or Showdown objects.
 
-Session type: `RandomizerSession` in `lib/types/session.ts` (serializable; later team/share/seed features should reuse it).
+Session type: `RandomizerSession` in `lib/types/session.ts` (serializable; later team/share/seed features should reuse it). Relevant fields already exist: `config`, `resultPokemonIds`, `abilityOptions`, `moveOptions`, `itemOptions`.
 
 ---
 
@@ -192,13 +191,23 @@ Do not put this logic in UI components. Do not re-run the catalog importer.
 
 ## What Phase 4 must do
 
-Implement the seeded randomizer in `lib/randomizer`. Do **not** polish the randomizer UI yet. Do not rebuild Phases 1–3.
+Implement the seeded randomizer in `lib/randomizer`. Branch from current `master`. Do **not** polish the randomizer UI yet. Do not rebuild Phases 1–3.
 
-1. Draw unique Pokémon by form id from `filterPokemonForms`, using `lib/randomizer/randomUtils.ts` only (no `Math.random()`).
+Reuse, do not rewrite:
+
+- `filterPokemonForms` from `lib/filters`
+- `createRng`, `pickUnique`, `InsufficientPoolError` from `lib/randomizer/randomUtils.ts`
+- `DEFAULT_RANDOMIZER_CONFIG` from `lib/randomizer/defaults.ts`
+- `loadGeneratedCatalog()` in tests (Node only)
+- `RandomizerSession` fields: `resultPokemonIds`, `abilityOptions`, `moveOptions`, `itemOptions`
+
+Scope:
+
+1. Draw unique Pokémon by form id from `filterPokemonForms`. No `Math.random()`.
 2. Throw `InsufficientPoolError` when the filtered pool is smaller than `pokemonCount`. Never return a silent short list.
-3. Optional ability / move / item randomizers, independently, using existing catalog collections. Ability ON = all standard abilities; move ON = all standard moves (Z/Max/CAP already excluded by import); item ON = holdables + explicit None.
+3. Optional ability / move / item randomizers, independently. Ability ON = all standard abilities; move ON = all standard moves (Z/Max/CAP already excluded by import); item ON = holdables + explicit None.
 4. Tests for uniqueness, seed reproducibility, and insufficient pools.
-5. Keep pool and RNG logic out of UI. Wire results into `RandomizerSession` types if needed, but do not build the configure/generate UI (Phase 5).
+5. Keep pool and RNG logic out of UI. Wiring into session types is fine; do not build the configure/generate UI (Phase 5).
 
 ---
 
@@ -229,20 +238,19 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Leftovers / watchouts
 
-- Phase 3 is **committed** on `feat/phase-3-filtering-engine`. Continue from this branch rather than `feat/phase-2-data-layer`.
-- Phase 2 is committed and pushed on `origin/feat/phase-2-data-layer`.
-- `data/generated/catalog.json` (~4.7MB) is already in Phase 2 so CI tests do not need network.
+- Start Phase 4 from up-to-date `master`, not from `feat/phase-3-filtering-engine` (that branch is merged).
+- `data/generated/catalog.json` (~4.7MB) is on `master`. CI tests do not need network.
 - `data/cache/pokeapi/` is gitignored. Safe to keep locally; do not commit.
 - Untracked `public/*.svg` files are leftover create-next-app assets and were **intentionally not committed**.
 - `node_modules.bak` (if present) is a leftover Vite install; gitignored; safe to delete.
 - Next.js 16 may rewrite the `<!-- BEGIN:nextjs-agent-rules -->` block at the top of `AGENTS.md`. Keep the Pokémon Randomizer rules below that block.
-- `master` on GitHub is still the Vite starter. Merge/PR when the user asks. Renaming `master` → `main` is planned but not done.
+- Renaming `master` → `main` is planned but not done.
 - Playwright browsers may need `npx playwright install` before `npm run test:e2e`.
 - Do not add the full `pokemon-showdown` simulator package to the client.
-- Natures now have `pokeApiSlug` (dual-write rule). Do not remove it.
+- Natures have `pokeApiSlug` (dual-write rule). Do not remove it.
 
 ---
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. Phase 3 (filtering engine) is done and committed on `feat/phase-3-filtering-engine`. We are starting Phase 4 (randomization engine). Do not rebuild Phases 1–3.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. Phases 1–3 are merged to `master`. We are starting Phase 4 (randomization engine). Branch from `master`. Do not rebuild Phases 1–3.
