@@ -3,9 +3,15 @@ export class InsufficientPoolError extends Error {
   readonly requestedCount: number;
   readonly kind: string;
 
-  constructor(kind: string, availableCount: number, requestedCount: number) {
+  constructor(
+    kind: string,
+    availableCount: number,
+    requestedCount: number,
+    message?: string,
+  ) {
     super(
-      `Only ${availableCount} ${kind} match your current filters. Please reduce the requested amount or broaden your filters.`,
+      message ??
+        `Only ${availableCount} ${kind} match your current filters. Please reduce the requested amount or broaden your filters.`,
     );
     this.name = "InsufficientPoolError";
     this.kind = kind;
@@ -21,6 +27,12 @@ function hashSeed(seed: string): number {
     hash = Math.imul(hash, 16777619);
   }
   return hash >>> 0;
+}
+
+export function createSeed(): string {
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 export function createRng(seed: string): () => number {
@@ -50,6 +62,36 @@ export function shuffle<T>(items: readonly T[], next: () => number): T[] {
   return copy;
 }
 
+export function rerollEmptyMessage(kind: string): string {
+  return `No other matching ${kind} are left to re-roll this one. Broaden your filters or generate a new set.`;
+}
+
+/**
+ * Pick a replacement that is still in `pool`, is not `replaceId`, and does not
+ * duplicate any other current id. The replaced id can appear again on a later
+ * re-roll of a different option.
+ */
+export function rerollUnique<T extends { id: string }>(
+  pool: readonly T[],
+  currentIds: readonly string[],
+  replaceId: string,
+  seed: string,
+  kind: string,
+): T {
+  const keptIds = new Set(currentIds.filter((id) => id !== replaceId));
+  const candidates = pool.filter((item) => item.id !== replaceId && !keptIds.has(item.id));
+  if (candidates.length === 0) {
+    throw new InsufficientPoolError(kind, 0, 1, rerollEmptyMessage(kind));
+  }
+
+  const [picked] = pickUnique(candidates, 1, createRng(seed), kind);
+  if (!picked) {
+    throw new InsufficientPoolError(kind, 0, 1, rerollEmptyMessage(kind));
+  }
+
+  return picked;
+}
+
 export function pickUnique<T>(
   pool: readonly T[],
   count: number,
@@ -61,4 +103,34 @@ export function pickUnique<T>(
   }
 
   return shuffle(pool, next).slice(0, count);
+}
+
+export function pickUniqueBy<T>(
+  pool: readonly T[],
+  count: number,
+  keyOf: (item: T) => string,
+  next: () => number,
+  kind = "options",
+): T[] {
+  const uniqueKeyCount = new Set(pool.map(keyOf)).size;
+  if (count > uniqueKeyCount) {
+    throw new InsufficientPoolError(kind, uniqueKeyCount, count);
+  }
+
+  const picked: T[] = [];
+  const seen = new Set<string>();
+  for (const item of shuffle(pool, next)) {
+    const key = keyOf(item);
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    picked.push(item);
+    if (picked.length === count) {
+      return picked;
+    }
+  }
+
+  throw new InsufficientPoolError(kind, uniqueKeyCount, count);
 }

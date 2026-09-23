@@ -1,5 +1,7 @@
 import { Dex } from "@pkmn/dex";
 import type { Ability, Item, Move, Nature, Species } from "@pkmn/dex";
+import { classifyShowdownItemTeambuilderCategory } from "../../lib/data/item-teambuilder";
+import type { ItemCategory, ItemKind } from "../../lib/types/catalog-entities";
 import { toShowdownId } from "./mapping";
 
 export { toShowdownId };
@@ -59,7 +61,7 @@ export function collectShowdownSources(dex = Dex): ShowdownCatalogSources {
   };
 }
 
-export function itemCategory(item: Item): "held" | "berry" | "mega-stone" | "z-crystal" | "other" {
+export function itemKind(item: Item): ItemKind {
   if (item.isBerry) {
     return "berry";
   }
@@ -70,6 +72,15 @@ export function itemCategory(item: Item): "held" | "berry" | "mega-stone" | "z-c
     return "mega-stone";
   }
   return "held";
+}
+
+export function itemTeambuilderCategory(item: Item): ItemCategory {
+  return classifyShowdownItemTeambuilderCategory({
+    id: item.id,
+    name: item.name,
+    itemUser: item.itemUser,
+    megaStone: item.megaStone,
+  });
 }
 
 export function showdownAbilityIds(species: Species): string[] {

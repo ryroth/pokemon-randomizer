@@ -39,19 +39,28 @@ export type {
   Ability,
   Item,
   ItemCategory,
+  ItemKind,
   Move,
   MoveCategory,
   Nature,
+} from "@/lib/types/catalog-entities";
+export {
+  ITEM_CATEGORIES,
+  ITEM_CATEGORY_LABELS,
+  MOVE_CATEGORIES,
+  MOVE_CATEGORY_LABELS,
 } from "@/lib/types/catalog-entities";
 export type { Catalog } from "@/lib/types/catalog";
 export type {
   AbilityPoolMode,
   MovePoolMode,
   RandomizerConfig,
+  RandomizerTab,
   TypeMatchMode,
 } from "@/lib/types/randomizer";
 export type {
   AppStep,
+  PokemonRoll,
   PokemonSet,
   PokemonSetDraft,
   RandomizerSession,

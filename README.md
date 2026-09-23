@@ -4,7 +4,7 @@ A polished web app for generating a unique Pokémon, building a complete set by 
 
 ## Status
 
-Phase 2 data layer: Next.js app shell plus a generated PokéAPI + Showdown catalog at `data/generated/catalog.json`. The UI still does not load catalogs or randomize Pokémon.
+Phase 4/5 Pokémon, Ability, Move, and Item slices are complete on this branch (still uncommitted). Stop for confirmation after Item. The Builder is not started.
 
 ## Quick start
 

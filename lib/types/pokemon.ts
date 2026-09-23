@@ -47,4 +47,6 @@ export interface PokemonForm {
   sprites: PokemonSprites;
   baseStats: StatSpread;
   genderRule: GenderRule;
+  /** Later-stage forms in this Pokémon's evolution line, excluding Mega, Primal, and Gigantamax. */
+  evolutionTargetIds: string[];
 }

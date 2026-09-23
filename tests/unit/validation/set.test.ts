@@ -36,6 +36,7 @@ const swampert: PokemonForm = {
   sprites: { sprite: null, spriteShiny: null, artwork: null },
   baseStats: { hp: 100, atk: 110, def: 90, spa: 85, spd: 90, spe: 60 },
   genderRule: "mixed",
+  evolutionTargetIds: [],
 };
 
 describe("set field validators", () => {
