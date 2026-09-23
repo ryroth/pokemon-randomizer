@@ -27,16 +27,17 @@ Cursor should follow these rules on every change.
 
 ## Data sources
 
-- PokéAPI: dex text, sprites/artwork, evolution chains, official species flags, move/ability/item flavor text.
-- Pokémon Showdown: teambuilder names, forme identity, Restricted Legendary / Sub-Legendary / Mythical / Paradox / Ultra Beast tags.
+- PokéAPI: dex text, sprites/artwork, evolution chains, official species flags, and English move/ability/item flavor plus `effect_entries` (the same official wording Pokémon Database, Bulbapedia, and Serebii reprint).
+- Pokémon Showdown: teambuilder names, forme identity, Restricted Legendary / Sub-Legendary / Mythical / Paradox / Ultra Beast tags, and battling `shortDesc`/`desc` when PokéAPI effect text omits numeric mechanics (for example Punk Rock’s 1.3× sound boost).
 - Dual-write `pokeApiSlug` and `showdownName` on every entity. Export only Showdown names.
+- Do not invent, paraphrase, or rewrite Pokédex, ability, move, or item descriptions. Pokédex entries use the latest unique English PokéAPI flavor only. Ability, move, and item `description` prefers PokéAPI English `short_effect`/`effect` when it includes numbers, then Showdown battling text with numbers, then flavor. Never invent multipliers. Leave the field empty when no source has English text.
 - Do not invent Pokémon data when an authoritative source exists.
 - Do not hardcode large catalogs inside React components.
 
 ## Randomization and validation
 
 - Use `lib/randomizer/randomUtils.ts` for all randomness. Do not call `Math.random()` in product code.
-- Pokémon results in a roll must be unique by form id.
+- Pokémon results in a roll must be unique along overlapping evolution paths. Split branches may appear together (Cascoon with Silcoon or Beautifly). A shared ancestor (Wurmple) or the rest of the same branch (Dustox with Cascoon) may not.
 - Insufficient pools are errors. Never silently return fewer results.
 - Do not auto-assign EVs, IVs, Nature, Tera type, gender (when mixed), level, or shiny.
 - Mega Evolutions are a first-class form type and are off by default. Dynamax is not a form. Gigantamax is a form and is off by default.

@@ -4,7 +4,8 @@ import {
   isCatalogItem,
   isCatalogMove,
   isCatalogSpecies,
-  itemCategory,
+  itemKind,
+  itemTeambuilderCategory,
 } from "../../../scripts/import/showdown";
 
 describe("Showdown catalog filters", () => {
@@ -23,10 +24,19 @@ describe("Showdown catalog filters", () => {
     expect(isCatalogItem(Dex.items.get("Leftovers"))).toBe(true);
   });
 
-  it("classifies holdable item categories", () => {
-    expect(itemCategory(Dex.items.get("Leftovers"))).toBe("held");
-    expect(itemCategory(Dex.items.get("Sitrus Berry"))).toBe("berry");
-    expect(itemCategory(Dex.items.get("Venusaurite"))).toBe("mega-stone");
-    expect(itemCategory(Dex.items.get("Firium Z"))).toBe("z-crystal");
+  it("classifies holdable item kinds", () => {
+    expect(itemKind(Dex.items.get("Leftovers"))).toBe("held");
+    expect(itemKind(Dex.items.get("Sitrus Berry"))).toBe("berry");
+    expect(itemKind(Dex.items.get("Venusaurite"))).toBe("mega-stone");
+    expect(itemKind(Dex.items.get("Firium Z"))).toBe("z-crystal");
+  });
+
+  it("classifies Showdown teambuilder item categories", () => {
+    expect(itemTeambuilderCategory(Dex.items.get("Leftovers"))).toBe("popular");
+    expect(itemTeambuilderCategory(Dex.items.get("Sitrus Berry"))).toBe("items");
+    expect(itemTeambuilderCategory(Dex.items.get("Thick Club"))).toBe("pokemon-specific");
+    expect(itemTeambuilderCategory(Dex.items.get("Venusaurite"))).toBe("pokemon-specific");
+    expect(itemTeambuilderCategory(Dex.items.get("Oran Berry"))).toBe("usually-useless");
+    expect(itemTeambuilderCategory(Dex.items.get("Rare Bone"))).toBe("useless");
   });
 });

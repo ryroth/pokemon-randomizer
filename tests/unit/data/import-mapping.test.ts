@@ -10,7 +10,7 @@ import {
   toPokeApiKebab,
   toShowdownId,
 } from "../../../scripts/import/mapping";
-import { uniqueEnglishFlavor } from "../../../scripts/import/text";
+import { mechanicalDescription, officialEnglishFlavor, uniqueEnglishFlavor } from "../../../scripts/import/text";
 
 describe("showdown / PokéAPI name mapping", () => {
   it("maps hyphenated PokéAPI slugs onto Showdown ids", () => {
@@ -97,5 +97,108 @@ describe("pokeapi field parsing", () => {
         },
       ]),
     ).toEqual([{ version: "red", text: "Line one. Line two." }]);
+  });
+
+  it("orders unique English flavor newest-first using PokéAPI version ids", () => {
+    expect(
+      uniqueEnglishFlavor([
+        {
+          flavor_text: "A strange seed was planted on its back at birth.",
+          language: { name: "en" },
+          version: { name: "red", url: "https://pokeapi.co/api/v2/version/1/" },
+        },
+        {
+          flavor_text:
+            "While it is young, it uses the nutrients that are stored in the seed on its back in order to grow.",
+          language: { name: "en" },
+          version: { name: "shield", url: "https://pokeapi.co/api/v2/version/34/" },
+        },
+      ]),
+    ).toEqual([
+      {
+        version: "shield",
+        text: "While it is young, it uses the nutrients that are stored in the seed on its back in order to grow.",
+      },
+      {
+        version: "red",
+        text: "A strange seed was planted on its back at birth.",
+      },
+    ]);
+  });
+
+  it("reads item flavor from PokéAPI `text` and never uses a paraphrase fallback", () => {
+    const entries = [
+      {
+        text: "A hold item that\ngradually restores\nHP in battle.",
+        language: { name: "en" },
+        version_group: {
+          name: "ruby-sapphire",
+          url: "https://pokeapi.co/api/v2/version-group/5/",
+        },
+      },
+      {
+        text: "An item to be held by a Pokémon. The holder’s HP is slowly but steadily restored throughout every battle.",
+        language: { name: "en" },
+        version_group: {
+          name: "sword-shield",
+          url: "https://pokeapi.co/api/v2/version-group/20/",
+        },
+      },
+    ];
+    expect(officialEnglishFlavor(entries)).toBe(
+      "An item to be held by a Pokémon. The holder’s HP is slowly but steadily restored throughout every battle.",
+    );
+    expect(officialEnglishFlavor(undefined)).toBe("");
+  });
+
+  it("prefers PokéAPI effect numbers, then Showdown mechanics, over flavor", () => {
+    expect(
+      mechanicalDescription({
+        effectEntries: [
+          {
+            short_effect: "Held: Steel-Type moves from holder do 20% more damage.",
+            effect: "Held: Increases the power of the holder’s Steel moves by 20%.",
+            language: { name: "en" },
+          },
+        ],
+        showdownShortDesc: "Holder's Steel-type attacks have 1.2x power.",
+        flavorEntries: [
+          {
+            text: "An item to be held by a Pokémon. It is a special metallic film that can boost the power of Steel-type moves.",
+            language: { name: "en" },
+          },
+        ],
+      }),
+    ).toBe("Held: Steel-Type moves from holder do 20% more damage.");
+
+    expect(
+      mechanicalDescription({
+        effectEntries: [
+          {
+            short_effect: "Boosts sound-based moves and halves damage from the same moves.",
+            effect: "Boosts the power of sound-based moves. The Pokémon also takes half the damage from these kinds of moves.",
+            language: { name: "en" },
+          },
+        ],
+        showdownShortDesc: "This Pokemon receives 1/2 damage from sound moves. Its own have 1.3x power.",
+        flavorEntries: [
+          {
+            flavor_text: "Boosts the power of sound-based moves. The Pokémon also takes half the damage from these kinds of moves.",
+            language: { name: "en" },
+          },
+        ],
+      }),
+    ).toBe("This Pokemon receives 1/2 damage from sound moves. Its own have 1.3x power.");
+
+    expect(
+      mechanicalDescription({
+        flavorEntries: [
+          {
+            flavor_text: "By floating in the air, the Pokémon receives full immunity to all Ground-type moves.",
+            language: { name: "en" },
+          },
+        ],
+      }),
+    ).toBe("By floating in the air, the Pokémon receives full immunity to all Ground-type moves.");
   });
 });

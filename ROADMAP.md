@@ -18,13 +18,21 @@ Full PokéAPI + Showdown snapshot into `data/generated/catalog.json`, unmatched-
 
 All Pokémon filters, including combinations. Complete.
 
-## Phase 4 — Randomization engine (current)
+## Phase 4 — Randomization engine (current, per randomizer)
 
-Seeded unique Pokémon / ability / move / item draws and insufficient-pool errors.
+Seeded unique draws and insufficient-pool errors, one randomizer at a time.
 
-## Phase 5 — Randomizer UI
+1. Pokémon — complete on `feat/phase-4-5-pokemon-randomizer` (uncommitted)
+2. Ability — complete on the same branch (uncommitted)
+3. Move — complete on the same branch (uncommitted); confirmed
+4. Item — complete on the same branch (uncommitted); confirmed
+5. Per-option re-roll on Pokémon, Ability, Move, and Item — complete on the same branch (uncommitted); stop for confirmation
 
-Configure → generate → select, polished and responsive.
+Confirm each bullet before starting the next.
+
+## Phase 5 — Randomizer UI (current, paired with Phase 4)
+
+Configure → generate → select → optional evolve → Continue to the next **tab** in `randomizerOrder` (default Pokémon → Ability → Move → Item). Extras can also run before Pokémon; then the user applies unique extras from that pool onto Pokémon they choose. Unchecked randomizers are skipped. Pokémon, Ability, Move, and Item tabs are built. Generated options can be re-rolled in place any number of times. Stop for confirmation after re-roll.
 
 ## Phase 6 — Pokémon builder
 

@@ -31,9 +31,15 @@ import {
   toShowdownId,
 } from "./mapping";
 import { resourceIdFromUrl } from "./pokeapi";
+import { applyEvolutionTargetsToPokemon } from "./evolutionTargets";
 import type { PokeApiChainLink, PokeApiPokemon, PokeApiSnapshot, PokeApiSpecies } from "./pokeapi-types";
-import { itemCategory, showdownAbilityIds, type ShowdownCatalogSources } from "./showdown";
-import { englishName, uniqueEnglishFlavor } from "./text";
+import {
+  itemKind,
+  itemTeambuilderCategory,
+  showdownAbilityIds,
+  type ShowdownCatalogSources,
+} from "./showdown";
+import { englishName, mechanicalDescription, uniqueEnglishFlavor } from "./text";
 
 export interface NormalizeFormInput {
   slug: string;
@@ -132,9 +138,9 @@ export function buildCatalog(
   }
 
   const catalog: Catalog = {
-    version: "2.0.0",
+    version: "2.4.0",
     generatedAt: new Date().toISOString(),
-    pokemon: sortById(pokemon),
+    pokemon: sortById(applyEvolutionTargetsToPokemon(pokemon, sources.species)),
     species: sortById([...speciesById.values()]),
     abilities: sortById(abilities),
     moves: sortById(moves),
@@ -374,6 +380,7 @@ function buildPokemonForm(input: {
     },
     baseStats: statsForForm(showdownSpecies, poke),
     genderRule: genderRuleFromShowdown(showdownSpecies),
+    evolutionTargetIds: [],
   };
 }
 
@@ -439,13 +446,17 @@ function dexEntriesFor(pokeSpecies: PokeApiSpecies | undefined): DexEntry[] {
 
 function buildAbility(ability: ShowdownAbility, snapshot: PokeApiSnapshot): Ability {
   const poke = snapshot.abilitiesByName.get(ability.id);
-  const flavor = poke ? uniqueEnglishFlavor(poke.flavor_text_entries) : [];
   return {
     id: ability.id,
     pokeApiSlug: poke?.name ?? toPokeApiKebab(ability.name),
     name: poke ? englishName(poke.names, ability.name) : ability.name,
     showdownName: ability.name,
-    description: flavor[0]?.text ?? ability.shortDesc ?? ability.desc ?? "",
+    description: mechanicalDescription({
+      effectEntries: poke?.effect_entries,
+      showdownShortDesc: ability.shortDesc,
+      showdownDesc: ability.desc,
+      flavorEntries: poke?.flavor_text_entries,
+    }),
   };
 }
 
@@ -456,7 +467,6 @@ function buildMove(move: ShowdownMove, snapshot: PokeApiSnapshot): Move | null {
   if (!type || !category) {
     return null;
   }
-  const flavor = poke ? uniqueEnglishFlavor(poke.flavor_text_entries) : [];
   return {
     id: move.id,
     pokeApiSlug: poke?.name ?? toPokeApiKebab(move.name),
@@ -469,20 +479,30 @@ function buildMove(move: ShowdownMove, snapshot: PokeApiSnapshot): Move | null {
       poke?.accuracy ??
       (move.accuracy === true ? 100 : typeof move.accuracy === "number" ? move.accuracy : null),
     pp: poke?.pp ?? move.pp ?? null,
-    description: flavor[0]?.text ?? move.shortDesc ?? move.desc ?? "",
+    description: mechanicalDescription({
+      effectEntries: poke?.effect_entries,
+      showdownShortDesc: move.shortDesc,
+      showdownDesc: move.desc,
+      flavorEntries: poke?.flavor_text_entries,
+    }),
   };
 }
 
 function buildItem(item: ShowdownItem, snapshot: PokeApiSnapshot): Item {
   const poke = snapshot.itemsByName.get(item.id);
-  const flavor = poke ? uniqueEnglishFlavor(poke.flavor_text_entries) : [];
   return {
     id: item.id,
     pokeApiSlug: poke?.name ?? toPokeApiKebab(item.name),
     name: poke ? englishName(poke.names, item.name) : item.name,
     showdownName: item.name,
-    description: flavor[0]?.text ?? item.shortDesc ?? item.desc ?? "",
-    category: itemCategory(item),
+    description: mechanicalDescription({
+      effectEntries: poke?.effect_entries,
+      showdownShortDesc: item.shortDesc,
+      showdownDesc: item.desc,
+      flavorEntries: poke?.flavor_text_entries,
+    }),
+    kind: itemKind(item),
+    category: itemTeambuilderCategory(item),
   };
 }
 

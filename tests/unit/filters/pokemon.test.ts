@@ -32,6 +32,7 @@ function makeForm(overrides: Partial<PokemonForm> & Pick<PokemonForm, "id">): Po
     sprites: { sprite: null, spriteShiny: null, artwork: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
+    evolutionTargetIds: [],
     ...overrides,
     evolutionStage,
     isBasic: overrides.isBasic ?? evolutionStage === "basic",

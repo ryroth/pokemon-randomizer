@@ -1,13 +1,23 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { evolutionConflictContext, evolutionFormsConflict } from "@/lib/data/evolution";
 import { generatedCatalogPath, loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import type { PokemonForm } from "@/lib/types/pokemon";
+import { ITEM_CATEGORIES } from "@/lib/types/catalog-entities";
 
 const catalogPath = generatedCatalogPath();
 const catalogAvailable = existsSync(catalogPath);
 
 describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
   const catalog = loadGeneratedCatalog();
+
+  function byId(id: string): PokemonForm {
+    const match = catalog.pokemon.find((pokemon) => pokemon.id === id);
+    if (!match) {
+      throw new Error(`Expected catalog Pokémon with id ${id}`);
+    }
+    return match;
+  }
 
   function byPokeApiSlug(slug: string): PokemonForm {
     const match = catalog.pokemon.find((pokemon) => pokemon.pokeApiSlug === slug);
@@ -47,7 +57,13 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
     for (const item of catalog.items) {
       expect(item.pokeApiSlug).toBeTruthy();
       expect(item.showdownName).toBeTruthy();
+      expect(["held", "berry", "mega-stone", "z-crystal", "other"]).toContain(item.kind);
+      expect(ITEM_CATEGORIES).toContain(item.category);
     }
+    expect(catalog.items.find((item) => item.id === "leftovers")?.category).toBe("popular");
+    expect(catalog.items.find((item) => item.id === "thickclub")?.category).toBe(
+      "pokemon-specific",
+    );
     for (const nature of catalog.natures) {
       expect(nature.pokeApiSlug).toBeTruthy();
       expect(nature.showdownName).toBeTruthy();
@@ -57,6 +73,12 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
   it("keeps Pokémon ids unique by form", () => {
     const ids = catalog.pokemon.map((pokemon) => pokemon.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("keeps ability ids unique and excludes noability", () => {
+    const ids = catalog.abilities.map((ability) => ability.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).not.toContain("noability");
   });
 
   it("classifies fixture species", () => {
@@ -101,6 +123,59 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
     expect(megaVenusaur.formType).toBe("mega");
     expect(megaVenusaur.speciesId).toBe("venusaur");
     expect(megaVenusaur.generation).toBe(6);
+  });
+
+  it("stores later-stage battle evolutions without Mega or Gigantamax", () => {
+    expect(byPokeApiSlug("charmander").evolutionTargetIds).toEqual(["charmeleon", "charizard"]);
+    expect(byPokeApiSlug("charizard").evolutionTargetIds).toEqual([]);
+    expect(byPokeApiSlug("pikachu").evolutionTargetIds).toEqual(["raichu", "raichualola"]);
+    expect(byPokeApiSlug("silcoon").evolutionTargetIds).toEqual(["beautifly"]);
+    expect(byPokeApiSlug("magikarp").evolutionTargetIds).toEqual(["gyarados"]);
+    expect(byPokeApiSlug("kadabra").evolutionTargetIds).toEqual(["alakazam"]);
+  });
+
+  it("treats Honedge, Doublade, and Aegislash as one overlapping path", () => {
+    const context = evolutionConflictContext(catalog.pokemon);
+    const honedge = byId("honedge");
+    const doublade = byId("doublade");
+    const aegislash = byId("aegislash");
+
+    expect(evolutionFormsConflict(honedge, doublade, context)).toBe(true);
+    expect(evolutionFormsConflict(honedge, aegislash, context)).toBe(true);
+    expect(evolutionFormsConflict(doublade, aegislash, context)).toBe(true);
+  });
+
+  it("allows Wurmple split branches to coexist without the shared ancestor", () => {
+    const context = evolutionConflictContext(catalog.pokemon);
+    const wurmple = byId("wurmple");
+    const silcoon = byId("silcoon");
+    const cascoon = byId("cascoon");
+    const beautifly = byId("beautifly");
+    const dustox = byId("dustox");
+
+    expect(evolutionFormsConflict(wurmple, cascoon, context)).toBe(true);
+    expect(evolutionFormsConflict(cascoon, dustox, context)).toBe(true);
+    expect(evolutionFormsConflict(cascoon, silcoon, context)).toBe(false);
+    expect(evolutionFormsConflict(cascoon, beautifly, context)).toBe(false);
+  });
+
+  it("stores numeric ability, move, and item effects, and latest Pokédex flavor", () => {
+    expect(catalog.abilities.find((ability) => ability.id === "blaze")?.description).toBe(
+      "Strengthens Fire moves to inflict 1.5× damage at 1/3 max HP or less.",
+    );
+    expect(catalog.abilities.find((ability) => ability.id === "punkrock")?.description).toMatch(
+      /1\.3x/i,
+    );
+    expect(catalog.moves.find((move) => move.id === "ember")?.description).toBe(
+      "10% chance to burn the target.",
+    );
+    expect(catalog.items.find((item) => item.id === "metalcoat")?.description).toBe(
+      "Held: Steel-Type moves from holder do 20% more damage.",
+    );
+    expect(catalog.items.find((item) => item.id === "leftovers")?.description).toMatch(/1\/16/);
+    expect(byId("bulbasaur").dexEntries[0]?.text).toBe(
+      "While it is young, it uses the nutrients that are stored in the seed on its back in order to grow.",
+    );
   });
 });
 

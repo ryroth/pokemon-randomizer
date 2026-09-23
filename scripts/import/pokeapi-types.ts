@@ -8,8 +8,15 @@ export interface NameEntry {
   language: NamedAPIResource;
 }
 
+export interface VerboseEffect {
+  effect?: string;
+  short_effect?: string;
+  language: NamedAPIResource;
+}
+
 export interface FlavorTextEntry {
-  flavor_text: string;
+  flavor_text?: string;
+  text?: string;
   language: NamedAPIResource;
   version?: NamedAPIResource;
   version_group?: NamedAPIResource;
@@ -63,6 +70,7 @@ export interface PokeApiAbility {
   name: string;
   names: NameEntry[];
   flavor_text_entries: FlavorTextEntry[];
+  effect_entries: VerboseEffect[];
 }
 
 export interface PokeApiMove {
@@ -75,6 +83,7 @@ export interface PokeApiMove {
   accuracy: number | null;
   pp: number | null;
   flavor_text_entries: FlavorTextEntry[];
+  effect_entries: VerboseEffect[];
 }
 
 export interface PokeApiItem {
@@ -82,6 +91,7 @@ export interface PokeApiItem {
   name: string;
   names: NameEntry[];
   flavor_text_entries: FlavorTextEntry[];
+  effect_entries: VerboseEffect[];
   category: NamedAPIResource;
 }
 

@@ -4,13 +4,14 @@ Consumer-facing web app for randomizing one Pokémon and building a Pokémon Sho
 
 ## V1 flow
 
-1. Configure Pokémon filters and optional ability / move / item randomizers.
-2. Generate a requested number of unique Pokémon.
-3. Select one result.
-4. Build the set: item, ability, four moves, EVs, IVs, Nature, Tera type, gender, level, shiny.
-5. Validate the set.
-6. View a recap card.
-7. Copy Showdown text.
+1. Choose the order of Pokémon, Ability, Move, and Item. Typical order is Pokémon, then Ability, then Moves, then Items. Pokémon is always on; the others are independently optional and skipped when off.
+2. Configure and generate each enabled randomizer in that order. After any generate, the user can re-roll an individual option in place any number of times. Re-roll keeps the rest of that generation, stays unique against the remaining options, and does not create a new Previous/Next generation. None is not re-rollable. If nothing else matches, keep the current option and show an error.
+3. If Ability, Move, or Item runs **after** Pokémon: select a Pokémon (and optional evolution), then generate extras and pick for that battle Pokémon.
+4. If an extra runs **before** Pokémon: generate that extra pool first, then generate Pokémon. The user applies extras to the Pokémon they choose (one unique ability or item each; `movesPerPokemon` unique moves each, 1–4, default 4). Leftovers stay unused. Then select a Pokémon (Ability-before still requires an applied ability; Move-before requires the chosen number of applied moves; Item-before requires an applied item, including None).
+5. Build the set: item, ability, four moves, EVs, IVs, Nature, Tera type, gender, level, shiny. If ability randomization was skipped, the builder offers that Pokémon's usual abilities. Empty move slots after a partial Move-before apply are filled here from the original learnset or the custom/rolled pool, depending on format.
+6. Validate the set.
+7. View a recap card.
+8. Copy Showdown text.
 
 Pokémon are always randomized. Abilities, moves, and items are independently optional.
 
