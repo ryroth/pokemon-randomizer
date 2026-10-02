@@ -15,7 +15,9 @@ import { PokemonFilterForm } from "@/components/randomizer/pokemon-filter-form";
 import { PokemonResults } from "@/components/randomizer/pokemon-results";
 import { RandomizerFlowList } from "@/components/randomizer/randomizer-flow";
 import { RandomizerTabs } from "@/components/randomizer/randomizer-tabs";
+import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { openBuilder } from "@/lib/builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { evolutionChoices } from "@/lib/data/evolution";
 import {
@@ -33,7 +35,6 @@ import {
   chooseEvolvedPokemon,
   clampViewedRollIndex,
   clearPokemonRolls,
-  createInitialSession,
   createSeed,
   filledMoveCount,
   isExtraBeforePokemon,
@@ -89,7 +90,7 @@ interface PokemonRandomizerProps {
 }
 
 export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonRandomizerProps) {
-  const [session, setSession] = useState(() => createInitialSession());
+  const { session, setSession, ready } = useRandomizerSession();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [abilityErrorMessage, setAbilityErrorMessage] = useState<string | null>(null);
   const [moveErrorMessage, setMoveErrorMessage] = useState<string | null>(null);
@@ -459,6 +460,16 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           ? "Generate unique abilities from every standard ability. Next you will apply each ability to a Pokémon you choose, then select one to build."
           : "Generate unique abilities from every standard ability, then pick one. This is not limited to the abilities this Pokémon usually has."
         : "Choose how many unique Pokémon to generate, then optionally turn on later randomizers. You can put Pokémon, Ability, Move, and Item in any order.";
+
+  if (!ready) {
+    return (
+      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4 py-12 sm:px-6">
+        <p role="status" className="text-sm text-muted-foreground">
+          Loading your randomizer…
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
@@ -899,11 +910,16 @@ function ContinueControl({
   selectedPokemon: PokemonForm | undefined;
   onOpenTab: (tab: RandomizerTab) => void;
 }) {
+  const { session, setSession } = useRandomizerSession();
   const label = continueLabel(next, battlePokemon, selectedPokemon);
 
   if (ready && next === "builder") {
     return (
-      <Link href="/builder" className={cn(buttonVariants({ size: "lg" }), "w-fit")}>
+      <Link
+        href="/builder"
+        className={cn(buttonVariants({ size: "lg" }), "w-fit")}
+        onClick={() => setSession(openBuilder(session))}
+      >
         {label}
       </Link>
     );
@@ -1034,14 +1050,14 @@ function describePokemonContinueHelp(input: {
   }
 
   if (input.abilityBeforePokemon || input.moveBeforePokemon || input.itemBeforePokemon) {
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (input.battlePokemon.id !== input.selectedPokemon?.id) {
-    return `You'll build ${input.battlePokemon.displayName}, evolved from ${input.selectedPokemon?.displayName}. The builder is still a placeholder.`;
+    return `You'll build ${input.battlePokemon.displayName}, evolved from ${input.selectedPokemon?.displayName}. The builder will not fill EVs, Nature, Tera type, level, or shiny for you. IVs start at 31.`;
   }
 
-  return "The builder is still a placeholder. In the builder you will choose from this Pokémon's usual abilities.";
+  return "In the builder you will choose from this Pokémon's usual abilities, then set moves, an item, and the rest of the set by hand.";
 }
 
 function describeAbilityContinueHelp(input: {
@@ -1064,7 +1080,7 @@ function describeAbilityContinueHelp(input: {
     if (input.next === "item") {
       return "Next you will randomize items.";
     }
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (!input.battlePokemon) {
@@ -1078,7 +1094,7 @@ function describeAbilityContinueHelp(input: {
     if (input.next === "item") {
       return `Next you will randomize items for ${input.battlePokemon.displayName}.`;
     }
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (input.hasPool) {
@@ -1108,7 +1124,7 @@ function describeMoveContinueHelp(input: {
     if (input.next === "item") {
       return "Next you will randomize items.";
     }
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (!input.battlePokemon) {
@@ -1119,7 +1135,7 @@ function describeMoveContinueHelp(input: {
     if (input.next === "item") {
       return `Next you will randomize items for ${input.battlePokemon.displayName}.`;
     }
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (input.hasPool) {
@@ -1149,7 +1165,7 @@ function describeItemContinueHelp(input: {
     if (input.next === "move") {
       return "Next you will randomize moves.";
     }
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (!input.battlePokemon) {
@@ -1163,7 +1179,7 @@ function describeItemContinueHelp(input: {
     if (input.next === "move") {
       return `Next you will randomize moves for ${input.battlePokemon.displayName}.`;
     }
-    return "The builder is still a placeholder. Selection is saved on this page only for now.";
+    return "Next you will finish the set in the builder. EVs, Nature, Tera type, level, and shiny stay empty until you set them. IVs start at 31.";
   }
 
   if (input.hasPool) {

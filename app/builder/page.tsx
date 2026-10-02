@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { PhasePlaceholder } from "@/components/layout/phase-placeholder";
+import { SetBuilder } from "@/components/builder/set-builder";
+import { loadGeneratedCatalog, slimPokemonForClient } from "@/lib/data/loadCatalog";
 
 export const metadata: Metadata = {
   title: "Builder",
 };
 
 export default function BuilderPage() {
+  const catalog = loadGeneratedCatalog();
+
   return (
-    <PhasePlaceholder
-      title="Build the set"
-      summary="After you pick a Pokémon, you will choose ability, four moves, an item, EVs, IVs, Nature, Tera type, gender, level, and shiny. Nothing in that list is filled in automatically."
-      nextHref="/recap"
-      nextLabel="Continue to recap"
+    <SetBuilder
+      pokemon={slimPokemonForClient(catalog.pokemon)}
+      abilities={catalog.abilities}
+      moves={catalog.moves}
+      items={catalog.items}
+      natures={catalog.natures}
     />
   );
 }

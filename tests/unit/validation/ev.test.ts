@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { EMPTY_EVS } from "@/lib/types/stats";
-import { validateEvs } from "@/lib/validation/ev";
+import { maxEvForStat, validateEvs } from "@/lib/validation/ev";
 
 describe("validateEvs", () => {
-  it("accepts a 510 spread with a 252 cap", () => {
+  it("accepts a 508 spread with a 252 cap", () => {
     const result = validateEvs({
       hp: 252,
       atk: 252,
@@ -21,7 +21,7 @@ describe("validateEvs", () => {
     expect(result.ok).toBe(true);
   });
 
-  it("rejects a total above 510", () => {
+  it("rejects a total above 508", () => {
     const result = validateEvs({
       hp: 252,
       atk: 252,
@@ -35,6 +35,13 @@ describe("validateEvs", () => {
     if (!result.ok) {
       expect(result.errors.some((error) => error.code === "evs.total-limit")).toBe(true);
     }
+  });
+
+  it("leaves only the remaining EVs for the other stats", () => {
+    const evs = { atk: 252, spe: 252 };
+    expect(maxEvForStat(evs, "def")).toBe(4);
+    expect(maxEvForStat(evs, "hp")).toBe(4);
+    expect(maxEvForStat(evs, "atk")).toBe(252);
   });
 
   it("rejects a single stat above 252", () => {

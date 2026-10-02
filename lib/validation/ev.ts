@@ -1,13 +1,32 @@
 import type { StatSpread } from "@/lib/types/stats";
-import { STAT_IDS, STAT_LABELS } from "@/lib/types/stats";
+import { STAT_IDS, STAT_LABELS, type StatId } from "@/lib/types/stats";
 import { fail, ok, type ValidationResult } from "@/lib/validation/result";
 import type { ValidationIssue } from "@/lib/validation/result";
 
 export const MAX_EV_PER_STAT = 252;
-export const MAX_EV_TOTAL = 510;
+export const MAX_EV_TOTAL = 508;
 
 export function sumEvs(evs: StatSpread): number {
   return STAT_IDS.reduce((total, stat) => total + evs[stat], 0);
+}
+
+/** How high this stat can go without passing the total or the per-stat cap. */
+export function maxEvForStat(evs: Partial<StatSpread> | undefined, stat: StatId): number {
+  const filled = evsCountingBlanksAsZero(evs);
+  const otherTotal = sumEvs(filled) - filled[stat];
+  return Math.max(0, Math.min(MAX_EV_PER_STAT, MAX_EV_TOTAL - otherTotal));
+}
+
+/** Blank slots are 0. A filled number is kept, including an explicit 0. */
+export function evsCountingBlanksAsZero(evs: Partial<StatSpread> | undefined): StatSpread {
+  return {
+    hp: evs?.hp ?? 0,
+    atk: evs?.atk ?? 0,
+    def: evs?.def ?? 0,
+    spa: evs?.spa ?? 0,
+    spd: evs?.spd ?? 0,
+    spe: evs?.spe ?? 0,
+  };
 }
 
 export function validateEvs(evs: StatSpread | undefined): ValidationResult<StatSpread> {

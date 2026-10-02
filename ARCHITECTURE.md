@@ -12,7 +12,7 @@ PokéAPI + Showdown → import scripts → generated JSON catalogs
                                         UI
 ```
 
-The UI never owns pool logic, classification, or validation. Session state is a serializable `RandomizerSession` so later team, seed, and share features can reuse it.
+The UI never owns pool logic, classification, or validation. Session state is a serializable `RandomizerSession`. A client provider shares it between the randomizer and the builder, and `sessionStorage` restores it after refresh.
 
 ## Stack
 

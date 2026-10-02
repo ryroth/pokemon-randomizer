@@ -59,6 +59,10 @@ export function validateGender(
 
 export const MIN_LEVEL = 1;
 export const MAX_LEVEL = 100;
+export const MIN_HAPPINESS = 0;
+export const MAX_HAPPINESS = 255;
+export const DEFAULT_HAPPINESS = 255;
+export const MAX_NICKNAME_LENGTH = 18;
 
 export function validateLevel(level: number | undefined): ValidationResult<number> {
   if (level === undefined) {
@@ -82,6 +86,49 @@ export function validateLevel(level: number | undefined): ValidationResult<numbe
   }
 
   return ok(level);
+}
+
+export function validateHappiness(happiness: number | undefined): ValidationResult<number> {
+  if (happiness === undefined) {
+    return fail([
+      {
+        code: "happiness.missing",
+        field: "happiness",
+        message: "Choose a happiness from 0 to 255.",
+      },
+    ]);
+  }
+
+  if (!Number.isInteger(happiness) || happiness < MIN_HAPPINESS || happiness > MAX_HAPPINESS) {
+    return fail([
+      {
+        code: "happiness.range",
+        field: "happiness",
+        message: `Happiness must be a whole number from ${MIN_HAPPINESS} to ${MAX_HAPPINESS}.`,
+      },
+    ]);
+  }
+
+  return ok(happiness);
+}
+
+export function validateNickname(nickname: string | undefined): ValidationResult<string | undefined> {
+  const trimmed = nickname?.trim();
+  if (!trimmed) {
+    return ok(undefined);
+  }
+
+  if (trimmed.length > MAX_NICKNAME_LENGTH) {
+    return fail([
+      {
+        code: "nickname.length",
+        field: "nickname",
+        message: `Nickname must be ${MAX_NICKNAME_LENGTH} characters or fewer.`,
+      },
+    ]);
+  }
+
+  return ok(trimmed);
 }
 
 export function validateShiny(shiny: boolean | undefined): ValidationResult<boolean> {

@@ -170,6 +170,40 @@ describe("randomizer session helpers", () => {
     expect(rolledPokemonIds(rerolled)).toEqual(["c", "d", "a", "b"]);
   });
 
+  it("clears EVs and Nature when a new Pokémon is rolled or selected", () => {
+    const trained = selectRolledPokemon(
+      applyPokemonRoll(createInitialSession(), {
+        seed: "abc",
+        poolSize: 10,
+        pokemon: [makeForm("a"), makeForm("b")],
+      }),
+      "a",
+    );
+    trained.draft.evs = { atk: 252, spe: 252 };
+    trained.draft.natureId = "jolly";
+    trained.draft.evsConfirmed = true;
+
+    const rerolled = applyPokemonRoll(trained, {
+      seed: "def",
+      poolSize: 10,
+      pokemon: [makeForm("a"), makeForm("c")],
+    });
+    expect(rerolled.draft.evs).toBeUndefined();
+    expect(rerolled.draft.natureId).toBeUndefined();
+    expect(rerolled.draft.evsConfirmed).toBe(false);
+
+    const switched = selectRolledPokemon(
+      {
+        ...trained,
+        draft: { ...trained.draft, evs: { hp: 4 }, natureId: "adamant", evsConfirmed: true },
+      },
+      "b",
+    );
+    expect(switched.draft.evs).toBeUndefined();
+    expect(switched.draft.natureId).toBeUndefined();
+    expect(switched.draft.evsConfirmed).toBe(false);
+  });
+
   it("allows selecting a Pokémon from an earlier roll", () => {
     const session = applyPokemonRoll(
       applyPokemonRoll(createInitialSession(), {
