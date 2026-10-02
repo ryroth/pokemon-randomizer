@@ -27,7 +27,7 @@ Dynamax is a battle mechanic, not a randomizable form. Gigantamax is a form.
 
 ## Builder rules
 
-Do not auto-assign EVs, IVs, Nature, Tera type, mixed-gender, level, or shiny. A set cannot be finalized until those required fields are explicitly configured. Genderless Pokémon omit gender. Gender-locked species use their only legal gender.
+Do not auto-assign EVs, Nature, Tera type, mixed-gender, level, or shiny. IVs start at 31 in every stat and can be changed. Happiness starts at 255 and can be set from 0 to 255. Nickname is optional. A set cannot be finalized until the required fields are explicitly configured. Genderless Pokémon omit gender. Gender-locked species use their only legal gender.
 
 ## Export
 

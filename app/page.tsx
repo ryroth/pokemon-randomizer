@@ -19,7 +19,7 @@ const steps = [
   },
   {
     title: "Build",
-    body: "Choose ability, moves, item, EVs, IVs, Nature, Tera type, gender, level, and shiny.",
+    body: "Choose ability, moves, item, EVs, Nature, Tera type, gender, level, shiny, and happiness. IVs start at 31.",
   },
   {
     title: "Export",
@@ -40,8 +40,8 @@ export default function HomePage() {
         <p className="text-lg leading-8 text-muted-foreground">
           Generate a unique Pokémon, shape a complete set by hand, then copy it
           straight into Pokémon Showdown. Abilities, moves, and items can be
-          randomized or chosen normally. EVs, IVs, Nature, Tera type, gender,
-          level, and shiny are always yours to set.
+          randomized or chosen normally. EVs, Nature, Tera type, gender, level,
+          and shiny are yours to set. IVs start at 31. Happiness starts at 255.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link href="/randomizer" className={cn(buttonVariants({ size: "lg" }))}>

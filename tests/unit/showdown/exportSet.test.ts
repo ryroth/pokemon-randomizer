@@ -14,7 +14,8 @@ const swampertSet: PokemonSet = {
   gender: null,
   level: 100,
   shiny: false,
-  };
+  happiness: 255,
+};
 
 describe("exportShowdownSet", () => {
   it("matches the Swampert golden fixture, including Tera Type", () => {
@@ -64,5 +65,21 @@ describe("exportShowdownSet", () => {
     expect(text).toContain("Level: 50");
     expect(text).toContain("Shiny: Yes");
     expect(text).toContain("Tera Type: Ground");
+  });
+
+  it("writes a nickname and a non-default happiness", () => {
+    const text = exportShowdownSet(
+      { ...swampertSet, nickname: "Mud", happiness: 0 },
+      {
+        pokemon: "Swampert",
+        ability: "Damp",
+        item: "Leftovers",
+        nature: "Adamant",
+        moves: ["Stealth Rock", "Flip Turn", "Earthquake", "Knock Off"],
+      },
+    );
+
+    expect(text).toContain("Mud (Swampert) @ Leftovers");
+    expect(text).toContain("Happiness: 0");
   });
 });

@@ -7,7 +7,7 @@
 
 ## Current coverage (Phase 4/5 Pokémon + Ability + Move + Item slices)
 
-- EV total 510, EV total over 510, single-stat cap.
+- EV total 508, EV total over 508, single-stat cap. Blank EV slots count as 0.
 - Missing Nature, too few / too many moves, IV range.
 - Required Tera / level / shiny.
 - Full set validation, including unconfirmed EVs.
@@ -35,9 +35,13 @@
 - Re-roll: `rerollUnique` / `rerollPokemon` / `rerollAbility` / `rerollMove` / `rerollItem` pick a different unused id from the remaining filtered pool; Pokémon still exclude overlapping evolution paths with kept forms; exhausted remaining pools throw `rerollEmptyMessage`. Session `replaceRolled*` edits the viewed generation in place, remaps applied extras and the draft, and does not prepend history.
 - Playwright: typical path generate/select/Continue to Abilities then pick one, then Continue to Moves and pick four, then Continue to Items and pick one. Ability-first, Move-first, and Item-first apply-then-select. Item category dropdown follows Showdown teambuilder groups. Per-option Re-roll in place on Pokémon, Ability, Move, and Item; None has no Re-roll; exhausted remaining Pokémon pool keeps the current cards and shows the re-roll error. Move cards show Power and Accuracy percentages. Randomizer order tiles drag and drop, with keyboard Space/Arrow reorder.
 
+- Builder draft: no auto EVs, Nature, Tera, gender, level, or shiny; IVs default to 31; happiness defaults to 255; nickname is optional; ability and moves stay inside their pools; duplicate moves rejected; EV edits clear confirmation; gender-locked species stay unset; finalize requires `validateSet`.
+- Builder pools: rolled moves or items when that randomizer is on; standard catalog when it is off; None is always in the item pool. Partial EV spreads name the blank stats.
+- Playwright: generate, select, continue to the builder, confirm unset EVs/IVs/Nature/Tera/level/shiny, fill a set, continue to `/recap`.
+
 ## Upcoming
 
-- Builder and recap end-to-end, clipboard export (Phases 6–7). Fill remaining move slots after a partial Move-before apply from original learnset or custom/rolled pool depending on format.
+- Recap card and clipboard export (Phase 7). Learnset-backed move slots when a learnset field exists.
 
 ## Quality bar
 

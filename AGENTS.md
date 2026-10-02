@@ -39,7 +39,7 @@ Cursor should follow these rules on every change.
 - Use `lib/randomizer/randomUtils.ts` for all randomness. Do not call `Math.random()` in product code.
 - Pokémon results in a roll must be unique along overlapping evolution paths. Split branches may appear together (Cascoon with Silcoon or Beautifly). A shared ancestor (Wurmple) or the rest of the same branch (Dustox with Cascoon) may not.
 - Insufficient pools are errors. Never silently return fewer results.
-- Do not auto-assign EVs, IVs, Nature, Tera type, gender (when mixed), level, or shiny.
+- Do not auto-assign EVs, Nature, Tera type, gender (when mixed), level, or shiny. IVs default to 31 and can be edited. Happiness defaults to 255 (range 0–255). Nickname is optional.
 - Mega Evolutions are a first-class form type and are off by default. Dynamax is not a form. Gigantamax is a form and is off by default.
 
 ## Testing and quality

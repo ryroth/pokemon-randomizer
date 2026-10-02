@@ -1,6 +1,7 @@
 import type { PokemonSet } from "@/lib/types/session";
 import { SHOWDOWN_STAT_LABELS, STAT_IDS, type StatSpread } from "@/lib/types/stats";
 import { TYPE_LABELS } from "@/lib/types/pokemon-type";
+import { DEFAULT_HAPPINESS } from "@/lib/validation/details";
 
 export interface ExportNames {
   pokemon: string;
@@ -20,7 +21,7 @@ function formatStatLine(prefix: string, spread: StatSpread, includeStat: (value:
 export function exportShowdownSet(set: PokemonSet, names: ExportNames): string {
   const lines: string[] = [];
 
-  let header = names.pokemon;
+  let header = set.nickname ? `${set.nickname} (${names.pokemon})` : names.pokemon;
   if (set.gender === "M" || set.gender === "F") {
     header += ` (${set.gender})`;
   }
@@ -37,6 +38,10 @@ export function exportShowdownSet(set: PokemonSet, names: ExportNames): string {
 
   if (set.shiny) {
     lines.push("Shiny: Yes");
+  }
+
+  if (set.happiness !== DEFAULT_HAPPINESS) {
+    lines.push(`Happiness: ${set.happiness}`);
   }
 
   lines.push(`Tera Type: ${TYPE_LABELS[set.teraType]}`);

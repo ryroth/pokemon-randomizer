@@ -73,11 +73,11 @@ export function applyPokemonRoll(
       viewedRollIndex: 0,
       selectedPokemonId,
       evolvedPokemonId,
-      draft: {
+      draft: freshTraining({
         ...session.draft,
         pokemonId: evolvedPokemonId,
         moveIds: [...session.draft.moveIds],
-      },
+      }),
     },
     session,
   );
@@ -109,16 +109,23 @@ export function selectRolledPokemon(
     return session;
   }
 
+  const samePokemon = session.selectedPokemonId === pokemonId && session.evolvedPokemonId === pokemonId;
   return withExtraState(
     {
       ...session,
       selectedPokemonId: pokemonId,
       evolvedPokemonId: pokemonId,
-      draft: {
-        ...session.draft,
-        pokemonId,
-        moveIds: [...session.draft.moveIds],
-      },
+      draft: samePokemon
+        ? {
+            ...session.draft,
+            pokemonId,
+            moveIds: [...session.draft.moveIds],
+          }
+        : freshTraining({
+            ...session.draft,
+            pokemonId,
+            moveIds: [...session.draft.moveIds],
+          }),
     },
     session,
   );
@@ -141,11 +148,11 @@ export function chooseEvolvedPokemon(
     {
       ...session,
       evolvedPokemonId: nextBattlePokemonId,
-      draft: {
+      draft: freshTraining({
         ...session.draft,
         pokemonId: nextBattlePokemonId,
         moveIds: [...session.draft.moveIds],
-      },
+      }),
     },
     session,
   );
@@ -168,13 +175,13 @@ export function clearPokemonRolls(session: RandomizerSession): RandomizerSession
     abilityOptions: keepAbilityPool ? [...session.abilityOptions] : [],
     moveOptions: keepMovePool ? [...session.moveOptions] : [],
     itemOptions: keepItemPool ? [...session.itemOptions] : [],
-    draft: {
+    draft: freshTraining({
       ...session.draft,
       pokemonId: undefined,
       abilityId: undefined,
       itemId: undefined,
       moveIds: emptyMoveSlots(),
-    },
+    }),
   };
 }
 
@@ -1149,6 +1156,13 @@ function appliedMoveIdsOnSameRoll(session: RandomizerSession, pokemonId: string)
     }
   }
   return [];
+}
+
+function freshTraining(draft: PokemonSetDraft): PokemonSetDraft {
+  const next = { ...draft, evsConfirmed: false };
+  delete next.evs;
+  delete next.natureId;
+  return next;
 }
 
 function withDraftAbility(draft: PokemonSetDraft, abilityId: string | undefined): PokemonSetDraft {

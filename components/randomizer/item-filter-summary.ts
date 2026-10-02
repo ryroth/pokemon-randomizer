@@ -4,7 +4,7 @@ import {
 } from "@/lib/types/catalog-entities";
 import type { RandomizerConfig } from "@/lib/types/randomizer";
 
-export function describeItemCategoryFilter(config: RandomizerConfig): string {
+export function describeItemCategoryFilter(config: Pick<RandomizerConfig, "itemCategories">): string {
   if (config.itemCategories.length === 0) {
     return "No categories";
   }

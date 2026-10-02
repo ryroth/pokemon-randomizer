@@ -10,13 +10,19 @@ export interface PokemonSetDraft {
   itemId?: string | null;
   abilityId?: string;
   moveIds: Array<string | undefined>;
-  evs?: StatSpread;
-  ivs?: StatSpread;
+  /** Partial until every stat has a number. Never prefilled. */
+  evs?: Partial<StatSpread>;
+  /** Defaults to 31 in every stat when the builder opens. */
+  ivs?: Partial<StatSpread>;
   natureId?: string;
   teraType?: TeraType;
   gender?: Gender;
   level?: number;
   shiny?: boolean;
+  /** Optional. Empty means the Pokémon uses its species name. */
+  nickname?: string;
+  /** 0–255. Defaults to 255 when the builder opens. */
+  happiness?: number;
   evsConfirmed: boolean;
 }
 
@@ -32,6 +38,8 @@ export interface PokemonSet {
   gender: Gender | null;
   level: number;
   shiny: boolean;
+  nickname?: string;
+  happiness: number;
 }
 
 export type AppStep = "configure" | "results" | "builder" | "recap";

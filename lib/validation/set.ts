@@ -1,13 +1,16 @@
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { PokemonSet, PokemonSetDraft } from "@/lib/types/session";
+import { STAT_IDS, STAT_LABELS, type StatSpread } from "@/lib/types/stats";
 import { validateAbility, validateItem, validateNature } from "@/lib/validation/identity";
 import {
   validateGender,
+  validateHappiness,
   validateLevel,
+  validateNickname,
   validateShiny,
   validateTeraType,
 } from "@/lib/validation/details";
-import { validateEvs } from "@/lib/validation/ev";
+import { evsCountingBlanksAsZero, validateEvs } from "@/lib/validation/ev";
 import { validateIvs } from "@/lib/validation/iv";
 import { validateMoves } from "@/lib/validation/moves";
 import {
@@ -39,8 +42,8 @@ export function validateSet(
     });
   }
 
-  const evs = validateEvs(draft.evs);
-  const ivs = validateIvs(draft.ivs);
+  const evs = validateEvs(evsCountingBlanksAsZero(draft.evs));
+  const ivs = validateSpreadField(draft.ivs, "ivs", "IVs", validateIvs);
   const nature = validateNature(draft.natureId);
   const ability = validateAbility(draft.abilityId);
   const item = validateItem(draft.itemId);
@@ -49,8 +52,10 @@ export function validateSet(
   const gender = validateGender(draft.gender, pokemon?.genderRule ?? "mixed");
   const level = validateLevel(draft.level);
   const shiny = validateShiny(draft.shiny);
+  const happiness = validateHappiness(draft.happiness);
+  const nickname = validateNickname(draft.nickname);
 
-  for (const result of [evs, ivs, nature, ability, item, moves, tera, gender, level, shiny]) {
+  for (const result of [evs, ivs, nature, ability, item, moves, tera, gender, level, shiny, happiness, nickname]) {
     if (!result.ok) {
       errors.push(...result.errors);
     }
@@ -70,7 +75,9 @@ export function validateSet(
     !tera.ok ||
     !gender.ok ||
     !level.ok ||
-    !shiny.ok
+    !shiny.ok ||
+    !happiness.ok ||
+    !nickname.ok
   ) {
     return fail(errors);
   }
@@ -87,5 +94,31 @@ export function validateSet(
     gender: gender.value,
     level: level.value,
     shiny: shiny.value,
+    nickname: nickname.value,
+    happiness: happiness.value,
   });
+}
+
+function validateSpreadField(
+  spread: Partial<StatSpread> | undefined,
+  field: "evs" | "ivs",
+  label: "EVs" | "IVs",
+  validate: (value: StatSpread | undefined) => ValidationResult<StatSpread>,
+): ValidationResult<StatSpread> {
+  if (!spread || STAT_IDS.every((stat) => spread[stat] === undefined)) {
+    return validate(undefined);
+  }
+
+  const missing = STAT_IDS.filter((stat) => typeof spread[stat] !== "number");
+  if (missing.length > 0) {
+    return fail(
+      missing.map((stat) => ({
+        code: `${field}.incomplete`,
+        field: `${field}.${stat}`,
+        message: `Enter ${STAT_LABELS[stat]} ${label} before finishing this Pokémon.`,
+      })),
+    );
+  }
+
+  return validate(spread as StatSpread);
 }

@@ -91,6 +91,7 @@ describe("validateSet", () => {
         gender: "M",
         level: 100,
         shiny: false,
+        happiness: 255,
         evsConfirmed: true,
       },
       swampert,
@@ -120,6 +121,32 @@ describe("validateSet", () => {
 
     expect(result.ok).toBe(false);
     if (!result.ok) {
+      expect(result.errors.some((error) => error.code === "evs.unconfirmed")).toBe(true);
+    }
+  });
+
+  it("treats blank EV slots as 0 and still asks for confirmation", () => {
+    const result = validateSet(
+      {
+        pokemonId: "swampert",
+        itemId: null,
+        abilityId: "torrent",
+        moveIds: ["a", "b", "c", "d"],
+        evs: { hp: 0 },
+        ivs: PERFECT_IVS,
+        natureId: "adamant",
+        teraType: "water",
+        gender: "M",
+        level: 50,
+        shiny: false,
+        evsConfirmed: false,
+      },
+      swampert,
+    );
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.some((error) => error.code === "evs.incomplete")).toBe(false);
       expect(result.errors.some((error) => error.code === "evs.unconfirmed")).toBe(true);
     }
   });

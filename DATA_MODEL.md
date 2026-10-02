@@ -116,4 +116,4 @@ Each generated option can be replaced in place any number of times. `rerollPokem
 
 ## Set draft vs finalized set
 
-`PokemonSetDraft` allows unset fields. `PokemonSet` is only produced by `validateSet`. Required builder fields: ability, four unique moves, item or explicit none, confirmed EVs, IVs, Nature, Tera type, gender when mixed, level, shiny.
+`PokemonSetDraft` allows unset fields. EV spreads may be partial until every stat has a number. IVs default to 31 when the builder opens. Happiness defaults to 255 and must stay from 0 to 255. Nickname is optional, at most 18 characters. `PokemonSet` is only produced by `validateSet`. Required builder fields: ability, four unique moves, item or explicit none, confirmed EVs, IVs, Nature, Tera type, gender when mixed, level, shiny, happiness. The builder move pool is `moveOptions` when Move randomization is on, and the standard catalog when it is off. The item pool always includes explicit None.

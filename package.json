@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "import:data": "tsx scripts/import/index.ts"
+    "import:data": "tsx scripts/import/index.ts",
+    "import:learnsets": "tsx scripts/import/learnsets.ts",
+    "import:hidden-abilities": "tsx scripts/import/hidden-abilities.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

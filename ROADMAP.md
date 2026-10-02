@@ -18,29 +18,27 @@ Full PokéAPI + Showdown snapshot into `data/generated/catalog.json`, unmatched-
 
 All Pokémon filters, including combinations. Complete.
 
-## Phase 4 — Randomization engine (current, per randomizer)
+## Phase 4 — Randomization engine
 
-Seeded unique draws and insufficient-pool errors, one randomizer at a time.
+Seeded unique draws and insufficient-pool errors. Complete on `master` (PR #4).
 
-1. Pokémon — complete on `feat/phase-4-5-pokemon-randomizer` (uncommitted)
-2. Ability — complete on the same branch (uncommitted)
-3. Move — complete on the same branch (uncommitted); confirmed
-4. Item — complete on the same branch (uncommitted); confirmed
-5. Per-option re-roll on Pokémon, Ability, Move, and Item — complete on the same branch (uncommitted); stop for confirmation
+1. Pokémon — overlapping-path uniqueness, optional evolve, Previous/Next history
+2. Ability — full catalog pool; after-Pokémon pick or before-Pokémon apply
+3. Move — category/type filters; after-Pokémon pick four or before-Pokémon `movesPerPokemon`
+4. Item — Showdown teambuilder categories; after-Pokémon pick one/None or before-Pokémon apply
+5. Per-option re-roll on Pokémon, Ability, Move, and Item
 
-Confirm each bullet before starting the next.
+## Phase 5 — Randomizer UI
 
-## Phase 5 — Randomizer UI (current, paired with Phase 4)
-
-Configure → generate → select → optional evolve → Continue to the next **tab** in `randomizerOrder` (default Pokémon → Ability → Move → Item). Extras can also run before Pokémon; then the user applies unique extras from that pool onto Pokémon they choose. Unchecked randomizers are skipped. Pokémon, Ability, Move, and Item tabs are built. Generated options can be re-rolled in place any number of times. Stop for confirmation after re-roll.
+Configure → generate → select → optional evolve → Continue to the next **tab** in `randomizerOrder` (default Pokémon → Ability → Move → Item). Extras can run before Pokémon. Unchecked randomizers are skipped. Order tiles are drag-and-drop. Complete on `master` (PR #4).
 
 ## Phase 6 — Pokémon builder
 
-Ability, moves, item, EVs, IVs, Nature, Tera, gender, level, shiny, live validation.
+Ability, moves, item, EVs, IVs, Nature, Tera, gender, level, shiny, and live validation. Implemented on `feat/phase-6-builder`. The session is shared with `/randomizer` and restored from `sessionStorage`. `/recap` is still a placeholder.
 
-## Phase 7 — Recap and Showdown export
+## Phase 7 — Recap and Showdown export (next)
 
-Recap card and Copy to Showdown.
+Recap card and Copy to Showdown. Not started. `finalizedSet` is written when the builder validates.
 
 ## Phase 8 — Polish
 
