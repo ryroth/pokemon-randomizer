@@ -13,10 +13,13 @@
     "test:e2e": "playwright test",
     "import:data": "tsx scripts/import/index.ts",
     "import:learnsets": "tsx scripts/import/learnsets.ts",
-    "import:hidden-abilities": "tsx scripts/import/hidden-abilities.ts"
+    "import:hidden-abilities": "tsx scripts/import/hidden-abilities.ts",
+    "import:models": "tsx scripts/import/pokemon-models.ts",
+    "import:genera": "tsx scripts/import/genera.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
+    "@google/model-viewer": "^4.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cn": "^0.2.6",

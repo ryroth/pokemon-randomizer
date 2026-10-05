@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { exportShowdownSet } from "@/lib/showdown/exportSet";
+import { exportShowdownSet, exportShowdownTeam } from "@/lib/showdown/exportSet";
 import type { PokemonSet } from "@/lib/types/session";
 
 const swampertSet: PokemonSet = {
@@ -81,5 +81,19 @@ describe("exportShowdownSet", () => {
 
     expect(text).toContain("Mud (Swampert) @ Leftovers");
     expect(text).toContain("Happiness: 0");
+  });
+
+  it("separates a team with a blank line between sets", () => {
+    const names = {
+      pokemon: "Swampert",
+      ability: "Damp",
+      item: "Leftovers",
+      nature: "Adamant",
+      moves: ["Stealth Rock", "Flip Turn", "Earthquake", "Knock Off"] as [string, string, string, string],
+    };
+    const first = exportShowdownSet(swampertSet, names);
+    const second = exportShowdownSet({ ...swampertSet, nickname: "Mud", pokemonId: "mudkip" }, names);
+    expect(exportShowdownTeam([first, second])).toBe(`${first.trimEnd()}\n\n${second.trimEnd()}\n`);
+    expect(exportShowdownTeam([])).toBe("");
   });
 });

@@ -64,3 +64,9 @@ export function exportShowdownSet(set: PokemonSet, names: ExportNames): string {
 
   return `${lines.join("\n")}\n`;
 }
+
+/** Showdown imports a team as one set after another, with a blank line between them. */
+export function exportShowdownTeam(setTexts: readonly string[]): string {
+  const blocks = setTexts.map((text) => text.replace(/\s+$/, ""));
+  return blocks.length > 0 ? `${blocks.join("\n\n")}\n` : "";
+}

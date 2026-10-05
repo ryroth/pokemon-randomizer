@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -27,6 +26,7 @@ import {
   setDraftShiny,
   setDraftTeraType,
 } from "@/lib/builder";
+import { PokemonPortrait } from "@/components/builder/pokemon-portrait";
 import { StatSpreadSheet } from "@/components/builder/stat-spread";
 import { AbilityDropdown } from "@/components/builder/ability-dropdown";
 import { ItemPicker } from "@/components/builder/item-picker";
@@ -98,7 +98,6 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const itemPool = builderItemPool(session, items);
   const validation = validateSet(session.draft, battlePokemon);
   const issues = validation.ok ? [] : validation.errors;
-  const imageSrc = battlePokemon.sprites.artwork ?? battlePokemon.sprites.sprite;
   const evTotal = sumEvs(evsCountingBlanksAsZero(session.draft.evs));
   const filledMoveSlots = session.draft.moveIds.filter((id) => Boolean(id)).length;
   const emptyMoveSlots = REQUIRED_MOVE_COUNT - filledMoveSlots;
@@ -156,15 +155,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         </section>
 
       <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
-        <div className="relative size-20 shrink-0">
-          {imageSrc ? (
-            <Image src={imageSrc} alt="" fill sizes="80px" className="object-contain" />
-          ) : (
-            <div className="flex size-20 items-center justify-center rounded-xl border border-dashed border-border text-xl text-muted-foreground">
-              {battlePokemon.displayName.slice(0, 1)}
-            </div>
-          )}
-        </div>
+        <PokemonPortrait pokemon={battlePokemon} shiny={session.draft.shiny} />
         <div className="min-w-0 space-y-1">
           <p className="font-medium">{battlePokemon.displayName}</p>
           <p className="flex flex-wrap gap-1.5">
@@ -369,7 +360,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
                   checked={session.draft.shiny === true}
                   onChange={() => setSession(setDraftShiny(session, true))}
                 />
-                Shiny
+                Yes
               </label>
               <label className="flex items-center gap-2">
                 <input
@@ -378,7 +369,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
                   checked={session.draft.shiny === false}
                   onChange={() => setSession(setDraftShiny(session, false))}
                 />
-                Not shiny
+                No
               </label>
             </div>
           </fieldset>

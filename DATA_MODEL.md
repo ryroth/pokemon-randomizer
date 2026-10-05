@@ -25,6 +25,9 @@ Every entity keeps both `pokeApiSlug` and `showdownName`. Catalog `id` values ar
 - Unmatched records are written to `data/generated/join-report.json` instead of being dropped silently. Showdown-only Pokémon stay in the catalog with empty dex/sprite fields. Typical leftovers are plate/drive/Tera/cosmetic formes that PokéAPI stores as form records rather than `/pokemon` varieties.
 - Sprites are stored as PokéAPI official-artwork URLs. Images are not vendored.
 - The app must not call PokéAPI in the browser. Re-run the importer when source data changes.
+- `data/generated/pokemon-model-index.json` is a snapshot of optimized GLB paths from `Pokemon-3D-api/assets` (`npm run import:models`, commit `429de1288cea0d43f5b4f56305d2276e94239d65`). The recap animates the regular GLB and paints shiny textures onto it when materials pair. Do not hand-edit the index. Forms without a snapshotted model fall back to catalog artwork.
+- `data/generated/genera.json` is the English PokéAPI genus (`npm run import:genera`). Do not hand-edit it. The recap name plate shows that genus under the species name.
+- Saved teams are not catalog data. They live in browser `localStorage` under `pokemon-randomizer.teams.v1`.
 
 ## Classification
 

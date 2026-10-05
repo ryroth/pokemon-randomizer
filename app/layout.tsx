@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { RandomizerSessionProvider } from "@/components/session/session-provider";
+import { TeamProvider } from "@/components/teams/team-provider";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -36,7 +37,9 @@ export default function RootLayout({
         </a>
         <SiteHeader />
         <main id="main" className="flex flex-1 flex-col">
-          <RandomizerSessionProvider>{children}</RandomizerSessionProvider>
+          <RandomizerSessionProvider>
+            <TeamProvider>{children}</TeamProvider>
+          </RandomizerSessionProvider>
         </main>
         <SiteFooter />
       </body>

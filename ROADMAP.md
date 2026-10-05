@@ -34,11 +34,11 @@ Configure → generate → select → optional evolve → Continue to the next *
 
 ## Phase 6 — Pokémon builder
 
-Ability, moves, item, EVs, IVs, Nature, Tera, gender, level, shiny, and live validation. Implemented on `feat/phase-6-builder`. The session is shared with `/randomizer` and restored from `sessionStorage`. `/recap` is still a placeholder.
+Ability, moves, item, EVs, IVs, Nature, Tera, gender, level, shiny, and live validation. Complete on `master` (PR #5). The session is shared with `/randomizer` and restored from `sessionStorage`.
 
-## Phase 7 — Recap and Showdown export (next)
+## Phase 7 — Recap, Showdown export, and saved teams (current)
 
-Recap card and Copy to Showdown. Not started. `finalizedSet` is written when the builder validates.
+A Pokédex-style card for the finalized Pokémon, with the regular 3D idle model, shiny colors painted on when the materials match, Copy to Showdown, and Next Randomizer. Finished sets can be saved to local teams of 6, reordered, removed, cleared after confirmation, and copied as one Showdown team. Implemented on `feat/phase-7-recap`. The randomizer is still one Pokémon at a time. There is no database.
 
 ## Phase 8 — Polish
 
@@ -46,4 +46,4 @@ Accessibility, responsive, loading/error, performance, visual consistency.
 
 ## Later, not now
 
-Team builder, saved builds, accounts, share URLs, public seeds, learnset-only and competitive pool modes.
+Team builder of six **randomized** Pokémon, accounts, share URLs, public seeds, learnset-only and competitive pool modes. Saving finished sets onto local teams is part of Phase 7.
