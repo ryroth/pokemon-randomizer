@@ -65,7 +65,7 @@ export function StatRadar({ stats, evs }: { stats: CalculatedStat[]; evs: StatSp
 
 function StatReadout({ stat, ev }: { stat: CalculatedStat; ev: number }) {
   const tone =
-    stat.natureEffect === "boost" ? "text-[#8fd4ff]" : stat.natureEffect === "drop" ? "text-[#ff9b9b]" : "text-white";
+    stat.natureEffect === "boost" ? "text-[#8fd4ff]" : stat.natureEffect === "drop" ? "text-[#ffc4c4]" : "text-white";
   return (
     <div className={`min-w-0 ${PLACEMENT[stat.stat]}`}>
       <p className={`text-xs font-medium ${tone}`}>

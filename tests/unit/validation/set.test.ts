@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { validateIvs } from "@/lib/validation/iv";
 import { validateMoves } from "@/lib/validation/moves";
 import { validateNature } from "@/lib/validation/identity";
-import { validateLevel, validateShiny, validateTeraType } from "@/lib/validation/details";
+import { validateLevel, validateNickname, validateShiny, validateTeraType } from "@/lib/validation/details";
 import { validateSet } from "@/lib/validation/set";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import { EMPTY_EVS, PERFECT_IVS } from "@/lib/types/stats";
@@ -63,6 +63,17 @@ describe("set field validators", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors[0]?.code).toBe("moves.too-many");
+    }
+  });
+
+  it("keeps spaces inside a nickname and counts them toward 18 characters", () => {
+    expect(validateNickname("Big Ace")).toEqual({ ok: true, value: "Big Ace" });
+    expect(validateNickname("  Big Ace  ")).toEqual({ ok: true, value: "Big Ace" });
+    expect(validateNickname(" ".repeat(18))).toEqual({ ok: true, value: undefined });
+    const tooLong = validateNickname(`${"a".repeat(9)} ${"a".repeat(9)}`);
+    expect(tooLong.ok).toBe(false);
+    if (!tooLong.ok) {
+      expect(tooLong.errors[0]?.code).toBe("nickname.length");
     }
   });
 

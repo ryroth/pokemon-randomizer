@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TYPE_COLORS } from "@/components/type-colors";
 import { searchMovesByName, moveNameMatchSpan } from "@/lib/builder/moveSearch";
 import { nextMoveSort, sortMoves, type MoveSort, type MoveSortColumn } from "@/lib/builder/moveSort";
 import {
@@ -16,26 +17,7 @@ import { cn } from "@/lib/utils";
 const ROW_GRID =
   "grid grid-cols-[minmax(7rem,1.15fr)_4.75rem_1.75rem_2.75rem_3.25rem_2.25rem_minmax(12rem,2.2fr)] items-center gap-x-2";
 
-const TYPE_COLORS: Record<PokemonType, { background: string; color: string }> = {
-  normal: { background: "#9fa19f", color: "#fff" },
-  fire: { background: "#e62829", color: "#fff" },
-  water: { background: "#2980ef", color: "#fff" },
-  electric: { background: "#fac000", color: "#1a1a1a" },
-  grass: { background: "#3fa129", color: "#fff" },
-  ice: { background: "#3dcef3", color: "#1a1a1a" },
-  fighting: { background: "#ff8000", color: "#fff" },
-  poison: { background: "#9141cb", color: "#fff" },
-  ground: { background: "#915121", color: "#fff" },
-  flying: { background: "#81b9ef", color: "#1a1a1a" },
-  psychic: { background: "#ef4179", color: "#fff" },
-  bug: { background: "#91a119", color: "#fff" },
-  rock: { background: "#afa981", color: "#1a1a1a" },
-  ghost: { background: "#704170", color: "#fff" },
-  dragon: { background: "#5060e1", color: "#fff" },
-  dark: { background: "#624d4e", color: "#fff" },
-  steel: { background: "#60a1b8", color: "#fff" },
-  fairy: { background: "#ef70ef", color: "#1a1a1a" },
-};
+const scrollRegionClass = "overflow-x-auto rounded-lg border border-border";
 
 export function MovePicker({
   moves,
@@ -120,7 +102,12 @@ export function MovePicker({
       </div>
 
       {lockedSlots?.[activeSlot] && selected ? (
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div
+          className={scrollRegionClass}
+          tabIndex={0}
+          role="region"
+          aria-label="Locked move, scroll sideways if the columns do not fit"
+        >
           <div className={cn(ROW_GRID, "border-b border-border bg-muted/60 px-2 py-1.5 text-xs font-medium text-muted-foreground")}>
             <span>Name</span>
             <span>Type</span>
@@ -146,7 +133,12 @@ export function MovePicker({
       </label>
       <p className="text-sm text-muted-foreground">Choosing move {activeSlot + 1}.</p>
 
-      <div className="overflow-x-auto rounded-lg border border-border">
+      <div
+        className={scrollRegionClass}
+        tabIndex={0}
+        role="region"
+        aria-label="Matching moves, scroll sideways if the columns do not fit"
+      >
         <div className={cn(ROW_GRID, "border-b border-border bg-muted/60 px-2 py-1.5 text-xs font-medium text-muted-foreground")}>
           <SortHeader label="Name" column="name" sort={sort} onSort={setSort} />
           <SortHeader label="Type" column="type" sort={sort} onSort={setSort} />

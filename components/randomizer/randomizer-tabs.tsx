@@ -18,39 +18,50 @@ interface RandomizerTabsProps {
 }
 
 export function RandomizerTabs({ tabs, activeTab, canOpen, onChange }: RandomizerTabsProps) {
-  return (
-    <div
-      role="tablist"
-      aria-label="Randomizer steps"
-      className="flex flex-wrap gap-1 rounded-xl border border-border bg-muted/40 p-1"
-    >
-      {tabs.map((tab) => {
-        const selected = tab === activeTab;
-        const disabled = !canOpen(tab);
+  const disabledReasonId = "randomizer-tab-disabled-reason";
+  const anyDisabled = tabs.some((tab) => !canOpen(tab));
 
-        return (
-          <button
-            key={tab}
-            type="button"
-            role="tab"
-            id={`randomizer-tab-${tab}`}
-            aria-controls={`randomizer-panel-${tab}`}
-            aria-selected={selected}
-            disabled={disabled}
-            title={disabled ? "Select a Pokémon first" : undefined}
-            className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50",
-              selected
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-              disabled && "cursor-not-allowed opacity-50 hover:text-muted-foreground",
-            )}
-            onClick={() => onChange(tab)}
-          >
-            {TAB_LABELS[tab]}
-          </button>
-        );
-      })}
+  return (
+    <div className="space-y-2">
+      <div
+        role="tablist"
+        aria-label="Randomizer steps"
+        className="flex flex-wrap gap-1 rounded-xl border border-border bg-muted/40 p-1"
+      >
+        {tabs.map((tab) => {
+          const selected = tab === activeTab;
+          const disabled = !canOpen(tab);
+
+          return (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              id={`randomizer-tab-${tab}`}
+              aria-controls={`randomizer-panel-${tab}`}
+              aria-selected={selected}
+              disabled={disabled}
+              title={disabled ? "Select a Pokémon first" : undefined}
+              aria-describedby={disabled ? disabledReasonId : undefined}
+              className={cn(
+                "min-h-11 flex-1 rounded-lg px-3 py-2 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:min-h-10",
+                selected
+                  ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-foreground/20"
+                  : "text-muted-foreground hover:text-foreground",
+                disabled && "cursor-not-allowed opacity-50 hover:text-muted-foreground",
+              )}
+              onClick={() => onChange(tab)}
+            >
+              {TAB_LABELS[tab]}
+            </button>
+          );
+        })}
+      </div>
+      {anyDisabled ? (
+        <p id={disabledReasonId} className="sr-only">
+          Select a Pokémon first
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,9 +16,18 @@ export function FilterDropdown({
   description?: string;
   children: ReactNode;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <details className="group rounded-xl border border-border bg-background">
-      <summary className="cursor-pointer list-none rounded-xl px-4 py-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden [&::marker]:content-none">
+    <details
+      className="group rounded-xl border border-border bg-background"
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary
+        role="button"
+        aria-expanded={open}
+        className="cursor-pointer list-none rounded-xl px-4 py-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 [&::-webkit-details-marker]:hidden [&::marker]:content-none"
+      >
         <span className="flex items-center justify-between gap-3">
           <span className="min-w-0 text-left">
             <span className="block text-sm font-medium">{label}</span>

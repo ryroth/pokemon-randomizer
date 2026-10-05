@@ -5,7 +5,7 @@
 - Vitest: unit tests for classification, RNG, validation, Showdown export, Pokémon filters, Pokémon rolls, ability rolls, move rolls, item rolls.
 - Playwright: browser smoke of the app shell, the Pokémon generate flow, the ability generate flow, the move generate flow, and the item generate flow.
 
-## Current coverage (through the Phase 7 recap)
+## Current coverage (through Phase 8)
 
 - EV total 508, EV total over 508, single-stat cap. Blank EV slots count as 0.
 - Missing Nature, too few / too many moves, IV range.
@@ -33,19 +33,21 @@
 - Item randomizer: unique ids, seed reproducibility, catalog holdables only (None is extra selectable, not an RNG id), Showdown teambuilder category filters (Popular / Items / Pokémon-Specific / Usually Useless / Useless; all default on; empty list matches nothing), insufficient pools, invalid counts, catalog rolls of `itemCount` unique holdables.
 - Randomizer session helpers for items: store a roll only for `battlePokemonId` when Item is after Pokémon, then pick one or None; Item-first stores a pool, the user applies unique items onto Pokémon (None allowed), selection requires an applied item, evolve keeps it; clear Pokémon rolls keep the pre-Pokémon pool; no auto-assign.
 - Re-roll: `rerollUnique` / `rerollPokemon` / `rerollAbility` / `rerollMove` / `rerollItem` pick a different unused id from the remaining filtered pool; Pokémon still exclude overlapping evolution paths with kept forms; exhausted remaining pools throw `rerollEmptyMessage`. Session `replaceRolled*` edits the viewed generation in place, remaps applied extras and the draft, and does not prepend history.
-- Playwright: typical path generate/select/Continue to Abilities then pick one, then Continue to Moves and pick four, then Continue to Items and pick one. Ability-first, Move-first, and Item-first apply-then-select. Item category dropdown follows Showdown teambuilder groups. Per-option Re-roll in place on Pokémon, Ability, Move, and Item; None has no Re-roll; exhausted remaining Pokémon pool keeps the current cards and shows the re-roll error. Move cards show Power and Accuracy percentages. Randomizer order tiles drag and drop, with keyboard Space/Arrow reorder.
+- Playwright: typical path generate/select/Continue to Abilities then pick one, then Continue to Moves and pick four, then Continue to Items and pick one. Ability-first, Move-first, and Item-first apply-then-select. Back returns to the previous enabled tab. The first tab has no back button. Item category dropdown follows Showdown teambuilder groups. Per-option Re-roll in place on Pokémon, Ability, Move, and Item; None has no Re-roll; exhausted remaining Pokémon pool keeps the current cards and shows the re-roll error. Move cards show Power and Accuracy percentages. Randomizer order tiles drag and drop, with keyboard Space/Arrow reorder.
 
-- Builder draft: no auto EVs, Nature, Tera, gender, level, or shiny; IVs default to 31; happiness defaults to 255; nickname is optional; ability and moves stay inside their pools; duplicate moves rejected; EV edits clear confirmation; gender-locked species stay unset; finalize requires `validateSet`.
+- Builder draft: no auto EVs, Nature, Tera, gender, level, or shiny; IVs default to 31; happiness defaults to 255; nickname is optional and spaces count toward 18; ability and moves stay inside their pools; duplicate moves rejected; EV edits clear confirmation; gender-locked species stay unset; finalize requires `validateSet`.
+- Spread guess: four moves produce a Showdown-style role, EVs, and Nature (`guessEvSpread`). Fewer than four moves produce nothing, except Ditto, Unown, and Last Resort. Applying the guess sets those EVs and that Nature and does not confirm.
 - Builder pools: rolled moves or items when that randomizer is on; standard catalog when it is off; None is always in the item pool. Partial EV spreads name the blank stats.
 - Playwright: generate, select, continue to the builder, confirm unset EVs/IVs/Nature/Tera/level/shiny, fill a set, continue to `/recap`.
 
 - Recap: idle-clip selection, shiny texture pairing, 3D model URLs for base, shiny, regional, Mega, Mega-X, Gigantamax, Primal, Origin, and named formes, artwork fallback when a forme has no model, genus text, one export card per finalized set, Showdown text matches `exportShowdownSet`.
 - Teams: a new team leaves earlier teams unchanged, the next slot fills until 6, one slot can be removed or moved, clearing one team leaves the others, a team paste separates sets with a blank line, broken storage becomes an empty box, HOME sprites are preferred.
 - Playwright: after the builder fill-in, the recap shows that Pokémon and its Showdown text, Copy to Showdown writes the clipboard, save to a new team survives Next Randomizer, the team recap opens, and removing the slot empties it.
+- Polish: the header marks the current page, fits a 390px viewport without sideways scrolling, and an unknown URL shows Page not found. Type chip text meets a 4.5:1 contrast ratio.
 
 ## Upcoming
 
-- Learnset-only and competitive pool modes. Phase 8 polish. A six-Pokémon randomizer is not started.
+- Learnset-only and competitive pool modes. A six-Pokémon randomizer is not started.
 
 ## Quality bar
 

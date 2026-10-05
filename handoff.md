@@ -19,18 +19,18 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 7 — Recap, Showdown copy, and saved teams** |
-| Current work | None. Phase 8 is next only if the user asks |
-| Next phase | **Phase 8 — Polish** |
+| Phase complete on `master` | **Phase 8 — Polish**, plus back navigation, nickname spaces, and the Showdown spread guess |
+| Current work | None. Later features only if the user asks |
+| Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | `04d7053` — feat: add the recap, Showdown copy, and saved teams |
+| Latest on `master` | Filled in after this pull request merges |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7 |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7. Phase 8 PR number is filled in after merge |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–7 are on `master`. Do **not** rebuild them. Do **not** start Phase 8 polish unless the user asks.
+Phases 1–8 are on `master` after this pull request merges. Do **not** rebuild Phases 1–8. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
 
-Start the next feature from up-to-date `master`. Do not stack new work on `feat/phase-7-recap` or `feat/phase-6-builder`.
+Start the next feature from up-to-date `master`. Do not stack new work on `feat/phase-7-recap`, `feat/phase-6-builder`, or the Phase 8 branch.
 
 Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Playwright covers the randomizer and the builder-through-teams flow at `tests/e2e/builder.spec.ts` (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, or `pokemon-model-index.json`. Learnsets and Hidden Abilities are separate generated files.
 
@@ -38,8 +38,8 @@ Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, 
 
 ## First action for the next agent
 
-1. Read this file and `AGENTS.md`. Stay on `master` until a new branch is asked for. Do **not** recreate or rebuild Phases 1–7.
-2. Phase 7 (recap, copy, and saved teams) is merged in [#6](https://github.com/ryroth/pokemon-randomizer/pull/6). Phase 8 is polish. Do not start polish unless asked.
+1. Read this file and `AGENTS.md`. Stay on `master` until a new branch is asked for. Do **not** recreate or rebuild Phases 1–8.
+2. Phase 8 is merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless asked.
 3. Saved teams are in scope. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
 
 Do not commit unless asked. Do not push unless asked.
@@ -56,7 +56,7 @@ Custom order can put Ability, Move, or Item **before** Pokémon. Then generate t
 
 - Pokémon: always randomized
 - Abilities / moves / items: independently optional
-- EVs, Nature, Tera type, gender (if mixed), level, and shiny are not auto-assigned. Applying a Smogon guess is the exception: it fills that analysis's EVs and Nature and still requires EV confirmation. IVs default to 31. Happiness defaults to 255 (0–255). Nickname is optional.
+- EVs, Nature, Tera type, gender (if mixed), level, and shiny are not auto-assigned. Applying the guessed spread is the exception: it fills those EVs and that Nature and still requires EV confirmation. IVs default to 31. Happiness defaults to 255 (0–255). Nickname is optional.
 - A new Pokémon roll, a different selected Pokémon, or an evolution clears EVs, Nature, and EV confirmation. IVs stay at 31.
 
 Out of scope until explicitly requested: accounts, share URLs, public seeds, learnset-only or competitive-only pools, and a database. A six-Pokémon **randomizer** is still out of scope. Saving finished builds onto local teams is implemented.
@@ -120,9 +120,9 @@ Do not silently reverse these.
 | RNG | `lib/randomizer/randomUtils.ts` only. No `Math.random()` in product code |
 | Re-roll | Replaces **one** option in the **viewed** generation. Not a new Generate. No Previous/Next history. None is not re-rollable |
 | Tera / gender / level / shiny | In V1 UI, validation, recap, and export. Not auto-filled |
-| Nickname | Optional, above the Pokémon, at most 18 characters. Blank uses the species name |
+| Nickname | Optional, above the Pokémon, at most 18 characters. Spaces count. Blank uses the species name |
 | Happiness | 0–255, default 255. Frustration is strongest at 0. Return is strongest at 255 |
-| EVs | Blank slots count as 0 and the user does not type 0. Total cannot pass 508. Per-stat cap is 252. Sliders are always scaled 0–252 and still clamp to the remaining total. Confirm with `evsConfirmed`. Four moves show a Smogon guess; applying it sets those EVs and that Nature and does not confirm. |
+| EVs | Blank slots count as 0 and the user does not type 0. Total cannot pass 508. Per-stat cap is 252. Sliders are always scaled 0–252 and still clamp to the remaining total. Confirm with `evsConfirmed`. Four moves show a Showdown-style guessed spread; applying it sets those EVs and that Nature and does not confirm. |
 | IVs | Start at 31 in every stat. The user can change any stat from 0 to 31 |
 | Descriptions | Do not invent or paraphrase. Pokédex = latest unique English PokéAPI flavor. Ability/move/item `description` prefers PokéAPI English `short_effect`/`effect` when it includes numbers, then Showdown battling text with numbers, then flavor |
 | Export | `exportShowdownSet` for one Pokémon. `exportShowdownTeam` joins sets with a blank line. Tera always written. Level 100 omitted. IVs of 31 omitted. Zero EVs omitted. Gender omitted if genderless. Shiny line only if shiny. Happiness omitted at 255 |
@@ -157,7 +157,7 @@ Session type: `RandomizerSession` in `lib/types/session.ts` (serializable). A cl
 ```text
 app/                         Home, randomizer, builder, recap, teams
 app/randomizer/              Server page + loading/error (pass catalog Pokémon, abilities, moves, items)
-components/layout/           Header, footer, phase placeholder
+components/layout/           Header, footer, page frame, route notice and error
 components/randomizer/       Order list + tabs + Pokémon / Ability / Move / Item UI
 components/recap/            Pokédex card, idle model, save-to-team
 components/teams/            Team list, clear confirmation, slot sprites
@@ -171,7 +171,7 @@ lib/data/moveDisplay.ts      Power / Accuracy chip labels
 lib/data/item-teambuilder.ts Showdown item category mapping
 lib/filters/                 Pokémon, move, and item filters from RandomizerConfig
 lib/randomizer/              defaults, RNG, engines, custom order, extras, session helpers
-lib/builder/                Draft setters, pools, learnsets, move search/sort, item search, ability groups, Smogon EV guess, randomizer locks
+lib/builder/                Draft setters, pools, learnsets, move search/sort, item search, ability groups, Showdown EV guess, randomizer locks
 lib/stats/battleStat.ts     Gen 3+ battle stat formula
 lib/session/                 sessionStorage for RandomizerSession
 lib/validation/              EV/IV/nature/ability/moves/item/tera/gender/level/shiny/happiness/set (`REQUIRED_MOVE_COUNT = 4`, `MAX_EV_TOTAL = 508`)
@@ -180,16 +180,11 @@ lib/recap/                   Recap entries, 3D model URLs, idle-clip choice, shi
 lib/teams/                   Team box, localStorage, Showdown team paste, HOME sprite URLs
 scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, Hidden Abilities, model index, genera
 data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, hidden-abilities.json, join-report.json, pokemon-model-index.json, genera.json
-data/smogon/                 Gen 9 analyses used for the EV guess. Do not hand-edit.
 data/cache/pokeapi/          Gitignored HTTP cache
-tests/unit/                  Domain tests (Vitest)
+tests/unit/                  Domain tests (Vitest), including `tests/unit/ui/type-colors.test.ts`
 tests/e2e/builder.spec.ts    Builder, recap, and saved-team flow (Playwright)
-tests/e2e/randomizer.spec.ts Real randomizer flow (Playwright)
-data/smogon/                 Gen 9 analyses used for the EV guess. Do not hand-edit.
-data/cache/pokeapi/          Gitignored HTTP cache
-tests/unit/                  Domain tests (Vitest)
-tests/e2e/builder.spec.ts    Builder fill-in (Playwright)
-tests/e2e/randomizer.spec.ts Real randomizer flow (Playwright)
+tests/e2e/randomizer.spec.ts Real randomizer flow, including back navigation (Playwright)
+tests/e2e/polish.spec.ts     Header, not-found, and narrow viewport (Playwright)
 ```
 
 ---
@@ -267,8 +262,8 @@ Continue to builder opens `/builder` with the same session. The battle Pokémon,
 - Moves: applied randomizer moves stay in that many slots and are locked. Empty slots use every standard move or that Pokémon's learnset (`data/generated/learnsets.json`: level-up, egg, TM, tutor, and transfer, including earlier stages). The list is not capped. Search matches letters the way a Showdown id does. Column headers sort the current list. A power of 1 is a variable-damage placeholder and displays as a dash; those dashes sort as the lowest power.
 - Item: a categorized scrollable list matching the item randomizer (Popular items, Items, Pokémon-specific items, Usually useless items, Useless items), with search. Explicit None stays available. A randomizer-chosen item, including None, is locked and its effect stays visible.
 - Stats: six rows like the Showdown teambuilder (base bar, EVs, slider, IVs, calculated stat). Formula is official Gen 3+ in `lib/stats/battleStat.ts`. Blank EVs preview as 0. Missing IVs preview as 31. Unset level previews at 100. Shedinja's base HP of 1 stays 1.
-- Smogon guess appears when all four moves are chosen (`data/smogon/gen9-analyses.json`). "Use this spread" fills those EVs and that analysis Nature and does not confirm.
-- EVs, Nature, Tera, mixed gender, level, and shiny stay unset until the user sets them, except the Smogon apply above. A new roll, a different Pokémon, or an evolution clears EVs, Nature, and confirmation. IVs start at 31. Happiness starts at 255 (0–255). Nickname is optional, max 18, and sits above the Pokémon.
+- A guessed spread appears once four moves are chosen (Ditto, Unown, and Last Resort can guess sooner). `guessEvSpread` in `lib/builder/suggestEvs.ts` follows the Pokémon Showdown teambuilder stat guesser (`BattleStatGuesser`) for Gen 9 with normal EV limits. The role comes from move categories and base stats, plus the ability, item, level, and IVs. It is not a published Smogon set. `data/smogon/gen9-analyses.json` is gone. "Use this spread" fills those EVs and the Nature that matches the plus and minus stats, and does not confirm.
+- EVs, Nature, Tera, mixed gender, level, and shiny stay unset until the user sets them, except the guessed spread above. A new roll, a different Pokémon, or an evolution clears EVs, Nature, and confirmation. IVs start at 31. Happiness starts at 255 (0–255). Nickname is optional, max 18 including spaces, and sits above the Pokémon. Spaces stay while typing and count toward 18. A nickname of only spaces is blank. Leading and trailing spaces are removed when the set is saved. Internal spaces stay in the saved set and in the Showdown paste.
 - Gender-locked and genderless species do not ask for a gender. `validateSet` fills the only legal gender.
 - Live issues come from `validateSet`. Continue to recap stays disabled until the set is valid, then stores `finalizedSet`.
 
@@ -291,7 +286,17 @@ On a team the user can:
 
 Domain rules live in `lib/teams`. The UI calls them. Invalid stored JSON becomes an empty team box. Do not add a database for teams.
 
-Phase 8 is polish. Do not start it unless asked.
+## Phase 8 Polish
+
+Merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless asked.
+
+- Header: `aria-current="page"` plus semibold, underline, and a muted background. At phone width the brand is its own row and the four links are a two-column grid with 44px targets.
+- `PageFrame` and `RouteNotice` share spacing. Randomizer, builder, recap, and teams each have a loading notice with a heading and `role="status"`, plus an `error.tsx` whose Try again calls Next's `retry`. `app/not-found.tsx` covers unknown URLs. `app/error.tsx` and `app/global-error.tsx` cover unexpected failures and do not show stack traces.
+- Type chips live in `components/type-colors.ts` and meet 4.5:1. The Pokédex title bar uses dark text on the orange bar. A lowered Nature stat uses `#ffc4c4`. `prefers-reduced-motion` shortens CSS animation. The 3D idle already pauses for reduced motion. The font uses `display: "swap"`.
+- Filter summaries use an explicit `role="button"` and `aria-expanded`. Current Chromium no longer exposes a plain `<summary>` as a button, and the randomizer tests open those filters by that role.
+- Each randomizer tab except the first shows an outline **Back to …** button for the previous enabled tab, including Pokémon when an extra randomizer is ordered before it. Recap always links **Back to the builder** without clearing the session. Builder links **Back to the randomizer** at the top and bottom of the form.
+
+Do not start the later features unless asked.
 
 ---
 
@@ -301,7 +306,7 @@ Phase 8 is polish. Do not start it unless asked.
 - Filter groups use a real `<fieldset>` / `<legend>`. Filter dropdowns use native `<details>`.
 - Playwright `getByRole("button", { name: "Clear generations" })` is the **filter toolbar**, not “Clear generated Pokémon”. Open the Generations dropdown first.
 - Aegislash catalog `id` is `aegislash`; `pokeApiSlug` is `aegislash-shield`. Look up by Showdown `id` for evolution-path tests.
-- Header can feel tight on a 390px viewport; not in-scope unless asked.
+- Header fits a 390px viewport: the brand is on its own row and the four links are a two-column grid with 44px targets. The current page uses `aria-current="page"`, semibold type, an underline, and a muted background.
 - Continue to builder writes the session before leaving `/randomizer`. Continue to recap writes `finalizedSet` before leaving `/builder`.
 - Editing a draft field clears `finalizedSet`. Do not toggle shiny on a finished set unless the user submits the builder again.
 - Untracked `public/*.svg` leftovers from create-next-app should not be committed. `.next/` must not be committed.
@@ -332,4 +337,4 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–7 are merged. Phase 7 is the recap, Showdown copy, and saved teams. Do not start polish unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8 are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.

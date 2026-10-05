@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { PageFrame } from "@/components/layout/page-frame";
+import { RouteNotice } from "@/components/layout/route-notice";
 import { MoveSlotControl, slotLabel } from "@/components/recap/save-to-team";
 import { PokedexCard } from "@/components/recap/pokedex-card";
 import { useTeams } from "@/components/teams/team-provider";
@@ -17,18 +19,11 @@ export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
   const [clearedMessage, setClearedMessage] = useState<string | null>(null);
 
   if (!ready) {
-    return (
-      <TeamFrame>
-        <h1 className="text-3xl font-semibold tracking-tight">Teams</h1>
-        <p role="status" className="text-base text-muted-foreground">
-          Loading your teams…
-        </p>
-      </TeamFrame>
-    );
+    return <RouteNotice title="Teams" message="Loading your teams…" live />;
   }
 
   return (
-    <TeamFrame>
+    <PageFrame>
       <header className="max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">Teams</h1>
         <p className="text-base leading-7 text-muted-foreground">
@@ -74,7 +69,7 @@ export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
           ))}
         </div>
       )}
-    </TeamFrame>
+    </PageFrame>
   );
 }
 
@@ -382,12 +377,6 @@ function TeamMemberRecap({
         </p>
       )}
     </section>
-  );
-}
-
-function TeamFrame({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14">{children}</div>
   );
 }
 

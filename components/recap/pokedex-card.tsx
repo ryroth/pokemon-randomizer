@@ -45,7 +45,7 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
 
   return (
     <article className="overflow-hidden rounded-xl border-4 border-[#f3b15a] bg-[#1a4d98] text-white shadow-lg">
-      <header className="flex items-center gap-2.5 bg-[#e8872f] px-4 py-2.5">
+      <header className="flex items-center gap-2.5 bg-[#e8872f] px-4 py-2.5 text-[#2a1608]">
         <PokeBallIcon className="size-5" />
         <p className="text-sm font-bold tracking-wide uppercase">Pokémon status summary</p>
       </header>

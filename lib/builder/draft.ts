@@ -227,11 +227,13 @@ export function setDraftNickname(
   session: RandomizerSession,
   nickname: string | undefined,
 ): RandomizerSession {
-  const trimmed = nickname?.trim();
-  if (trimmed && trimmed.length > MAX_NICKNAME_LENGTH) {
+  if (nickname === undefined || nickname.length === 0) {
+    return replaceDraft(session, { nickname: undefined });
+  }
+  if (nickname.length > MAX_NICKNAME_LENGTH) {
     return session;
   }
-  return replaceDraft(session, { nickname: trimmed || undefined });
+  return replaceDraft(session, { nickname });
 }
 
 export function setDraftHappiness(
