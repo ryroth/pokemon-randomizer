@@ -23,14 +23,14 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 | Current work | None. Later features only if the user asks |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | Filled in after this pull request merges |
+| Latest on `master` | `503d8bb` — Merge pull request #7. The following commit refreshes this handoff |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7. Phase 8 PR number is filled in after merge |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8 |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–8 are on `master` after this pull request merges. Do **not** rebuild Phases 1–8. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
+Phases 1–8 are on `master`. Do **not** rebuild Phases 1–8. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
 
-Start the next feature from up-to-date `master`. Do not stack new work on `feat/phase-7-recap`, `feat/phase-6-builder`, or the Phase 8 branch.
+Start the next feature from up-to-date `master`. Do not stack new work on `feat/phase-7-recap` or `feat/phase-6-builder`.
 
 Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Playwright covers the randomizer and the builder-through-teams flow at `tests/e2e/builder.spec.ts` (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, or `pokemon-model-index.json`. Learnsets and Hidden Abilities are separate generated files.
 

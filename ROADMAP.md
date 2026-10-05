@@ -42,7 +42,7 @@ A Pokédex-style card for the finalized Pokémon, with the regular 3D idle model
 
 ## Phase 8 — Polish
 
-Accessibility, responsive layout, loading and error pages, and visual consistency. Complete on `master`. Also on `master`: back navigation between randomizer tabs, Recap, and Builder; nicknames that keep spaces; and a Showdown-style EV guess.
+Accessibility, responsive layout, loading and error pages, and visual consistency. Complete on `master` (PR #7). Also on `master`: back navigation between randomizer tabs, Recap, and Builder; nicknames that keep spaces; and a Showdown-style EV guess.
 
 - The header names the current page and fits a 390px screen: the brand sits above a two-column nav with 44px targets.
 - Randomizer, builder, recap, and teams share one page frame. Each has a loading notice and an error page with Try again. Unknown URLs show a not-found page.
