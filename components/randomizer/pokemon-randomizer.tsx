@@ -15,6 +15,8 @@ import { PokemonFilterForm } from "@/components/randomizer/pokemon-filter-form";
 import { PokemonResults } from "@/components/randomizer/pokemon-results";
 import { RandomizerFlowList } from "@/components/randomizer/randomizer-flow";
 import { RandomizerTabs } from "@/components/randomizer/randomizer-tabs";
+import { PageFrame } from "@/components/layout/page-frame";
+import { RouteNotice } from "@/components/layout/route-notice";
 import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { openBuilder } from "@/lib/builder";
@@ -261,6 +263,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const nextFromAbility = nextOpenDestination(session.config, "ability");
   const nextFromMove = nextOpenDestination(session.config, "move");
   const nextFromItem = nextOpenDestination(session.config, "item");
+  const previousFromPokemon = previousOpenDestination(session.config, "pokemon");
   const previousFromAbility = previousOpenDestination(session.config, "ability");
   const previousFromMove = previousOpenDestination(session.config, "move");
   const previousFromItem = previousOpenDestination(session.config, "item");
@@ -463,16 +466,12 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
 
   if (!ready) {
     return (
-      <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4 py-12 sm:px-6">
-        <p role="status" className="text-sm text-muted-foreground">
-          Loading your randomizer…
-        </p>
-      </div>
+      <RouteNotice title="Configure your roll" message="Loading your randomizer…" live width="page" />
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-4 py-12 sm:px-6">
+    <PageFrame className="gap-10">
       <header className="space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
         <p className="max-w-3xl text-base leading-7 text-muted-foreground">{intro}</p>
@@ -496,6 +495,12 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           aria-labelledby="randomizer-tab-item"
           className="flex flex-col gap-10"
         >
+          {previousFromItem ? (
+            <BackToTabButton
+              tab={previousFromItem}
+              onBack={() => setSession(openRandomizerTab(session, previousFromItem))}
+            />
+          ) : null}
           {!itemBeforePokemon && chosenBattlePokemon ? (
             <BattlePokemonSummary pokemon={chosenBattlePokemon} />
           ) : null}
@@ -531,22 +536,6 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               selectedPokemon={selectedPokemon}
               onOpenTab={(tab) => setSession(openRandomizerTab(session, tab))}
             />
-            {previousFromItem ? (
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-fit"
-                onClick={() => setSession(openRandomizerTab(session, previousFromItem))}
-              >
-                {previousFromItem === "pokemon"
-                  ? "Back to Pokémon"
-                  : previousFromItem === "ability"
-                    ? "Back to abilities"
-                    : previousFromItem === "move"
-                      ? "Back to moves"
-                      : "Back"}
-              </Button>
-            ) : null}
             <p className="text-sm text-muted-foreground">
               {describeItemContinueHelp({
                 beforePokemon: itemBeforePokemon,
@@ -565,6 +554,12 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           aria-labelledby="randomizer-tab-move"
           className="flex flex-col gap-10"
         >
+          {previousFromMove ? (
+            <BackToTabButton
+              tab={previousFromMove}
+              onBack={() => setSession(openRandomizerTab(session, previousFromMove))}
+            />
+          ) : null}
           {!moveBeforePokemon && chosenBattlePokemon ? (
             <BattlePokemonSummary pokemon={chosenBattlePokemon} />
           ) : null}
@@ -600,22 +595,6 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               selectedPokemon={selectedPokemon}
               onOpenTab={(tab) => setSession(openRandomizerTab(session, tab))}
             />
-            {previousFromMove ? (
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-fit"
-                onClick={() => setSession(openRandomizerTab(session, previousFromMove))}
-              >
-                {previousFromMove === "pokemon"
-                  ? "Back to Pokémon"
-                  : previousFromMove === "ability"
-                    ? "Back to abilities"
-                    : previousFromMove === "item"
-                      ? "Back to items"
-                      : "Back"}
-              </Button>
-            ) : null}
             <p className="text-sm text-muted-foreground">
               {describeMoveContinueHelp({
                 beforePokemon: moveBeforePokemon,
@@ -637,6 +616,12 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           aria-labelledby="randomizer-tab-ability"
           className="flex flex-col gap-10"
         >
+          {previousFromAbility ? (
+            <BackToTabButton
+              tab={previousFromAbility}
+              onBack={() => setSession(openRandomizerTab(session, previousFromAbility))}
+            />
+          ) : null}
           {!abilityBeforePokemon && chosenBattlePokemon ? (
             <BattlePokemonSummary pokemon={chosenBattlePokemon} />
           ) : null}
@@ -672,22 +657,6 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               selectedPokemon={selectedPokemon}
               onOpenTab={(tab) => setSession(openRandomizerTab(session, tab))}
             />
-            {previousFromAbility ? (
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-fit"
-                onClick={() => setSession(openRandomizerTab(session, previousFromAbility))}
-              >
-                {previousFromAbility === "pokemon"
-                  ? "Back to Pokémon"
-                  : previousFromAbility === "move"
-                    ? "Back to moves"
-                    : previousFromAbility === "item"
-                      ? "Back to items"
-                      : "Back"}
-              </Button>
-            ) : null}
             <p className="text-sm text-muted-foreground">
               {describeAbilityContinueHelp({
                 beforePokemon: abilityBeforePokemon,
@@ -706,6 +675,12 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           aria-labelledby="randomizer-tab-pokemon"
           className="flex flex-col gap-10"
         >
+          {previousFromPokemon ? (
+            <BackToTabButton
+              tab={previousFromPokemon}
+              onBack={() => setSession(openRandomizerTab(session, previousFromPokemon))}
+            />
+          ) : null}
           <Card>
             <CardHeader>
               <CardTitle>
@@ -893,8 +868,29 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           ) : null}
         </div>
       )}
-    </div>
+    </PageFrame>
   );
+}
+
+function BackToTabButton({ tab, onBack }: { tab: RandomizerTab; onBack: () => void }) {
+  return (
+    <Button type="button" variant="outline" className="w-fit" onClick={onBack}>
+      {backTabLabel(tab)}
+    </Button>
+  );
+}
+
+function backTabLabel(tab: RandomizerTab): string {
+  switch (tab) {
+    case "pokemon":
+      return "Back to Pokémon";
+    case "ability":
+      return "Back to abilities";
+    case "move":
+      return "Back to moves";
+    case "item":
+      return "Back to items";
+  }
 }
 
 function ContinueControl({

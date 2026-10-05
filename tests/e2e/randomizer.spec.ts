@@ -30,29 +30,35 @@ test("randomizer pages through previous generations and explains an empty pool",
   expect(new Set(firstNames).size).toBe(6);
 
   await results.getByRole("button").first().click();
-  await expect(page.getByText("Selected").first()).toBeVisible();
+  await expect(page.getByText("Selected", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Evolution", level: 2 })).toBeVisible();
   await expect(page.getByRole("link", { name: "Continue to builder" })).toBeEnabled();
   await expect(page.getByRole("button", { name: "Previous generated Pokémon" })).toBeDisabled();
   await expect(page.getByRole("button", { name: "Next generated Pokémon" })).toBeDisabled();
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
-  await expect(page.getByRole("list", { name: "Current generation" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: firstNames[0], level: 3 })).toHaveCount(0);
+  const current = page.getByRole("list", { name: "Current generation" });
+  await expect(current).toBeVisible();
+  await expect(current.getByRole("heading", { name: firstNames[0], level: 3 })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Previous generated Pokémon" }).click();
-  await expect(page.getByRole("list", { name: "Generation 1" }).getByRole("listitem")).toHaveCount(6);
-  await expect(page.getByRole("heading", { name: firstNames[0], level: 3 })).toBeVisible();
+  const earlier = page.getByRole("list", { name: "Generation 1" });
+  await expect(earlier.getByRole("listitem")).toHaveCount(6);
+  await expect(earlier.getByRole("heading", { name: firstNames[0], level: 3 })).toBeVisible();
 
   await page.getByRole("button", { name: "Next generated Pokémon" }).click();
   await expect(page.getByRole("list", { name: "Current generation" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: firstNames[0], level: 3 })).toHaveCount(0);
+  await expect(
+    page.getByRole("list", { name: "Current generation" }).getByRole("heading", { name: firstNames[0], level: 3 }),
+  ).toHaveCount(0);
 
   await page.getByRole("button", { name: /^Generations/ }).click();
   await expect(page.getByRole("button", { name: "Clear generations" })).toBeVisible();
   await page.getByRole("button", { name: "Clear generations" }).click();
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
-  await expect(page.getByRole("alert")).toContainText("Only 0 Pokémon match your current filters");
+  await expect(page.getByRole("alert").filter({ hasText: "Only 0 Pokémon" })).toContainText(
+    "Only 0 Pokémon match your current filters",
+  );
   await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(
     6,
   );
@@ -92,6 +98,22 @@ test("selected Pokémon can be evolved to a later battle stage", async ({ page }
   await evolutionChoices.getByRole("button").last().click();
   await expect(page.getByText("Using this evolution")).toBeVisible();
   await expect(page.getByRole("link", { name: /^Continue with / })).toBeEnabled();
+});
+
+test("back returns to the previous randomizer tab", async ({ page }) => {
+  await page.goto("/randomizer");
+  await expect(page.getByRole("button", { name: /^Back to / })).toHaveCount(0);
+
+  await page.getByRole("checkbox", { name: "Ability randomizer" }).check();
+  await page.getByRole("button", { name: "Generate Pokémon" }).click();
+  await page.getByRole("list", { name: "Current generation" }).getByRole("button").first().click();
+  await page.getByRole("button", { name: /^Continue to abilities/ }).click();
+  await expect(page.getByRole("tab", { name: "Abilities", selected: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Back to Pokémon" }).click();
+  await expect(page.getByRole("tab", { name: "Pokémon", selected: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Generate Pokémon" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Back to / })).toHaveCount(0);
 });
 
 test("ability randomizer runs on its own tab after continue", async ({ page }) => {
@@ -180,7 +202,7 @@ test("move randomizer runs after abilities on the typical path", async ({ page }
   await expect(page.getByRole("link", { name: "Continue to builder" })).toHaveCount(0);
   await clickRolledOption(moveResults, 3);
   await expect(page.getByText("4 of 4 moves selected")).toBeVisible();
-  await expect(moveResults.getByText("Selected")).toHaveCount(4);
+  await expect(moveResults.getByText("Selected", { exact: true })).toHaveCount(4);
   await expect(page.getByRole("link", { name: "Continue to builder" })).toBeEnabled();
 });
 
@@ -192,9 +214,31 @@ test("randomizer order tiles can be dragged to change the sequence", async ({ pa
   await expect(steps.getByRole("listitem").first()).toContainText("Pokémon randomizer");
   await expect(page.getByRole("button", { name: "Use typical order" })).toBeDisabled();
 
-  await page.getByRole("button", { name: "Reorder Item randomizer" }).dragTo(
-    page.getByRole("button", { name: "Reorder Pokémon randomizer" }),
-  );
+  const itemHandle = page.getByRole("button", { name: "Reorder Item randomizer" });
+  const listBox = await steps.boundingBox();
+  const itemBox = await itemHandle.boundingBox();
+  if (!listBox || !itemBox) {
+    throw new Error("Reorder handles are not visible.");
+  }
+  await page.evaluate(() => {
+    const item = document.querySelector<HTMLElement>('[data-randomizer-step="item"]');
+    const list = item?.closest("ol");
+    if (!item || !list) {
+      throw new Error("Could not find the item reorder tile.");
+    }
+    const dataTransfer = new DataTransfer();
+    const top = list.getBoundingClientRect().top + 4;
+    const middle = list.getBoundingClientRect().left + 24;
+    item.dispatchEvent(
+      new DragEvent("dragstart", { bubbles: true, cancelable: true, clientX: middle, clientY: top, dataTransfer }),
+    );
+    list.dispatchEvent(
+      new DragEvent("dragover", { bubbles: true, cancelable: true, clientX: middle, clientY: top, dataTransfer }),
+    );
+    list.dispatchEvent(
+      new DragEvent("drop", { bubbles: true, cancelable: true, clientX: middle, clientY: top, dataTransfer }),
+    );
+  });
 
   await expect(steps.getByRole("listitem").first()).toContainText("Item randomizer");
   await expect(page.getByRole("tab", { name: "Items" })).toBeEnabled();
@@ -348,7 +392,7 @@ test("item categories follow Showdown teambuilder groups", async ({ page }) => {
   await expect(page.getByRole("checkbox", { name: "Items", exact: true })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Pokémon-Specific Items" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Usually Useless Items" })).toBeChecked();
-  await expect(page.getByRole("checkbox", { name: "Useless Items" })).toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "Useless Items", exact: true })).toBeChecked();
 
   await page.getByRole("button", { name: "Clear item categories" }).click();
   await expect(page.getByText("0 items match these filters")).toBeVisible();
@@ -385,6 +429,7 @@ test("ability-first order lets the user apply abilities then select a Pokémon",
 
   await page.getByRole("button", { name: "Continue to Pokémon" }).click();
   await expect(page.getByRole("heading", { name: "Configure your roll", level: 1 })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Back to abilities" })).toBeVisible();
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
@@ -495,8 +540,8 @@ test("re-roll keeps the current option when the remaining Pokémon pool is empty
   const names = await results.getByRole("heading", { level: 3 }).allTextContents();
 
   await results.getByRole("button", { name: `Re-roll ${names[0]}` }).click();
-  await expect(page.getByRole("alert")).toContainText(
-    "No other matching Pokémon are left to re-roll this one",
-  );
+  await expect(
+    page.getByRole("alert").filter({ hasText: "No other matching Pokémon" }),
+  ).toContainText("No other matching Pokémon are left to re-roll this one");
   await expect(results.getByRole("heading", { level: 3 })).toHaveText(names);
 });

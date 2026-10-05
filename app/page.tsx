@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageFrame } from "@/components/layout/page-frame";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -29,7 +30,7 @@ const steps = [
 
 export default function HomePage() {
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-12 px-4 py-12 sm:px-6 sm:py-16">
+    <PageFrame className="gap-12">
       <section className="max-w-2xl space-y-5">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
           Single Pokémon builder
@@ -74,6 +75,6 @@ export default function HomePage() {
           </Card>
         ))}
       </section>
-    </div>
+    </PageFrame>
   );
 }

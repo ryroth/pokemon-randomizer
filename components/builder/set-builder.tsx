@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -12,7 +12,7 @@ import {
   canConfirmEvs,
   confirmDraftEvs,
   finalizeBuilderSet,
-  suggestEvSpread,
+  guessEvSpread,
   setDraftAbility,
   setDraftEv,
   setDraftGender,
@@ -27,6 +27,8 @@ import {
   setDraftTeraType,
 } from "@/lib/builder";
 import { PokemonPortrait } from "@/components/builder/pokemon-portrait";
+import { PageFrame } from "@/components/layout/page-frame";
+import { RouteNotice } from "@/components/layout/route-notice";
 import { StatSpreadSheet } from "@/components/builder/stat-spread";
 import { AbilityDropdown } from "@/components/builder/ability-dropdown";
 import { ItemPicker } from "@/components/builder/item-picker";
@@ -67,26 +69,20 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const battlePokemon = battleId ? pokemonById.get(battleId) : undefined;
 
   if (!ready) {
-    return (
-      <BuilderFrame>
-        <p role="status" className="text-sm text-muted-foreground">
-          Loading your set…
-        </p>
-      </BuilderFrame>
-    );
+    return <RouteNotice title="Build the set" message="Loading your set…" live width="builder" />;
   }
 
   if (!battlePokemon) {
     return (
-      <BuilderFrame>
-        <h1 className="text-3xl font-semibold tracking-tight">Build the set</h1>
-        <p className="text-base leading-7 text-muted-foreground">
-          Choose a Pokémon in the randomizer before building a set.
-        </p>
+      <RouteNotice
+        title="Build the set"
+        message="Choose a Pokémon in the randomizer before building a set."
+        width="builder"
+      >
         <Link href="/randomizer" className={cn(buttonVariants({ size: "lg" }), "w-fit")}>
           Back to the randomizer
         </Link>
-      </BuilderFrame>
+      </RouteNotice>
     );
   }
 
@@ -102,23 +98,36 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const filledMoveSlots = session.draft.moveIds.filter((id) => Boolean(id)).length;
   const emptyMoveSlots = REQUIRED_MOVE_COUNT - filledMoveSlots;
   const appliedFromRandomizer = session.config.randomizeMoves ? filledMoveSlots : 0;
-  const chosenMoveNames = (session.draft.moveIds ?? [])
-    .filter((id): id is string => Boolean(id))
-    .map((id) => moves.find((move) => move.id === id)?.name)
-    .filter((name): name is string => Boolean(name));
+  const chosenMoves = session.draft.moveIds.map((id) =>
+    id ? moves.find((move) => move.id === id) : undefined,
+  );
   const abilityLocked = abilityLockedByRandomizer(session);
   const itemLocked = itemLockedByRandomizer(session);
   const moveLocks = session.draft.moveIds.map((_, slot) => moveSlotLockedByRandomizer(session, slot));
-  const abilityName = abilities.find((ability) => ability.id === session.draft.abilityId)?.name;
+  const chosenAbility = abilities.find((ability) => ability.id === session.draft.abilityId);
   const heldItem = items.find((item) => item.id === session.draft.itemId);
-  const evSuggestion =
-    chosenMoveNames.length === REQUIRED_MOVE_COUNT
-      ? suggestEvSpread(battlePokemon.showdownName, chosenMoveNames)
-      : undefined;
+  const chosenNature = natures.find((entry) => entry.id === session.draft.natureId);
+  const evSuggestion = guessEvSpread({
+    showdownName: battlePokemon.showdownName,
+    baseStats: battlePokemon.baseStats,
+    types: battlePokemon.types,
+    moves: chosenMoves.map((move) =>
+      move ? { showdownName: move.showdownName, category: move.category } : undefined,
+    ),
+    abilityName: chosenAbility?.showdownName,
+    itemName: heldItem?.showdownName,
+    level: session.draft.level,
+    ivs: session.draft.ivs,
+    plusStat: chosenNature?.plusStat,
+    minusStat: chosenNature?.minusStat,
+  });
 
   return (
-    <BuilderFrame>
+    <PageFrame width="builder">
       <header className="space-y-3">
+        <Link href="/randomizer" className={cn(buttonVariants({ variant: "outline" }), "w-fit")}>
+          Back to the randomizer
+        </Link>
         <h1 className="text-3xl font-semibold tracking-tight">Build {battlePokemon.displayName}</h1>
         <p className="max-w-3xl text-base leading-7 text-muted-foreground">
           Finish the set by hand. EVs, Nature, Tera type, level, and shiny stay empty until you set
@@ -150,11 +159,11 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           </label>
           <p className="text-sm text-muted-foreground">
             Optional. Leave this blank to use {battlePokemon.displayName}. Up to {MAX_NICKNAME_LENGTH}{" "}
-            characters.
+            characters, including spaces.
           </p>
         </section>
 
-      <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
+      <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4">
         <PokemonPortrait pokemon={battlePokemon} shiny={session.draft.shiny} />
         <div className="min-w-0 space-y-1">
           <p className="font-medium">{battlePokemon.displayName}</p>
@@ -179,8 +188,8 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           </p>
           {abilityLocked ? (
             <div className="overflow-hidden rounded-lg border border-border">
-              <div className="flex items-start gap-2 bg-primary/15 px-2 py-1.5">
-                <span className="w-40 shrink-0 font-medium leading-6">{abilityName}</span>
+              <div className="flex flex-col gap-1 bg-primary/15 px-3 py-2 sm:flex-row sm:items-start sm:gap-3">
+                <span className="font-medium leading-6 sm:w-40 sm:shrink-0">{chosenAbility?.name}</span>
                 <span className="text-sm">
                   {abilities.find((ability) => ability.id === session.draft.abilityId)?.description}
                 </span>
@@ -261,8 +270,8 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           </p>
           {itemLocked ? (
             <div className="overflow-hidden rounded-lg border border-border">
-              <div className="flex items-start gap-2 bg-primary/15 px-2 py-1.5">
-                <span className="w-40 shrink-0 font-medium leading-6">
+              <div className="flex flex-col gap-1 bg-primary/15 px-3 py-2 sm:flex-row sm:items-start sm:gap-3">
+                <span className="font-medium leading-6 sm:w-40 sm:shrink-0">
                   {session.draft.itemId === null ? "None" : (heldItem?.name ?? session.draft.itemId)}
                 </span>
                 <span className="text-sm">
@@ -285,19 +294,21 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           ivs={session.draft.ivs}
           evs={session.draft.evs}
           level={session.draft.level}
-          nature={natures.find((entry) => entry.id === session.draft.natureId)}
+          nature={chosenNature}
           natures={natures}
           suggestion={evSuggestion}
-          movesReady={chosenMoveNames.length === REQUIRED_MOVE_COUNT}
           evTotal={evTotal}
           evsConfirmed={session.draft.evsConfirmed}
           canConfirm={canConfirmEvs(session.draft.evs)}
           onEvChange={(stat, value) => setSession(setDraftEv(session, stat, value))}
           onIvChange={(stat, value) => setSession(setDraftIv(session, stat, value))}
           onNatureChange={(natureId) => setSession(setDraftNature(session, natureId, natures))}
-          onApplySuggestion={(guess) =>
-            setSession(applySuggestedEvs(session, guess.evs, guess.nature, natures))
-          }
+          onApplySuggestion={(guess) => {
+            const nature = natures.find(
+              (entry) => entry.plusStat === guess.plusStat && entry.minusStat === guess.minusStat,
+            );
+            setSession(applySuggestedEvs(session, guess.evs, nature?.name, natures));
+          }}
           onConfirm={(confirmed) => setSession(confirmDraftEvs(session, confirmed))}
         />
 
@@ -435,15 +446,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           </Link>
         </div>
       </form>
-    </BuilderFrame>
-  );
-}
-
-function BuilderFrame({ children }: { children: ReactNode }) {
-  return (
-    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-4 py-12 sm:px-6">
-      {children}
-    </div>
+    </PageFrame>
   );
 }
 

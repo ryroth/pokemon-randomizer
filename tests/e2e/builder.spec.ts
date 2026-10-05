@@ -10,6 +10,7 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await page.getByRole("link", { name: "Continue to builder" }).click();
 
   await expect(page.getByRole("heading", { name: `Build ${name}`, level: 1 })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to the randomizer" })).toHaveCount(2);
   await expect(page.getByRole("spinbutton", { name: "HP EVs" })).toHaveValue("");
   await expect(page.getByRole("spinbutton", { name: "HP IVs" })).toHaveValue("31");
   await expect(page.getByRole("textbox", { name: "Nickname" })).toHaveValue("");
@@ -36,7 +37,7 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
     await page.getByRole("spinbutton", { name: `${stat} EVs`, exact: true }).fill("0");
   }
   await page.getByRole("checkbox", { name: "I confirm this EV spread" }).check();
-  await page.getByRole("textbox", { name: "Nickname" }).fill("Ace");
+  await page.getByRole("textbox", { name: "Nickname" }).fill("Ace One");
   await page.getByRole("slider", { name: "Happiness" }).fill("0");
 
   const nature = page.getByRole("combobox", { name: "Nature" });
@@ -55,16 +56,17 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await page.getByRole("button", { name: "Continue to recap" }).click();
   await expect(page).toHaveURL(/\/recap$/);
   await expect(page.getByRole("heading", { level: 1, name: "Pokémon recap" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Back to the builder" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: name!, exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: name! })).toBeVisible();
-  await expect(page.getByText("Ace", { exact: true })).toHaveCount(1);
+  await expect(page.getByText("Ace One", { exact: true })).toHaveCount(1);
 
   await page.getByRole("button", { name: "Save to a new team" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Saved to Team 1, slot 1 of 6." })).toBeVisible();
-  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText("Ace");
+  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText("Ace One");
 
   const showdown = page.getByLabel("Showdown set text");
-  await expect(showdown).toContainText(`Ace (${name})`);
+  await expect(showdown).toContainText(`Ace One (${name})`);
   await expect(showdown).toContainText("Level: 50");
   await expect(showdown).toContainText("Happiness: 0");
   await expect(showdown).toContainText("Tera Type: Water");
@@ -89,13 +91,13 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
 
   await page.goto("/teams");
   await expect(page.getByRole("heading", { level: 2, name: "Team 1" })).toBeVisible();
-  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText(`Ace (${name})`);
+  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText(`Ace One (${name})`);
   await expect(page.getByRole("button", { name: "Copy team to Showdown" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy set" })).toBeVisible();
   await page.getByRole("button", { name: "View recap, slot 1" }).click();
   await expect(page.getByRole("region", { name: "Recap for slot 1" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: name! })).toBeVisible();
-  await expect(page.getByLabel("Showdown set text")).toContainText(`Ace (${name})`);
+  await expect(page.getByLabel("Showdown set text")).toContainText(`Ace One (${name})`);
   await page.getByRole("button", { name: "Close recap" }).click();
   await expect(page.getByLabel("Showdown set text")).toHaveCount(0);
 

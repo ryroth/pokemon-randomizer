@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { PageFrame } from "@/components/layout/page-frame";
+import { RouteNotice } from "@/components/layout/route-notice";
 import { PokedexCard } from "@/components/recap/pokedex-card";
 import { SaveToTeam } from "@/components/recap/save-to-team";
 import { useRandomizerSession } from "@/components/session/session-provider";
@@ -15,20 +16,13 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
   const { session, ready } = useRandomizerSession();
 
   if (!ready) {
-    return (
-      <RecapFrame>
-        <h1 className="text-3xl font-semibold tracking-tight">Pokémon recap</h1>
-        <p role="status" className="text-base text-muted-foreground">
-          Loading your recap…
-        </p>
-      </RecapFrame>
-    );
+    return <RouteNotice title="Pokémon recap" message="Loading your recap…" live width="wide" />;
   }
 
   const recap = buildRecap(session, { pokemon, abilities, moves, items, natures });
 
   return (
-    <RecapFrame>
+    <PageFrame width="wide">
       <header className="max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">Pokémon recap</h1>
         <p className="text-base leading-7 text-muted-foreground">
@@ -61,14 +55,15 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
       ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        {recap.status === "empty" ? (
-          <Link href="/builder" className={cn(buttonVariants({ size: "lg" }), "w-fit")}>
-            Back to the builder
-          </Link>
-        ) : null}
+        <Link
+          href="/builder"
+          className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-fit")}
+        >
+          Back to the builder
+        </Link>
         <NextRandomizerButton />
       </div>
-    </RecapFrame>
+    </PageFrame>
   );
 }
 
@@ -88,11 +83,5 @@ function NextRandomizerButton() {
     >
       Next Randomizer
     </Button>
-  );
-}
-
-function RecapFrame({ children }: { children: ReactNode }) {
-  return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14">{children}</div>
   );
 }

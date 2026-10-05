@@ -11,6 +11,7 @@ import {
   setDraftGender,
   setDraftItem,
   setDraftMove,
+  setDraftNickname,
   setDraftShiny,
 } from "@/lib/builder";
 import type { Nature } from "@/lib/types/catalog-entities";
@@ -135,6 +136,10 @@ describe("builder draft", () => {
     expect(session.draft.ivs).toEqual(PERFECT_IVS);
     expect(session.draft.happiness).toBe(255);
     expect(session.draft.nickname).toBeUndefined();
+    expect(setDraftNickname(session, "Big Ace").draft.nickname).toBe("Big Ace");
+    expect(setDraftNickname(session, "12345678901234567 ").draft.nickname).toBe("12345678901234567 ");
+    expect(setDraftNickname(session, "123456789012345678 ").draft.nickname).toBeUndefined();
+    expect(setDraftNickname(session, "").draft.nickname).toBeUndefined();
     expect(session.draft.natureId).toBeUndefined();
     expect(session.draft.teraType).toBeUndefined();
     expect(session.draft.gender).toBeUndefined();
@@ -170,7 +175,7 @@ describe("builder draft", () => {
     expect(session.draft.evsConfirmed).toBe(false);
   });
 
-  it("applies a Smogon EV guess and its nature without confirming the spread", () => {
+  it("applies a guessed EV spread and its nature without confirming the spread", () => {
     const session = openBuilder({
       ...createInitialSession(),
       selectedPokemonId: "mudkip",

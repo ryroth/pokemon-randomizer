@@ -3,7 +3,7 @@ import { natureChoiceLabel } from "@/lib/builder/labels";
 import { calculateBattleStats } from "@/lib/stats/battleStat";
 import type { Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
-import { STAT_IDS, STAT_LABELS, type StatId, type StatSpread } from "@/lib/types/stats";
+import { STAT_LABELS, type StatId, type StatSpread } from "@/lib/types/stats";
 import { MAX_EV_PER_STAT, MAX_EV_TOTAL, MAX_IV, MIN_IV, maxEvForStat } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,7 +28,6 @@ export function StatSpreadSheet({
   nature,
   natures,
   suggestion,
-  movesReady,
   evTotal,
   evsConfirmed,
   canConfirm,
@@ -45,7 +44,6 @@ export function StatSpreadSheet({
   nature?: Nature;
   natures: readonly Nature[];
   suggestion?: EvSuggestion;
-  movesReady: boolean;
   evTotal: number;
   evsConfirmed: boolean;
   canConfirm: boolean;
@@ -64,41 +62,34 @@ export function StatSpreadSheet({
     minusStat: nature?.minusStat,
   });
   const remaining = MAX_EV_TOTAL - evTotal;
-  const suggestedNature = suggestion?.nature
-    ? natures.find((entry) => entry.name.toLowerCase() === suggestion.nature?.toLowerCase())
-    : undefined;
-
   return (
     <section className="space-y-3" aria-labelledby="battle-stats-heading">
       <h2 id="battle-stats-heading" className="text-lg font-medium">
         Stats
       </h2>
-      {movesReady ? (
-        suggestion ? (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
-            <p>
-              <span className="font-medium">Guessed spread: </span>
-              {formatGuessedSpread(suggestion, suggestedNature)}
-            </p>
-            <button
-              type="button"
-              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
-              onClick={() => onApplySuggestion(suggestion)}
-            >
-              Use this spread
-            </button>
-          </div>
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            No Smogon analysis matches this Pokémon and these four moves.
+      {suggestion ? (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+          <p>
+            <span className="font-medium">Guessed spread: </span>
+            {formatGuessedSpread(suggestion)}
           </p>
-        )
+          <button
+            type="button"
+            className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+            onClick={() => onApplySuggestion(suggestion)}
+          >
+            Use this spread
+          </button>
+        </div>
       ) : (
-        <p className="text-sm text-muted-foreground">
-          Choose four moves to see a Smogon EV guess.
-        </p>
+        <p className="text-sm text-muted-foreground">Choose four moves to see a guessed spread.</p>
       )}
-      <div className="overflow-x-auto">
+      <div
+        className="overflow-x-auto"
+        tabIndex={0}
+        role="region"
+        aria-label="Scroll the stat table sideways if it does not fit"
+      >
         <table className="w-full border-separate border-spacing-y-2 text-sm">
           <caption className="sr-only">Stats at level {calculated.level}</caption>
           <thead>

@@ -69,7 +69,7 @@ describe("exportShowdownSet", () => {
 
   it("writes a nickname and a non-default happiness", () => {
     const text = exportShowdownSet(
-      { ...swampertSet, nickname: "Mud", happiness: 0 },
+      { ...swampertSet, nickname: "Mud Fish", happiness: 0 },
       {
         pokemon: "Swampert",
         ability: "Damp",
@@ -79,7 +79,7 @@ describe("exportShowdownSet", () => {
       },
     );
 
-    expect(text).toContain("Mud (Swampert) @ Leftovers");
+    expect(text).toContain("Mud Fish (Swampert) @ Leftovers");
     expect(text).toContain("Happiness: 0");
   });
 

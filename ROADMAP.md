@@ -36,13 +36,18 @@ Configure → generate → select → optional evolve → Continue to the next *
 
 Ability, moves, item, EVs, IVs, Nature, Tera, gender, level, shiny, and live validation. Complete on `master` (PR #5). The session is shared with `/randomizer` and restored from `sessionStorage`.
 
-## Phase 7 — Recap, Showdown export, and saved teams (current)
+## Phase 7 — Recap, Showdown export, and saved teams
 
-A Pokédex-style card for the finalized Pokémon, with the regular 3D idle model, shiny colors painted on when the materials match, Copy to Showdown, and Next Randomizer. Finished sets can be saved to local teams of 6, reordered, removed, cleared after confirmation, and copied as one Showdown team. Implemented on `feat/phase-7-recap`. The randomizer is still one Pokémon at a time. There is no database.
+A Pokédex-style card for the finalized Pokémon, with the regular 3D idle model, shiny colors painted on when the materials match, Copy to Showdown, and Next Randomizer. Finished sets can be saved to local teams of 6, reordered, removed, cleared after confirmation, and copied as one Showdown team. Complete on `master` (PR #6). The randomizer is still one Pokémon at a time. There is no database.
 
 ## Phase 8 — Polish
 
-Accessibility, responsive, loading/error, performance, visual consistency.
+Accessibility, responsive layout, loading and error pages, and visual consistency. Complete on `master`. Also on `master`: back navigation between randomizer tabs, Recap, and Builder; nicknames that keep spaces; and a Showdown-style EV guess.
+
+- The header names the current page and fits a 390px screen: the brand sits above a two-column nav with 44px targets.
+- Randomizer, builder, recap, and teams share one page frame. Each has a loading notice and an error page with Try again. Unknown URLs show a not-found page.
+- Type chips, the Pokédex title bar, and a lowered Nature stat stay readable. Reduced motion shortens CSS animation. The 3D idle already pauses when motion is reduced.
+- Narrow screens wrap the builder portrait and locked ability or item rows. Wide stat and move tables can be scrolled from the keyboard.
 
 ## Later, not now
 

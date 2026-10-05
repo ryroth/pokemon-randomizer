@@ -2,7 +2,7 @@
 
 import { RouteError } from "@/components/layout/route-error";
 
-export default function RandomizerError({
+export default function RootError({
   retry,
 }: {
   error: Error & { digest?: string };
@@ -10,8 +10,8 @@ export default function RandomizerError({
 }) {
   return (
     <RouteError
-      title="Could not load the randomizer"
-      message="Pokémon data could not be loaded. Refresh the page or try again."
+      title="Something went wrong"
+      message="The page could not be loaded. Refresh it or try again."
       retry={retry}
     />
   );
