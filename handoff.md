@@ -25,6 +25,7 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 | Current branch locally | `feat/phase-7-recap` (from `master` at `c55218b`) |
 | Latest on `master` | `c55218b` — feat: add the Pokémon set builder |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
+| Open PR | [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) — Phase 7 recap, Showdown copy, and saved teams |
 | Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6 |
 | Rename `master` → `main` | Still pending |
 
@@ -38,7 +39,7 @@ Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, 
 
 ## First action for the next agent
 
-1. Read this file and `AGENTS.md`. Stay on `feat/phase-7-recap` until its pull request has merged. Do **not** recreate or rebuild Phases 1–6.
+1. Read this file and `AGENTS.md`. Stay on `feat/phase-7-recap` until [pull request #6](https://github.com/ryroth/pokemon-randomizer/pull/6) has merged. Do **not** recreate or rebuild Phases 1–6.
 2. Phase 7 (recap, copy, and saved teams) is implemented. Phase 8 is polish. Do not start polish unless asked.
 3. Saved teams are in scope. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
 
