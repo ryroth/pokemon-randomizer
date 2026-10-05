@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { PhasePlaceholder } from "@/components/layout/phase-placeholder";
+import { RecapScreen } from "@/components/recap/recap-screen";
+import { loadGeneratedCatalog, slimPokemonForClient } from "@/lib/data/loadCatalog";
 
 export const metadata: Metadata = {
   title: "Recap",
 };
 
 export default function RecapPage() {
+  const catalog = loadGeneratedCatalog();
+
   return (
-    <PhasePlaceholder
-      title="Pokémon recap"
-      summary="A finished set will appear here as a recap card, with a Copy to Showdown button that copies only the compatible set text — including Tera type, gender, level, and shiny when they belong in the export."
-      nextHref="/"
-      nextLabel="Back to home"
+    <RecapScreen
+      pokemon={slimPokemonForClient(catalog.pokemon)}
+      abilities={catalog.abilities}
+      moves={catalog.moves}
+      items={catalog.items}
+      natures={catalog.natures}
     />
   );
 }

@@ -18,8 +18,8 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await expect(page.getByRole("combobox", { name: "Nature" })).toHaveValue("");
   await expect(page.getByRole("combobox", { name: "Tera type" })).toHaveValue("");
   await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("");
-  await expect(page.getByRole("radio", { name: "Shiny" })).not.toBeChecked();
-  await expect(page.getByRole("radio", { name: "Not shiny" })).not.toBeChecked();
+  await expect(page.getByRole("radio", { name: "Yes", exact: true })).not.toBeChecked();
+  await expect(page.getByRole("radio", { name: "No", exact: true })).not.toBeChecked();
   await expect(page.getByRole("button", { name: "Continue to recap" })).toBeDisabled();
 
   await page.getByRole("combobox", { name: "Ability" }).click();
@@ -27,13 +27,13 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
 
   for (const move of ["Tackle", "Growl", "Pound", "Scratch"]) {
     await page.getByRole("textbox", { name: "Search moves" }).fill(move);
-    await page.getByRole("button", { name: move }).click();
+    await page.getByRole("button", { name: new RegExp(`^${move},`) }).click();
   }
 
   await page.getByRole("button", { name: "None", exact: true }).click();
 
   for (const stat of ["HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"]) {
-    await page.getByRole("spinbutton", { name: `${stat} EVs` }).fill("0");
+    await page.getByRole("spinbutton", { name: `${stat} EVs`, exact: true }).fill("0");
   }
   await page.getByRole("checkbox", { name: "I confirm this EV spread" }).check();
   await page.getByRole("textbox", { name: "Nickname" }).fill("Ace");
@@ -44,14 +44,62 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await nature.selectOption(natureValue!);
   await page.getByRole("combobox", { name: "Tera type" }).selectOption({ label: "Water" });
 
-  const male = page.getByRole("radio", { name: "Male" });
+  const male = page.getByRole("radio", { name: "Male", exact: true });
   if ((await male.count()) > 0) {
     await male.check();
   }
 
   await page.getByRole("spinbutton", { name: "Level" }).fill("50");
-  await page.getByRole("radio", { name: "Not shiny" }).check();
+  await page.getByRole("radio", { name: "No", exact: true }).check();
   await expect(page.getByRole("button", { name: "Continue to recap" })).toBeEnabled();
   await page.getByRole("button", { name: "Continue to recap" }).click();
   await expect(page).toHaveURL(/\/recap$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Pokémon recap" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: name!, exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: name! })).toBeVisible();
+  await expect(page.getByText("Ace", { exact: true })).toHaveCount(1);
+
+  await page.getByRole("button", { name: "Save to a new team" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Saved to Team 1, slot 1 of 6." })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText("Ace");
+
+  const showdown = page.getByLabel("Showdown set text");
+  await expect(showdown).toContainText(`Ace (${name})`);
+  await expect(showdown).toContainText("Level: 50");
+  await expect(showdown).toContainText("Happiness: 0");
+  await expect(showdown).toContainText("Tera Type: Water");
+  await expect(showdown).not.toContainText("Shiny: Yes");
+
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.getByRole("button", { name: "Copy to Showdown" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Copied" })).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toContain("Level: 50");
+  expect(copied).toContain("Tera Type: Water");
+
+  await page.getByRole("button", { name: "Next Randomizer" }).click();
+  await expect(page).toHaveURL(/\/randomizer$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Configure your roll" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Generate Pokémon" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Current generation" })).toHaveCount(0);
+  await expect(page.getByRole("checkbox", { name: "Ability randomizer" })).not.toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "Move randomizer" })).not.toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "Item randomizer" })).not.toBeChecked();
+  await expect(page.getByRole("heading", { level: 2, name: name!, exact: true })).toHaveCount(0);
+
+  await page.goto("/teams");
+  await expect(page.getByRole("heading", { level: 2, name: "Team 1" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText(`Ace (${name})`);
+  await expect(page.getByRole("button", { name: "Copy team to Showdown" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy set" })).toBeVisible();
+  await page.getByRole("button", { name: "View recap, slot 1" }).click();
+  await expect(page.getByRole("region", { name: "Recap for slot 1" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: name! })).toBeVisible();
+  await expect(page.getByLabel("Showdown set text")).toContainText(`Ace (${name})`);
+  await page.getByRole("button", { name: "Close recap" }).click();
+  await expect(page.getByLabel("Showdown set text")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Remove slot 1" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Removed the Pokémon in slot 1." })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText("Slot 1. Empty");
 });

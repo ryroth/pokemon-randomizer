@@ -19,28 +19,28 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 4/5 — Pokémon, Ability, Move, and Item randomizers** |
-| Current work | **Phase 6 — Pokémon builder** (implemented on `feat/phase-6-builder`, pull request open) |
-| Next phase | **Phase 7 — Recap and Copy to Showdown** |
-| Current branch locally | `feat/phase-6-builder` (from `master` at `1cdbc09`) |
-| Latest on `master` | `1cdbc09` — feat: add Pokémon, Ability, Move, and Item randomizers (#4) |
+| Phase complete on `master` | **Phase 6 — Pokémon builder** |
+| Current work | **Phase 7 — Recap, Showdown copy, and saved teams** (implemented on `feat/phase-7-recap`) |
+| Next phase | **Phase 8 — Polish** |
+| Current branch locally | `feat/phase-7-recap` (from `master` at `c55218b`) |
+| Latest on `master` | `c55218b` — feat: add the Pokémon set builder |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5 |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6 |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–5 are on `master`. Do **not** rebuild them. Phase 6 builder is implemented on this branch. Do **not** start the recap unless the user asks.
+Phases 1–6 are on `master`. Do **not** rebuild them. Phase 7 is implemented on this branch and is not merged yet. Do **not** start Phase 8 polish unless the user asks.
 
-Work continues on `feat/phase-6-builder`, branched from up-to-date `master`. Do not stack new work on `feat/phase-4-5-pokemon-randomizer`.
+Work continues on `feat/phase-7-recap`, branched from up-to-date `master`. Do not stack new work on `feat/phase-6-builder`.
 
-Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Playwright covers the randomizer and a builder fill-in at `tests/e2e/builder.spec.ts` (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`. Learnsets and Hidden Abilities are separate generated files.
+Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Playwright covers the randomizer and the builder-through-teams flow at `tests/e2e/builder.spec.ts` (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, or `pokemon-model-index.json`. Learnsets and Hidden Abilities are separate generated files.
 
 ---
 
 ## First action for the next agent
 
-1. Read this file and `AGENTS.md`. Stay on `feat/phase-6-builder` unless the pull request has merged. Do **not** recreate or rebuild Phases 1–5.
-2. Phase 6 is the builder. Phase 7 is the recap. Do not start the recap unless asked.
-3. If the user wants randomizer tweaks instead, do those on this branch only when they are part of the builder work. Otherwise ask before mixing scopes.
+1. Read this file and `AGENTS.md`. Stay on `feat/phase-7-recap` until its pull request has merged. Do **not** recreate or rebuild Phases 1–6.
+2. Phase 7 (recap, copy, and saved teams) is implemented. Phase 8 is polish. Do not start polish unless asked.
+3. Saved teams are in scope. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
 
 Do not commit unless asked. Do not push unless asked.
 
@@ -48,9 +48,9 @@ Do not commit unless asked. Do not push unless asked.
 
 ## Product (V1)
 
-Consumer web app: randomize **one** Pokémon, build a Showdown-compatible set by hand, copy the set text.
+Consumer web app: randomize **one** Pokémon, build a Showdown-compatible set by hand, copy that set, and save it onto a team of up to 6 that can be copied as a whole.
 
-Flow: Configure → generate unique Pokémon → select one → optional evolve → optional ability / move / item randomizers → Build → Validate → Recap → Copy to Showdown.
+Flow: Configure → generate unique Pokémon → select one → optional evolve → optional ability / move / item randomizers → Build → Validate → Recap → Copy to Showdown and/or save to a team → Next Randomizer for another Pokémon.
 
 Custom order can put Ability, Move, or Item **before** Pokémon. Then generate that extra pool first, apply extras to generated Pokémon (user choice, unique), then select. Ability-before requires an applied ability. Move-before uses a chosen 1–4 moves per Pokémon (default 4); empty slots are filled later in the Builder. Item-before requires one applied item, including None.
 
@@ -59,7 +59,7 @@ Custom order can put Ability, Move, or Item **before** Pokémon. Then generate t
 - EVs, Nature, Tera type, gender (if mixed), level, and shiny are not auto-assigned. Applying a Smogon guess is the exception: it fills that analysis's EVs and Nature and still requires EV confirmation. IVs default to 31. Happiness defaults to 255 (0–255). Nickname is optional.
 - A new Pokémon roll, a different selected Pokémon, or an evolution clears EVs, Nature, and EV confirmation. IVs stay at 31.
 
-Out of scope until explicitly requested: six-Pokémon teams, accounts, saved builds, share URLs, public seeds, learnset-only or competitive-only pools.
+Out of scope until explicitly requested: accounts, share URLs, public seeds, learnset-only or competitive-only pools, and a database. A six-Pokémon **randomizer** is still out of scope. Saving finished builds onto local teams is implemented.
 
 ---
 
@@ -85,6 +85,8 @@ npm run build
 npm run import:data              # PokéAPI + Showdown snapshot → data/generated/catalog.json
 npm run import:learnsets         # data/generated/learnsets.json
 npm run import:hidden-abilities  # data/generated/hidden-abilities.json
+npm run import:models            # Pokemon-3D-api GLB index → data/generated/pokemon-model-index.json
+npm run import:genera            # PokéAPI English genus → data/generated/genera.json
 ```
 
 Importer flags: `--fresh` (ignore HTTP cache), `--offline` (fail if cache miss), `--help`.
@@ -123,7 +125,8 @@ Do not silently reverse these.
 | EVs | Blank slots count as 0 and the user does not type 0. Total cannot pass 508. Per-stat cap is 252. Sliders are always scaled 0–252 and still clamp to the remaining total. Confirm with `evsConfirmed`. Four moves show a Smogon guess; applying it sets those EVs and that Nature and does not confirm. |
 | IVs | Start at 31 in every stat. The user can change any stat from 0 to 31 |
 | Descriptions | Do not invent or paraphrase. Pokédex = latest unique English PokéAPI flavor. Ability/move/item `description` prefers PokéAPI English `short_effect`/`effect` when it includes numbers, then Showdown battling text with numbers, then flavor |
-| Export | `lib/showdown/exportSet.ts`. Tera always written. Level 100 omitted. IVs of 31 omitted. Zero EVs omitted. Gender omitted if genderless. Shiny line only if shiny |
+| Export | `exportShowdownSet` for one Pokémon. `exportShowdownTeam` joins sets with a blank line. Tera always written. Level 100 omitted. IVs of 31 omitted. Zero EVs omitted. Gender omitted if genderless. Shiny line only if shiny. Happiness omitted at 255 |
+| Teams | Unlimited teams, 6 Pokémon each, stored in `localStorage` (`pokemon-randomizer.teams.v1`). Next Randomizer does not clear them. No species clause. Duplicates are allowed |
 | Data updates | Repeatable import scripts, not hand-edited catalogs |
 | Git | Feature branches; conventional commits. Rename `master` → `main` still pending |
 
@@ -145,21 +148,24 @@ PokéAPI + Showdown → scripts/import → data/generated/catalog.json
 
 UI must not own randomization, filtering, classification, or validation. UI must not consume raw PokéAPI or Showdown objects.
 
-Session type: `RandomizerSession` in `lib/types/session.ts` (serializable). A client provider keeps it across `/randomizer` and `/builder`, and `sessionStorage` (`pokemon-randomizer.session.v1`) restores it after a refresh. Junk storage is ignored.
+Session type: `RandomizerSession` in `lib/types/session.ts` (serializable). A client provider keeps it across `/randomizer`, `/builder`, `/recap`, and `/teams`, and `sessionStorage` (`pokemon-randomizer.session.v1`) restores it after a refresh. Junk storage is ignored. Teams use a separate `TeamProvider` and `localStorage`, so a new randomizer does not wipe them.
 
 ---
 
 ## Key paths
 
 ```text
-app/                         Home, randomizer, builder, recap shells
+app/                         Home, randomizer, builder, recap, teams
 app/randomizer/              Server page + loading/error (pass catalog Pokémon, abilities, moves, items)
 components/layout/           Header, footer, phase placeholder
 components/randomizer/       Order list + tabs + Pokémon / Ability / Move / Item UI
+components/recap/            Pokédex card, idle model, save-to-team
+components/teams/            Team list, clear confirmation, slot sprites
 components/ui/               shadcn button + card
 lib/types/                   Normalized catalogs + session
 lib/data/classify.ts         Form type, evolution depth, pseudo-legendaries
 lib/data/evolution.ts        Later-stage targets + overlapping-path uniqueness
+lib/data/genera.ts           English PokéAPI genus
 lib/data/loadCatalog.ts      Node loader (mtime-aware cache) + slim Pokémon payload
 lib/data/moveDisplay.ts      Power / Accuracy chip labels
 lib/data/item-teambuilder.ts Showdown item category mapping
@@ -169,9 +175,16 @@ lib/builder/                Draft setters, pools, learnsets, move search/sort, i
 lib/stats/battleStat.ts     Gen 3+ battle stat formula
 lib/session/                 sessionStorage for RandomizerSession
 lib/validation/              EV/IV/nature/ability/moves/item/tera/gender/level/shiny/happiness/set (`REQUIRED_MOVE_COUNT = 4`, `MAX_EV_TOTAL = 508`)
-lib/showdown/exportSet.ts    Deterministic Showdown text
-scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, Hidden Abilities
-data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, hidden-abilities.json, join-report.json
+lib/showdown/exportSet.ts    One set, and a team paste with a blank line between sets
+lib/recap/                   Recap entries, 3D model URLs, idle-clip choice, shiny texture pairing
+lib/teams/                   Team box, localStorage, Showdown team paste, HOME sprite URLs
+scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, Hidden Abilities, model index, genera
+data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, hidden-abilities.json, join-report.json, pokemon-model-index.json, genera.json
+data/smogon/                 Gen 9 analyses used for the EV guess. Do not hand-edit.
+data/cache/pokeapi/          Gitignored HTTP cache
+tests/unit/                  Domain tests (Vitest)
+tests/e2e/builder.spec.ts    Builder, recap, and saved-team flow (Playwright)
+tests/e2e/randomizer.spec.ts Real randomizer flow (Playwright)
 data/smogon/                 Gen 9 analyses used for the EV guess. Do not hand-edit.
 data/cache/pokeapi/          Gitignored HTTP cache
 tests/unit/                  Domain tests (Vitest)
@@ -242,7 +255,7 @@ Reuse these. Do not rewrite the select / evolve / clear / re-roll path.
 
 `draft.itemId === null` means None. `undefined` on applied extras means not applied. `NONE_ITEM_SELECT_VALUE` (`__none__`) is UI-only.
 
-Continue to builder opens `/builder` with the same session. The battle Pokémon, rolled extras, and draft come along. `/recap` is still a placeholder; a valid Continue writes `finalizedSet` onto the session for Phase 7.
+Continue to builder opens `/builder` with the same session. The battle Pokémon, rolled extras, and draft come along. A valid Continue writes `finalizedSet` onto the session and opens `/recap`.
 
 ---
 
@@ -259,7 +272,26 @@ Continue to builder opens `/builder` with the same session. The battle Pokémon,
 - Gender-locked and genderless species do not ask for a gender. `validateSet` fills the only legal gender.
 - Live issues come from `validateSet`. Continue to recap stays disabled until the set is valid, then stores `finalizedSet`.
 
-Phase 7 is the recap card and Copy to Showdown. Do not build that unless asked. `lib/showdown/exportSet.ts` already exists. Phase 8 is polish.
+## Phase 7 Recap and saved teams
+
+`/recap` shows one Pokédex-style card for the finalized set. The summary Name line is the nickname, or the species name when there is no nickname. The line under the species name on the 3D name plate is the official English genus from `genera.json` (`npm run import:genera`). There is no separate Species row. Copy to Showdown copies `exportShowdownSet`. Next Randomizer calls `startNextRandomizer()` (`createInitialSession()`) and opens `/randomizer`. It clears rolls, extras, the draft, and `finalizedSet`. It does not clear teams.
+
+The 3D stage always animates the regular or form GLB from `data/generated/pokemon-model-index.json` (`npm run import:models`, Pokemon-3D-api commit `429de1288cea0d43f5b4f56305d2276e94239d65`). `preferredIdleAnimation` picks a clip whose name matches `/a?idle/i`, otherwise the first clip. `waitA` is not treated as idle. When the set is shiny and a distinct shiny GLB exists, `lib/recap/shinyColors.ts` paints that file's base-color textures onto the animated model only when every material pairs by normalized name or body/eye role. Pairing is all-or-nothing. No shiny file means regular colors and the idle still plays. The page requests GLBs directly. It does not call the GitHub contents API or PokéAPI.
+
+`/teams` lists every saved team. From the recap the user can copy the set, save it into the next open slot of the active team, or save it as slot 1 of a new team. Other teams stay intact. There is no limit on the number of teams. Each team holds 6 Pokémon, packed from the front.
+
+On a team the user can:
+
+- View recap: the same Pokédex card, including its Showdown set, without replacing the randomizer session
+- Move to another filled slot
+- Remove one slot
+- Copy one set, or copy the team (`exportShowdownTeam`, blank line between sets)
+- Clear team: a confirmation dialog first. Cancel does nothing. Confirm removes that team only
+- See the latest sprite: Pokémon HOME, then official artwork, then the default sprite. Shiny sets use the shiny HOME sprite
+
+Domain rules live in `lib/teams`. The UI calls them. Invalid stored JSON becomes an empty team box. Do not add a database for teams.
+
+Phase 8 is polish. Do not start it unless asked.
 
 ---
 
@@ -270,12 +302,13 @@ Phase 7 is the recap card and Copy to Showdown. Do not build that unless asked. 
 - Playwright `getByRole("button", { name: "Clear generations" })` is the **filter toolbar**, not “Clear generated Pokémon”. Open the Generations dropdown first.
 - Aegislash catalog `id` is `aegislash`; `pokeApiSlug` is `aegislash-shield`. Look up by Showdown `id` for evolution-path tests.
 - Header can feel tight on a 390px viewport; not in-scope unless asked.
-- Continue to builder writes the session before leaving `/randomizer`. `/recap` does not render the set yet.
+- Continue to builder writes the session before leaving `/randomizer`. Continue to recap writes `finalizedSet` before leaving `/builder`.
+- Editing a draft field clears `finalizedSet`. Do not toggle shiny on a finished set unless the user submits the builder again.
+- Untracked `public/*.svg` leftovers from create-next-app should not be committed. `.next/` must not be committed.
 - Do not add the full `pokemon-showdown` simulator package to the client.
 - Natures have `pokeApiSlug` (dual-write rule). Do not remove it.
 - Next.js 16 may rewrite the `<!-- BEGIN:nextjs-agent-rules -->` block at the top of `AGENTS.md`. Keep the Pokémon Randomizer rules below that block.
 - `data/cache/pokeapi/` is gitignored. Safe to keep locally; do not commit.
-- Untracked `public/*.svg` leftovers from create-next-app should not be committed.
 - `node_modules.bak` (if present) is a leftover Vite install; gitignored; safe to delete.
 - PowerShell: chain commands with `;`, not `&&`.
 
@@ -299,4 +332,4 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `feat/phase-6-builder`. Phases 1–5 are on `master`. The builder is implemented. Do not start the recap unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `feat/phase-7-recap`. Phases 1–6 are on `master`. Phase 7 recap and saved teams are implemented and not merged. Do not start polish unless I ask. Do not commit unless I ask.

@@ -5,7 +5,7 @@
 - Vitest: unit tests for classification, RNG, validation, Showdown export, Pokémon filters, Pokémon rolls, ability rolls, move rolls, item rolls.
 - Playwright: browser smoke of the app shell, the Pokémon generate flow, the ability generate flow, the move generate flow, and the item generate flow.
 
-## Current coverage (Phase 4/5 Pokémon + Ability + Move + Item slices)
+## Current coverage (through the Phase 7 recap)
 
 - EV total 508, EV total over 508, single-stat cap. Blank EV slots count as 0.
 - Missing Nature, too few / too many moves, IV range.
@@ -39,9 +39,13 @@
 - Builder pools: rolled moves or items when that randomizer is on; standard catalog when it is off; None is always in the item pool. Partial EV spreads name the blank stats.
 - Playwright: generate, select, continue to the builder, confirm unset EVs/IVs/Nature/Tera/level/shiny, fill a set, continue to `/recap`.
 
+- Recap: idle-clip selection, shiny texture pairing, 3D model URLs for base, shiny, regional, Mega, Mega-X, Gigantamax, Primal, Origin, and named formes, artwork fallback when a forme has no model, genus text, one export card per finalized set, Showdown text matches `exportShowdownSet`.
+- Teams: a new team leaves earlier teams unchanged, the next slot fills until 6, one slot can be removed or moved, clearing one team leaves the others, a team paste separates sets with a blank line, broken storage becomes an empty box, HOME sprites are preferred.
+- Playwright: after the builder fill-in, the recap shows that Pokémon and its Showdown text, Copy to Showdown writes the clipboard, save to a new team survives Next Randomizer, the team recap opens, and removing the slot empties it.
+
 ## Upcoming
 
-- Recap card and clipboard export (Phase 7). Learnset-backed move slots when a learnset field exists.
+- Learnset-only and competitive pool modes. Phase 8 polish. A six-Pokémon randomizer is not started.
 
 ## Quality bar
 

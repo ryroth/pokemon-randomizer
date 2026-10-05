@@ -109,6 +109,7 @@ export {
   clearPokemonRolls,
   clampViewedRollIndex,
   createInitialSession,
+  startNextRandomizer,
   filledMoveCount,
   itemChoicesForPokemon,
   moveChoicesForPokemon,

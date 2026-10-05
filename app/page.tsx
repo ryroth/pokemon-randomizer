@@ -23,7 +23,7 @@ const steps = [
   },
   {
     title: "Export",
-    body: "Open a finished recap card and copy a Pokémon Showdown set.",
+    body: "Copy one Pokémon Showdown set, or save it onto a team and copy the whole team.",
   },
 ];
 

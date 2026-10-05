@@ -34,7 +34,9 @@ The UI never owns pool logic, classification, or validation. Session state is a 
 | `lib/data/loadCatalog.ts` | Node catalog loader; slims Pokémon rows for the client |
 | `lib/validation` | EV/IV/set rules and user-facing errors |
 | `lib/showdown/exportSet.ts` | Deterministic Showdown text |
-| `scripts/import` | Repeatable PokéAPI + `@pkmn/dex` snapshot into `data/generated/catalog.json` |
+| `lib/recap` | Pokédex recap entries, 3D model URLs, idle-clip selection, and shiny texture pairing |
+| `lib/teams` | Saved teams in `localStorage`, slot order, Showdown team paste, and HOME sprite URLs |
+| `scripts/import` | Repeatable PokéAPI + `@pkmn/dex` snapshot into `data/generated/catalog.json`, plus the 3D model index and English genera |
 
 ## Data sources
 

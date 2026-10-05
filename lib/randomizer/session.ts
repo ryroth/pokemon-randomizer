@@ -46,6 +46,11 @@ export function createInitialSession(
   };
 }
 
+/** Default setup again: no rolls, selections, drafts, or finished set from the last run. */
+export function startNextRandomizer(): RandomizerSession {
+  return createInitialSession();
+}
+
 export function applyPokemonRoll(
   session: RandomizerSession,
   result: PokemonRandomizerResult,

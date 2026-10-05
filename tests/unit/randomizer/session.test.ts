@@ -13,6 +13,7 @@ import {
   chooseEvolvedPokemon,
   clearPokemonRolls,
   createInitialSession,
+  startNextRandomizer,
   itemChoicesForPokemon,
   moveChoicesForPokemon,
   openRandomizerTab,
@@ -138,6 +139,43 @@ describe("randomizer session helpers", () => {
     expect(session.config.randomizeAbilities).toBe(false);
     expect(session.abilityOptions).toEqual([]);
     expect(session.draft.moveIds).toHaveLength(4);
+  });
+
+  it("starts the next randomizer with no rolls, extras, or finished set", () => {
+    const finished = selectRolledPokemon(
+      applyPokemonRoll(
+        createInitialSession({
+          ...DEFAULT_RANDOMIZER_CONFIG,
+          randomizeAbilities: true,
+          randomizeMoves: true,
+          randomizeItems: true,
+          seed: "old-seed",
+        }),
+        {
+          seed: "abc",
+          poolSize: 10,
+          pokemon: [makeForm("a")],
+        },
+      ),
+      "a",
+    );
+    expect(finished.selectedPokemonId).toBe("a");
+    expect(finished.config.seed).toBe("abc");
+
+    const next = startNextRandomizer();
+    expect(next).toEqual(createInitialSession());
+    expect(next.step).toBe("configure");
+    expect(next.pokemonRolls).toEqual([]);
+    expect(next.selectedPokemonId).toBeUndefined();
+    expect(next.evolvedPokemonId).toBeUndefined();
+    expect(next.abilityOptions).toEqual([]);
+    expect(next.moveOptions).toEqual([]);
+    expect(next.itemOptions).toEqual([]);
+    expect(next.finalizedSet).toBeUndefined();
+    expect(next.config.seed).toBeUndefined();
+    expect(next.config.randomizeAbilities).toBe(false);
+    expect(next.config.randomizeMoves).toBe(false);
+    expect(next.config.randomizeItems).toBe(false);
   });
 
   it("keeps earlier rolls and a previous selection when generating again", () => {
