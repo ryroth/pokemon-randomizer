@@ -19,19 +19,18 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 6 — Pokémon builder** |
-| Current work | **Phase 7 — Recap, Showdown copy, and saved teams** (implemented on `feat/phase-7-recap`) |
+| Phase complete on `master` | **Phase 7 — Recap, Showdown copy, and saved teams** |
+| Current work | None. Phase 8 is next only if the user asks |
 | Next phase | **Phase 8 — Polish** |
-| Current branch locally | `feat/phase-7-recap` (from `master` at `c55218b`) |
-| Latest on `master` | `c55218b` — feat: add the Pokémon set builder |
+| Current branch locally | `master` |
+| Latest on `master` | `04d7053` — feat: add the recap, Showdown copy, and saved teams |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Open PR | [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) — Phase 7 recap, Showdown copy, and saved teams |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6 |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7 |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–6 are on `master`. Do **not** rebuild them. Phase 7 is implemented on this branch and is not merged yet. Do **not** start Phase 8 polish unless the user asks.
+Phases 1–7 are on `master`. Do **not** rebuild them. Do **not** start Phase 8 polish unless the user asks.
 
-Work continues on `feat/phase-7-recap`, branched from up-to-date `master`. Do not stack new work on `feat/phase-6-builder`.
+Start the next feature from up-to-date `master`. Do not stack new work on `feat/phase-7-recap` or `feat/phase-6-builder`.
 
 Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Playwright covers the randomizer and the builder-through-teams flow at `tests/e2e/builder.spec.ts` (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, or `pokemon-model-index.json`. Learnsets and Hidden Abilities are separate generated files.
 
@@ -39,8 +38,8 @@ Quality gates for this branch: `npm run lint`, `npm run typecheck`, `npm test`, 
 
 ## First action for the next agent
 
-1. Read this file and `AGENTS.md`. Stay on `feat/phase-7-recap` until [pull request #6](https://github.com/ryroth/pokemon-randomizer/pull/6) has merged. Do **not** recreate or rebuild Phases 1–6.
-2. Phase 7 (recap, copy, and saved teams) is implemented. Phase 8 is polish. Do not start polish unless asked.
+1. Read this file and `AGENTS.md`. Stay on `master` until a new branch is asked for. Do **not** recreate or rebuild Phases 1–7.
+2. Phase 7 (recap, copy, and saved teams) is merged in [#6](https://github.com/ryroth/pokemon-randomizer/pull/6). Phase 8 is polish. Do not start polish unless asked.
 3. Saved teams are in scope. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
 
 Do not commit unless asked. Do not push unless asked.
@@ -333,4 +332,4 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `feat/phase-7-recap`. Phases 1–6 are on `master`. Phase 7 recap and saved teams are implemented and not merged. Do not start polish unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–7 are merged. Phase 7 is the recap, Showdown copy, and saved teams. Do not start polish unless I ask. Do not commit unless I ask.
