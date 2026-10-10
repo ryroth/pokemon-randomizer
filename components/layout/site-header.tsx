@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "@/components/layout/nav-links";
+import { PokeballIcon } from "@/components/randomizer/pokeball";
 import { cn } from "@/lib/utils";
 
 /** Brand on every screen. The links sit here from the small breakpoint up; phones use the bottom bar. */
@@ -10,9 +11,10 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b border-border bg-card">
+    <header className="border-b-4 border-b-primary bg-card/90 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-[1800px] items-center justify-between gap-3 px-[var(--space-page-x)] py-3 sm:py-4">
-        <Link href="/" className="text-sm font-semibold tracking-tight sm:text-base">
+        <Link href="/" className="logo-type flex items-center gap-2.5 text-xl sm:text-2xl">
+          <PokeballIcon kind="poke" className="size-7 shrink-0 sm:size-8" />
           Pokémon Randomizer
         </Link>
         <nav aria-label="Primary" className="hidden sm:block">

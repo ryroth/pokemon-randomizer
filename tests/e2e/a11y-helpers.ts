@@ -133,7 +133,14 @@ export async function findContrastFailures(page: Page, scope = "body"): Promise<
       const bold = Number.parseInt(style.fontWeight, 10) >= 700;
       const large = size >= 24 || (bold && size >= 18.66);
       const needed = large ? 3 : 4.5;
-      const measured = ratio(foreground, background);
+      let measured = ratio(foreground, background);
+      // Outlined lettering (the logo-style page titles): the outline is what separates the letters from
+      // the page on a light background, and the fill does it on a dark one. Either one may carry the contrast.
+      const outline = style.getPropertyValue("-webkit-text-stroke-width");
+      if (Number.parseFloat(outline) > 0) {
+        const stroke = over(toRgba(style.getPropertyValue("-webkit-text-stroke-color")), background);
+        measured = Math.max(measured, ratio(stroke, background));
+      }
       if (measured < needed) {
         failures.push({
           text: (node.textContent ?? "").trim().slice(0, 50),

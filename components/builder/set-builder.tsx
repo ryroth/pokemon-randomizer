@@ -129,7 +129,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
 
   return (
     <PageFrame width="builder">
-      <header className="space-y-3">
+      <header className="hero-panel space-y-3">
         <Link href="/randomizer" className={cn(buttonVariants({ variant: "outline" }), "w-fit")}>
           Back to the randomizer
         </Link>

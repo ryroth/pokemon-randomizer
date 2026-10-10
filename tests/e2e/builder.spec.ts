@@ -58,7 +58,7 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await expect(page.getByRole("button", { name: "Continue to recap" })).toBeEnabled();
   await page.getByRole("button", { name: "Continue to recap" }).click();
   await expect(page).toHaveURL(/\/recap$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Pokémon recap" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Pokémon Recap", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Back to the builder" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: name!, exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: name! })).toBeVisible();
@@ -107,4 +107,14 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await page.getByRole("button", { name: "Remove slot 1" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Removed the Pokémon in slot 1." })).toBeVisible();
   await expect(page.getByRole("list", { name: "Team 1 slots" })).toContainText("Slot 1. Empty");
+});
+
+test("the Teams page has a Back to the recap button that opens the recap", async ({ page }) => {
+  await page.goto("/teams");
+  await expect(page.getByRole("heading", { level: 1, name: "Teams", exact: true })).toBeVisible();
+  const back = page.getByRole("link", { name: "Back to the recap" });
+  await expect(back).toBeVisible();
+  await back.click();
+  await expect(page).toHaveURL(/\/recap$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Pokémon Recap", exact: true })).toBeVisible();
 });

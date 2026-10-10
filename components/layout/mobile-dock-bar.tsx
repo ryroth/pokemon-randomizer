@@ -30,7 +30,7 @@ export function MobileDockBar() {
   const active = box.teams.find((team) => team.id === box.activeTeamId) ?? null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)] lg:hidden">
       <div className="flex items-stretch">
         <nav aria-label="Primary" className="min-w-0 flex-1 sm:hidden">
           <ul className="grid grid-cols-4">

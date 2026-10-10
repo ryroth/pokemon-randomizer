@@ -31,7 +31,7 @@ const steps = [
 export default function HomePage() {
   return (
     <PageFrame className="gap-12">
-      <section className="max-w-2xl space-y-5">
+      <section className="hero-panel max-w-2xl space-y-5">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
           Single Pokémon builder
         </p>

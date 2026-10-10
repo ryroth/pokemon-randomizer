@@ -1,0 +1,68 @@
+{
+  "home-light": {
+    "title": "Legends Z-A Day Key Art.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Legends_Z-A_Day_Key_Art.png",
+    "file": "https://archives.bulbagarden.net/media/upload/d/df/Legends_Z-A_Day_Key_Art.png"
+  },
+  "home-dark": {
+    "title": "Legends Z-A Night Key Art.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Legends_Z-A_Night_Key_Art.png",
+    "file": "https://archives.bulbagarden.net/media/upload/d/d2/Legends_Z-A_Night_Key_Art.png"
+  },
+  "randomizer-light": {
+    "title": "Scarlet Violet Key Visual.png",
+    "game": "Scarlet and Violet",
+    "page": "https://archives.bulbagarden.net/wiki/File:Scarlet_Violet_Key_Visual.png",
+    "file": "https://archives.bulbagarden.net/media/upload/a/aa/Scarlet_Violet_Key_Visual.png"
+  },
+  "randomizer-dark": {
+    "title": "Prism Tower Mega Power ZA.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Prism_Tower_Mega_Power_ZA.png",
+    "file": "https://archives.bulbagarden.net/media/upload/3/38/Prism_Tower_Mega_Power_ZA.png"
+  },
+  "builder-light": {
+    "title": "Hotel Z battle.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Hotel_Z_battle.png",
+    "file": "https://archives.bulbagarden.net/media/upload/7/74/Hotel_Z_battle.png"
+  },
+  "builder-dark": {
+    "title": "Lower Area Zero.png",
+    "game": "Scarlet and Violet",
+    "page": "https://archives.bulbagarden.net/wiki/File:Lower_Area_Zero.png",
+    "file": "https://archives.bulbagarden.net/media/upload/0/0b/Lower_Area_Zero.png"
+  },
+  "recap-light": {
+    "title": "Quasartico Inc. building.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Quasartico_Inc._building.png",
+    "file": "https://archives.bulbagarden.net/media/upload/5/5d/Quasartico_Inc._building.png"
+  },
+  "recap-dark": {
+    "title": "Prism Tower Ange ZA.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Prism_Tower_Ange_ZA.png",
+    "file": "https://archives.bulbagarden.net/media/upload/1/10/Prism_Tower_Ange_ZA.png"
+  },
+  "teams-light": {
+    "title": "Upper Area Zero.png",
+    "game": "Scarlet and Violet",
+    "page": "https://archives.bulbagarden.net/wiki/File:Upper_Area_Zero.png",
+    "file": "https://archives.bulbagarden.net/media/upload/a/a0/Upper_Area_Zero.png"
+  },
+  "teams-dark": {
+    "title": "Prism Tower destroyed ZA.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Prism_Tower_destroyed_ZA.png",
+    "file": "https://archives.bulbagarden.net/media/upload/7/7a/Prism_Tower_destroyed_ZA.png"
+  },
+  "lost": {
+    "title": "Hyperspace Entry Point ZA.png",
+    "game": "Legends Z-A",
+    "page": "https://archives.bulbagarden.net/wiki/File:Hyperspace_Entry_Point_ZA.png",
+    "file": "https://archives.bulbagarden.net/media/upload/2/2a/Hyperspace_Entry_Point_ZA.png"
+  }
+}

@@ -323,7 +323,7 @@ export function TeamDockRail() {
   return (
     <aside
       aria-labelledby="team-dock-heading"
-      className="hidden border-l border-border bg-card lg:block"
+      className="hidden border-l border-border bg-card/85 backdrop-blur-md lg:block"
     >
       <div className="sticky top-0 max-h-dvh overflow-y-auto p-[var(--space-card-p)]">
         <TeamRoster headingId="team-dock-heading" />

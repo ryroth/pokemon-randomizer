@@ -134,7 +134,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-ring: var(--ring);
   --font-sans: var(--font-sans);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -193,6 +193,153 @@
   *:focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 3px;
+  }
+
+  /* Game-menu typeface for headings, tabs, and navigation. Body text and numbers keep Geist. */
+  h1,
+  h2,
+  h3,
+  h4,
+  [role="tab"],
+  nav[aria-label="Primary"] a {
+    font-family: var(--font-display), var(--font-sans);
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Logo lettering for page titles (h1) and the header brand: yellow letters with a blue outline, set in the
+   fan-made "Pokémon Solid" font. Unlayered on purpose, so it beats Tailwind's font-weight and tracking
+   utilities (the font has one weight, and a requested bold would be faked). The outline is drawn behind
+   the fill (paint-order), so the letters keep their full shape. */
+:root {
+  --logo-fill: #ffcb05;
+  --logo-stroke: #3b4cca;
+}
+
+h1,
+.logo-type {
+  font-family: var(--font-logo), var(--font-display), var(--font-sans);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  padding-bottom: 0.12em;
+  color: var(--logo-fill);
+  -webkit-text-stroke: 0.2em var(--logo-stroke);
+  paint-order: stroke fill;
+  text-shadow: 0 0.06em 0 var(--logo-stroke);
+}
+
+/* World backdrops: official Pokémon Legends: Z-A and Scarlet / Violet art behind each page.
+   Light and dark themes each get their own image. The scrim fades the art into the page color so
+   text never sits directly on busy art. Files come from `npm run import:world-art`.
+   Two layers share one image: .scene-world is a quiet fixed layer behind everything, and
+   .scene-banner is a vivid strip at the top of the page that fades out before the content starts. */
+.scene-world,
+.scene-banner {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.scene-world {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-canvas);
+  background-position: center;
+}
+
+.scene-world::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in oklab, var(--bg-canvas) 89%, transparent);
+}
+
+.scene-banner {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--banner-height, 18rem);
+  background-position: center 30%;
+  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%);
+}
+
+.scene-home {
+  --banner-height: 28rem;
+}
+.scene-builder {
+  --banner-height: 22rem;
+}
+.scene-teams {
+  --banner-height: 20rem;
+}
+
+@media (max-width: 40rem) {
+  .scene-banner {
+    height: 22rem;
+  }
+}
+
+/* Title block at the top of a page: a frosted panel so headings and intro text stay readable over the art. */
+.hero-panel {
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-2xl);
+  background: color-mix(in oklab, var(--bg-surface-1) 90%, transparent);
+  padding: var(--space-card-p);
+  box-shadow: 0 8px 28px -12px rgb(0 0 0 / 0.35);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* A thin red, gold, and blue stripe along the top edge, like the menu bars in the games. */
+.hero-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent-yellow), var(--accent-electric));
+}
+
+.scene-home {
+  background-image: url("/world/home-light.webp");
+}
+.scene-randomizer {
+  background-image: url("/world/randomizer-light.webp");
+}
+.scene-builder {
+  background-image: url("/world/builder-light.webp");
+}
+.scene-recap {
+  background-image: url("/world/recap-light.webp");
+}
+.scene-teams {
+  background-image: url("/world/teams-light.webp");
+}
+.scene-lost {
+  background-image: url("/world/lost.webp");
+}
+
+@media (prefers-color-scheme: dark) {
+  .scene-home {
+    background-image: url("/world/home-dark.webp");
+  }
+  .scene-randomizer {
+    background-image: url("/world/randomizer-dark.webp");
+  }
+  .scene-builder {
+    background-image: url("/world/builder-dark.webp");
+  }
+  .scene-recap {
+    background-image: url("/world/recap-dark.webp");
+  }
+  .scene-teams {
+    background-image: url("/world/teams-dark.webp");
   }
 }
 
