@@ -19,20 +19,20 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 8 — Polish**, then the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), merged in one PR |
+| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), then the **Pokémon world theme** (backdrops and logo titles), each merged by PR |
 | Current work | None. Later features only if the user asks |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | `93fcb67` — Merge pull request #8. The following commit refreshes this handoff |
+| Latest on `master` | The merge of pull request #9 (Pokémon world theme). Run `git log -1` for the hash |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–8 and the Battle Laboratory overhaul are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
+Phases 1–8, the Battle Laboratory overhaul, and the Pokémon world theme are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
 
 Start the next feature from up-to-date `master` on a new branch.
 
-Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`. Last full run on the overhaul branch: tsc clean, ESLint 0 errors, Vitest 405, Playwright 74, build passes. Playwright covers the randomizer, builder-through-teams, dock, Showdown, accessibility, and Round 2 flows (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, or `pokemon-model-index.json`. Learnsets and Hidden Abilities are separate generated files.
+Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`. Last full run on the world-theme branch: tsc clean, ESLint 0 errors, Vitest 413, Playwright 85, build passes. The keyboard tab-stop audits in `a11y.spec.ts` and a few Showdown tests can flake when many workers share one cold dev server (a different one each run); re-run the named test alone before treating it as a regression. Playwright covers the randomizer, builder-through-teams, dock, Showdown, accessibility, and Round 2 flows (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, or `pokemon-model-index.json`. Learnsets and Hidden Abilities are separate generated files.
 
 ---
 
@@ -89,6 +89,7 @@ npm run import:models            # Pokemon-3D-api GLB index → data/generated/p
 npm run import:genera            # PokéAPI English genus → data/generated/genera.json
 npm run import:dex-entries       # every English Pokédex entry by generation → data/generated/dex-entries.json
 npm run import:type-chart        # Showdown type chart → data/generated/type-chart.json
+npm run import:world-art         # official Z-A / Scarlet-Violet backdrops → public/world/*.webp
 ```
 
 Importer flags: `--fresh` (ignore HTTP cache), `--offline` (fail if cache miss), `--help`.
@@ -185,13 +186,19 @@ lib/validation/              EV/IV/nature/ability/moves/item/tera/gender/level/s
 lib/showdown/exportSet.ts    One set, and a team paste with a blank line between sets
 lib/recap/                   Recap entries, 3D model URLs, idle-clip choice, shiny texture pairing
 lib/teams/                   Team box, localStorage, Showdown team paste, HOME sprite URLs
-scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, Hidden Abilities, model index, genera
+scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, Hidden Abilities, model index, genera, and `world-art.ts` (backdrops)
+lib/world/                   Which backdrop each route shows (`sceneForPath`, `sceneImages`)
+components/layout/scene-backdrop.tsx  The two decorative backdrop layers
+public/world/                Compressed official backdrops and `sources.json` (generated, committed)
+app/fonts/                   pokemon-solid.ttf (fan-made logo lettering, see the world-theme section)
 data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, hidden-abilities.json, join-report.json, pokemon-model-index.json, genera.json
 data/cache/pokeapi/          Gitignored HTTP cache
 tests/unit/                  Domain tests (Vitest), including `tests/unit/ui/type-colors.test.ts`
 tests/e2e/builder.spec.ts    Builder, recap, and saved-team flow (Playwright)
 tests/e2e/randomizer.spec.ts Real randomizer flow, including back navigation (Playwright)
 tests/e2e/polish.spec.ts     Header, not-found, and narrow viewport (Playwright)
+tests/e2e/world.spec.ts      Backdrops, logo titles, Kanit headings, title never covers links (Playwright)
+tests/unit/world/            Scene mapping, shipped backdrop files, credits (Vitest)
 ```
 
 ---
@@ -340,6 +347,23 @@ Source: `Downloads/Final Master Design Overhaul Prompt.md`. Decisions: one phase
     - Starting a build for a different Pokémon resets Tera type, gender, shiny, and nickname (`freshTraining`), see Shiny rolls.
     - **Shiny display order:** shiny 3D model, then shiny sprite, then shiny artwork, in the Builder and Recap (`idleModelPlan`, `pokemonShinyModelUrl` in `lib/recap/model.ts`; `fallbackImage` and `cardImage` in `lib/recap/entries.ts`; `RecapEntry.idleModel` replaced `modelUrl`/`regularModelUrl`). `components/recap/pokemon-idle-model.tsx` hides the model until `paintShiny` returns `"painted"`; `"failed"` calls `onUnavailable` so the picture shows. The shiny 3D paint is covered by unit tests of the plan, not by a browser test. Spot-check it with a Pokémon that has a shiny GLB.
     - Teams art for a shiny set: `lib/teams/sprites.ts` candidates are HOME shiny, shiny sprite, shiny artwork, artwork, sprite.
+
+## Pokémon world theme (merged, PR #9)
+
+Look-and-feel only. No behavior, data, or route changed.
+
+- **Backdrops:** official art and screenshots from Pokémon Legends: Z-A and Pokémon Scarlet / Violet, taken from Bulbagarden Archives. No fan-made art. `npm run import:world-art` (`scripts/import/world-art.ts`, uses `sharp`, now a devDependency because Next already installs it) downloads each file, caches the originals in `data/cache/world-art/` (gitignored), and writes compressed WebP to `public/world/` with `sources.json` crediting each file. The browser only loads these local files.
+- **Scene per route:** `lib/world/scenes.ts` (`sceneForPath`, `sceneImages`): `/` home, `/randomizer`, `/builder`, `/recap`, `/teams`, and any unknown URL uses the `lost` scene. Light and dark themes each have an image (light = daytime art, dark = night art) chosen by `prefers-color-scheme` in `app/globals.css`. Change which art a page uses in `SCENES` in the importer and the matching `.scene-*` rules, then re-run the import.
+- **Layers:** `components/layout/scene-backdrop.tsx` renders two decorative (`aria-hidden`) layers from one image. `.scene-world` is a fixed layer under an 89% page-color scrim. `.scene-banner` is a vivid strip at the top, masked to fade out before the content, with a per-scene `--banner-height`. The body is `relative` for it. The dock rail, mobile bar, header, and footer are frosted (`bg-card/85–90 backdrop-blur`).
+- **Title panels:** `.hero-panel` (frosted card with a red, gold, and blue top stripe) holds each page's title block and every `RouteNotice`, so headings and intro text never sit directly on art. Put new page titles in one.
+- **Type:** two display faces, no new package.
+  - **Page titles (`h1`) and the header brand** use **Pokémon Solid** (`app/fonts/pokemon-solid.ttf`, `next/font/local`, `--font-logo`), set as yellow `#ffcb05` letters with a blue `#3b4cca` outline (`-webkit-text-stroke`, `paint-order: stroke fill`) through the unlayered `h1, .logo-type` rule in `globals.css`. The user chose this on purpose. It is a **fan-made** copy of the Pokémon logo lettering (the logo is custom artwork, not a font). It came from dafont.com, whose page shows no clear licence, so treat it as unlicensed: to drop it, delete the font file, the `localFont` block in `app/layout.tsx`, and the `h1, .logo-type` rule; titles then fall back to Kanit. It has one weight (never ask for bold; `font-synthesis: none`), and the `ascent/descent-override` declarations in `layout.tsx` are required: its Windows metrics are about 2.9× the letter height and otherwise each title's click area covers the link above it (see `a page title never covers the link above it` in `world.spec.ts`).
+  - **Smaller headings (`h2`–`h4`), tabs (`[role="tab"]`), and the primary navigation** use Kanit (`--font-display`, `next/font/google`). Body text and numbers keep Geist. `font-heading` maps to Kanit.
+  - The contrast scan in `tests/e2e/a11y-helpers.ts` accepts either the fill or the outline of outlined text, because the outline carries the contrast on light panels and the fill on dark ones.
+- **Brand:** the header shows the existing `PokeballIcon` beside the name and a red bottom border. The footer credits the art to Nintendo, Creatures Inc., and GAME FREAK inc.
+- **Tests:** `tests/unit/world/scenes.test.ts` (mapping, every image shipped and under 400 KB, stylesheet points at the same files, every source is an official game on Bulbagarden Archives) and `tests/e2e/world.spec.ts` (scene per route, hidden from assistive tech, light and dark images, local origin only, Kanit on headings and nav). The existing contrast scans in `a11y.spec.ts` still pass.
+- **Small page changes in the same PR:** the recap title is "Pokémon Recap" (capital R), and the Teams page has a **Back to the recap** outline button at the top of its title panel (tests in `tests/e2e/builder.spec.ts`).
+- **Not done:** the Pokémon cards are unchanged. No type-themed backdrop for the selected Pokémon, no sound, no animated art.
 
 ---
 
