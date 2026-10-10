@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  applyBuilderDefaults,
   applySuggestedEvs,
   builderItemPool,
   builderMovePool,
-  confirmDraftEvs,
   finalizeBuilderSet,
   openBuilder,
   setDraftAbility,
@@ -16,7 +16,7 @@ import {
 } from "@/lib/builder";
 import type { Nature } from "@/lib/types/catalog-entities";
 import { natureChoiceLabel } from "@/lib/builder/labels";
-import { createInitialSession } from "@/lib/randomizer/session";
+import { applyPokemonRoll, createInitialSession, selectRolledPokemon } from "@/lib/randomizer/session";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import { parseStoredSession } from "@/lib/session/storage";
 import type { PokemonForm } from "@/lib/types/pokemon";
@@ -67,7 +67,7 @@ function makeForm(id: string, genderRule: PokemonForm["genderRule"] = "mixed"): 
     isUltraBeast: false,
     isBaby: false,
     dexEntries: [],
-    sprites: { sprite: null, spriteShiny: null, artwork: null },
+    sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule,
     evolutionTargetIds: [],
@@ -143,12 +143,50 @@ describe("builder draft", () => {
     expect(session.draft.natureId).toBeUndefined();
     expect(session.draft.teraType).toBeUndefined();
     expect(session.draft.gender).toBeUndefined();
-    expect(session.draft.level).toBeUndefined();
-    expect(session.draft.shiny).toBeUndefined();
-    expect(session.draft.evsConfirmed).toBe(false);
+    expect(session.draft.level).toBe(50);
+    // Shiny starts at No. Nothing in the randomizer rolls shiny, so this is always the start.
+    expect(session.draft.shiny).toBe(false);
   });
 
-  it("keeps ability and move choices inside their pools and clears confirmation after an EV edit", () => {
+  it("starts the next Pokémon's build at the defaults, not the last build's choices", () => {
+    const first = openBuilder({
+      ...createInitialSession(),
+      selectedPokemonId: "mudkip",
+      evolvedPokemonId: "mudkip",
+      draft: { ...createInitialSession().draft, pokemonId: "mudkip" },
+    });
+    const customized = {
+      ...first,
+      draft: { ...first.draft, teraType: "water" as const, gender: "M" as const, shiny: true },
+    };
+    expect(applyBuilderDefaults(customized).draft.shiny).toBe(true);
+
+    const second = openBuilder(
+      selectRolledPokemon(
+        applyPokemonRoll(customized, {
+          seed: "next",
+          poolSize: 2,
+          pokemon: [makeForm("treecko"), makeForm("torchic")],
+        }),
+        "treecko",
+      ),
+    );
+    expect(second.draft.teraType).toBeUndefined();
+    expect(second.draft.gender).toBeUndefined();
+    expect(second.draft.shiny).toBe(false);
+  });
+
+  it("keeps a level the user already chose instead of resetting it to 50", () => {
+    const opened = openBuilder({
+      ...createInitialSession(),
+      selectedPokemonId: "mudkip",
+      evolvedPokemonId: "mudkip",
+      draft: { ...createInitialSession().draft, level: 100 },
+    });
+    expect(opened.draft.level).toBe(100);
+  });
+
+  it("keeps ability and move choices inside their pools and caps EV edits", () => {
     let session = openBuilder({
       ...createInitialSession(),
       selectedPokemonId: "mudkip",
@@ -169,13 +207,12 @@ describe("builder draft", () => {
     expect(session.draft.evs?.spe).toBe(4);
     session = setDraftEv(session, "def", 20);
     expect(session.draft.evs?.def).toBe(0);
-    session = confirmDraftEvs(session, true);
-    expect(session.draft.evsConfirmed).toBe(true);
+    session = setDraftEv(session, "spe", 0);
     session = setDraftEv(session, "def", 4);
-    expect(session.draft.evsConfirmed).toBe(false);
+    expect(session.draft.evs?.def).toBe(4);
   });
 
-  it("applies a guessed EV spread and its nature without confirming the spread", () => {
+  it("applies a guessed EV spread and its nature", () => {
     const session = openBuilder({
       ...createInitialSession(),
       selectedPokemonId: "mudkip",
@@ -185,7 +222,6 @@ describe("builder draft", () => {
 
     expect(next.draft.evs).toEqual({ spa: 252, spd: 4, spe: 252 });
     expect(next.draft.natureId).toBe("timid");
-    expect(next.draft.evsConfirmed).toBe(false);
   });
 
   it("keeps the current nature when the guessed name is not in the catalog", () => {
@@ -249,10 +285,9 @@ describe("builder draft", () => {
     for (const stat of ["hp", "atk", "def", "spa", "spd", "spe"] as const) {
       session = setDraftEv(session, stat, 0);
     }
-    session = confirmDraftEvs(session, true);
     session = {
       ...session,
-      draft: { ...session.draft, natureId: "hardy", teraType: "water", gender: "M", level: 50 },
+      draft: { ...session.draft, natureId: "hardy", teraType: "water", gender: "M" },
     };
     session = setDraftShiny(session, false);
     const finalized = finalizeBuilderSet(session, form);
@@ -316,7 +351,7 @@ describe("natureChoiceLabel", () => {
         plusStat: "atk",
         minusStat: "spa",
       }),
-    ).toBe("Adamant (+Attack, −Special Attack)");
+    ).toBe("Adamant (+Atk, −SpA)");
   });
 });
 

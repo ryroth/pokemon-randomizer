@@ -33,7 +33,7 @@ const swampert: PokemonForm = {
   isUltraBeast: false,
   isBaby: false,
   dexEntries: [],
-  sprites: { sprite: null, spriteShiny: null, artwork: null },
+  sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
   baseStats: { hp: 100, atk: 110, def: 90, spa: 85, spd: 90, spe: 60 },
   genderRule: "mixed",
   evolutionTargetIds: [],
@@ -103,7 +103,6 @@ describe("validateSet", () => {
         level: 100,
         shiny: false,
         happiness: 255,
-        evsConfirmed: true,
       },
       swampert,
     );
@@ -111,7 +110,7 @@ describe("validateSet", () => {
     expect(result.ok).toBe(true);
   });
 
-  it("blocks an unconfirmed EV spread even when 0/0 is numerically legal", () => {
+  it("accepts an all-zero EV spread without a separate confirmation", () => {
     const result = validateSet(
       {
         pokemonId: "swampert",
@@ -125,18 +124,15 @@ describe("validateSet", () => {
         gender: "F",
         level: 50,
         shiny: true,
-        evsConfirmed: false,
+        happiness: 255,
       },
       swampert,
     );
 
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.errors.some((error) => error.code === "evs.unconfirmed")).toBe(true);
-    }
+    expect(result.ok).toBe(true);
   });
 
-  it("treats blank EV slots as 0 and still asks for confirmation", () => {
+  it("treats blank EV slots as 0", () => {
     const result = validateSet(
       {
         pokemonId: "swampert",
@@ -150,15 +146,14 @@ describe("validateSet", () => {
         gender: "M",
         level: 50,
         shiny: false,
-        evsConfirmed: false,
+        happiness: 255,
       },
       swampert,
     );
 
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.errors.some((error) => error.code === "evs.incomplete")).toBe(false);
-      expect(result.errors.some((error) => error.code === "evs.unconfirmed")).toBe(true);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.evs).toEqual({ hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 });
     }
   });
 });

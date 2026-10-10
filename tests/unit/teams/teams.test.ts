@@ -3,8 +3,10 @@ import type { RecapCatalog } from "@/lib/recap/entries";
 import { teamShowdownText } from "@/lib/teams/export";
 import { parseStoredTeams } from "@/lib/teams/storage";
 import {
+  clampToFilledSlot,
   clearTeam,
   createEmptyTeamBox,
+  importSetsToTeam,
   removeSetFromTeam,
   moveSetToSlot,
   saveSetToNewTeam,
@@ -45,7 +47,7 @@ const catalog: RecapCatalog = {
       types: ["water", "ground"],
       dexEntries: [{ text: "It can swim while towing a large ship." }],
       baseStats: { hp: 100, atk: 110, def: 90, spa: 85, spd: 90, spe: 60 },
-      sprites: { sprite: null, spriteShiny: null, artwork: null },
+      sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     },
     {
       id: "marshtomp",
@@ -57,7 +59,7 @@ const catalog: RecapCatalog = {
       types: ["water", "ground"],
       dexEntries: [],
       baseStats: { hp: 70, atk: 85, def: 70, spa: 60, spd: 70, spe: 50 },
-      sprites: { sprite: null, spriteShiny: null, artwork: null },
+      sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     },
   ],
   abilities: [{ id: "damp", showdownName: "Damp", description: "Prevents explosive moves." }],
@@ -250,5 +252,66 @@ describe("saved teams", () => {
       ok: false,
       message: "That team is no longer saved.",
     });
+  });
+
+  it("drops onto the last filled slot when the target slot is empty", () => {
+    expect(clampToFilledSlot(5, 3)).toBe(2);
+    expect(clampToFilledSlot(1, 3)).toBe(1);
+    expect(clampToFilledSlot(-2, 3)).toBe(0);
+    expect(clampToFilledSlot(4, 0)).toBe(0);
+  });
+});
+
+describe("importing Pokémon into teams", () => {
+  const box = (): TeamBox => {
+    const first = saveSetToNewTeam(createEmptyTeamBox(), swampert);
+    if (!first.ok) {
+      throw new Error("setup failed");
+    }
+    return first.box;
+  };
+
+  it("appends to the open slots of the active team", () => {
+    const result = importSetsToTeam(box(), [marshtomp, marshtomp], "active");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.added).toBe(2);
+      expect(result.box.teams[0]?.sets.map((set) => set.pokemonId)).toEqual(["swampert", "marshtomp", "marshtomp"]);
+      expect(result.box.teams[0]?.sets[1]).not.toBe(marshtomp);
+    }
+  });
+
+  it("refuses when the pasted team does not fit and changes nothing", () => {
+    const start = box();
+    const result = importSetsToTeam(start, Array.from({ length: TEAM_SIZE }, () => marshtomp), "active");
+    expect(result).toEqual({
+      ok: false,
+      message: "Team 1 has 5 open slots, and this paste has 6 Pokémon. Save them as a new team instead.",
+    });
+    expect(start.teams[0]?.sets).toHaveLength(1);
+  });
+
+  it("saves as a new team and keeps the earlier one", () => {
+    const result = importSetsToTeam(box(), [marshtomp], "new");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.teamName).toBe("Team 2");
+      expect(result.box.teams).toHaveLength(2);
+      expect(result.box.activeTeamId).toBe(result.teamId);
+      expect(result.box.teams[0]?.sets).toHaveLength(1);
+    }
+  });
+
+  it("explains an empty box, a full team, and an empty import", () => {
+    expect(importSetsToTeam(createEmptyTeamBox(), [marshtomp], "active")).toMatchObject({ ok: false });
+    expect(importSetsToTeam(createEmptyTeamBox(), [marshtomp], "new")).toMatchObject({ ok: true });
+    expect(importSetsToTeam(box(), [], "new")).toMatchObject({ ok: false });
+    const full = importSetsToTeam(createEmptyTeamBox(), Array.from({ length: TEAM_SIZE }, () => marshtomp), "new");
+    if (full.ok) {
+      expect(importSetsToTeam(full.box, [marshtomp], "active")).toEqual({
+        ok: false,
+        message: "Team 1 is full. Save these as a new team instead.",
+      });
+    }
   });
 });

@@ -9,7 +9,8 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await results.getByRole("button").first().click();
   await page.getByRole("link", { name: "Continue to builder" }).click();
 
-  await expect(page.getByRole("heading", { name: `Build ${name}`, level: 1 })).toBeVisible();
+  // The dev server compiles and renders the builder route on first visit, which is slow under parallel load.
+  await expect(page.getByRole("heading", { name: `Build ${name}`, level: 1 })).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole("link", { name: "Back to the randomizer" })).toHaveCount(2);
   await expect(page.getByRole("spinbutton", { name: "HP EVs" })).toHaveValue("");
   await expect(page.getByRole("spinbutton", { name: "HP IVs" })).toHaveValue("31");
@@ -18,25 +19,28 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await expect(page.getByRole("slider", { name: "Happiness" })).toHaveValue("255");
   await expect(page.getByRole("combobox", { name: "Nature" })).toHaveValue("");
   await expect(page.getByRole("combobox", { name: "Tera type" })).toHaveValue("");
-  await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("");
+  await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("50");
   await expect(page.getByRole("radio", { name: "Yes", exact: true })).not.toBeChecked();
-  await expect(page.getByRole("radio", { name: "No", exact: true })).not.toBeChecked();
+  // Shiny starts at No, since the randomizer never rolls a shiny.
+  await expect(page.getByRole("radio", { name: "No", exact: true })).toBeChecked();
   await expect(page.getByRole("button", { name: "Continue to recap" })).toBeDisabled();
 
-  await page.getByRole("combobox", { name: "Ability" }).click();
+  await page.getByRole("button", { name: /^Ability:/ }).click();
   await page.getByRole("listbox", { name: "Abilities" }).getByRole("option").first().click();
 
-  for (const move of ["Tackle", "Growl", "Pound", "Scratch"]) {
-    await page.getByRole("textbox", { name: "Search moves" }).fill(move);
-    await page.getByRole("button", { name: new RegExp(`^${move},`) }).click();
+  for (const [index, move] of ["Tackle", "Growl", "Pound", "Scratch"].entries()) {
+    await page.getByRole("button", { name: `Choose move ${index + 1}` }).click();
+    await page.getByRole("combobox", { name: "Search moves" }).fill(move);
+    await page.getByRole("option", { name: new RegExp(`^${move},`) }).click();
   }
 
-  await page.getByRole("button", { name: "None", exact: true }).click();
+  await page.getByRole("button", { name: /^Held item:/ }).click();
+  await page.getByRole("option", { name: "None", exact: true }).click();
 
   for (const stat of ["HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"]) {
     await page.getByRole("spinbutton", { name: `${stat} EVs`, exact: true }).fill("0");
   }
-  await page.getByRole("checkbox", { name: "I confirm this EV spread" }).check();
+  await expect(page.getByRole("checkbox", { name: "I confirm this EV spread" })).toHaveCount(0);
   await page.getByRole("textbox", { name: "Nickname" }).fill("Ace One");
   await page.getByRole("slider", { name: "Happiness" }).fill("0");
 
@@ -44,14 +48,13 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   const natureValue = await nature.locator("option").nth(1).getAttribute("value");
   await nature.selectOption(natureValue!);
   await page.getByRole("combobox", { name: "Tera type" }).selectOption({ label: "Water" });
+  await expect(page.getByRole("combobox", { name: "Tera type" })).toHaveValue("water");
 
   const male = page.getByRole("radio", { name: "Male", exact: true });
   if ((await male.count()) > 0) {
     await male.check();
   }
 
-  await page.getByRole("spinbutton", { name: "Level" }).fill("50");
-  await page.getByRole("radio", { name: "No", exact: true }).check();
   await expect(page.getByRole("button", { name: "Continue to recap" })).toBeEnabled();
   await page.getByRole("button", { name: "Continue to recap" }).click();
   await expect(page).toHaveURL(/\/recap$/);

@@ -17,7 +17,7 @@ describe("Pokémon filter dropdown summaries", () => {
   it("describes the default filters", () => {
     expect(describeGenerationFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All generations");
     expect(describeTypeFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All types");
-    expect(describeFormTypeFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("Base forms");
+    expect(describeFormTypeFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("Base forms, Regional forms, Other formes");
     expect(describeEvolutionStageFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All stages");
     expect(describeSpecialFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All allowed");
     expect(describeMoveCategoryFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All categories");

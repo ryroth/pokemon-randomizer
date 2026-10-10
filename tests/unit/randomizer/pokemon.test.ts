@@ -33,7 +33,7 @@ function makeForm(overrides: Partial<PokemonForm> & Pick<PokemonForm, "id">): Po
     isUltraBeast: false,
     isBaby: false,
     dexEntries: [],
-    sprites: { sprite: null, spriteShiny: null, artwork: null },
+    sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
     evolutionTargetIds: [],
@@ -182,15 +182,16 @@ describe("randomizePokemon", () => {
     expect(first.seed).toBe("repeat-seed");
   });
 
-  it("uses the filtered pool, so default rolls exclude Mega formes", () => {
-    const result = randomizePokemon(pool, config({ pokemonCount: 3 }), "base-only");
+  it("uses the filtered pool, so default rolls include regional formes and exclude Mega formes", () => {
+    const result = randomizePokemon(pool, config({ pokemonCount: 4 }), "default-forms");
     const ids = result.pokemon.map((form) => form.id);
 
-    expect(result.poolSize).toBe(3);
-    expect(ids).toHaveLength(3);
-    expect(result.pokemon.every((form) => form.formType === "base")).toBe(true);
+    expect(result.poolSize).toBe(4);
+    expect(ids).toHaveLength(4);
+    expect(result.pokemon.some((form) => form.formType === "mega")).toBe(false);
     expect(ids).toContain("squirtle");
     expect(ids).toContain("bulbasaur");
+    expect(ids).toContain("raichualola");
     expect(ids.some((id) => id === "charmander" || id === "charizard")).toBe(true);
     expect(ids.includes("charmander") && ids.includes("charizard")).toBe(false);
   });

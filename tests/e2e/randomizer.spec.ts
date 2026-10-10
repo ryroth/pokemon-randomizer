@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { openFilter, waitForHydration } from "./helpers";
 
 async function clickRolledOption(list: Locator, index = 0) {
   await list.getByRole("listitem").nth(index).getByRole("button").first().click();
@@ -19,8 +20,12 @@ test("randomizer pages through previous generations and explains an empty pool",
 }) => {
   await page.goto("/randomizer");
   await expect(page.getByRole("heading", { name: "Configure your roll", level: 1 })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Generations/ })).toBeVisible();
+  // Filters start closed so the page stays quiet.
+  await expect(page.getByRole("button", { name: /^Generations/ })).toHaveAttribute("aria-expanded", "false");
   await expect(page.getByRole("button", { name: "Clear generations" })).toBeHidden();
+  await openFilter(page, "Generations");
+  await expect(page.getByRole("group", { name: "Generations" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear generations" })).toBeVisible();
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
@@ -52,7 +57,6 @@ test("randomizer pages through previous generations and explains an empty pool",
     page.getByRole("list", { name: "Current generation" }).getByRole("heading", { name: firstNames[0], level: 3 }),
   ).toHaveCount(0);
 
-  await page.getByRole("button", { name: /^Generations/ }).click();
   await expect(page.getByRole("button", { name: "Clear generations" })).toBeVisible();
   await page.getByRole("button", { name: "Clear generations" }).click();
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
@@ -69,17 +73,17 @@ test("selected Pokémon can be evolved to a later battle stage", async ({ page }
 
   await page.getByRole("spinbutton", { name: "Pokémon count" }).fill("3");
 
-  await page.getByRole("button", { name: /^Generations/ }).click();
+  await openFilter(page, "Generations");
   await page.getByRole("button", { name: "Clear generations" }).click();
   await page.getByRole("checkbox", { name: "Gen 1" }).click();
 
-  await page.getByRole("button", { name: /^Types/ }).click();
+  await openFilter(page, "Types");
   await page.getByRole("button", { name: "Clear types" }).click();
   await page.getByRole("radio", { name: "Match every selected type" }).click();
   await page.getByRole("checkbox", { name: "Grass" }).click();
   await page.getByRole("checkbox", { name: "Poison" }).click();
 
-  await page.getByRole("button", { name: /^Evolution stages/ }).click();
+  await openFilter(page, "Evolution stages");
   await page.getByRole("button", { name: "Clear evolution stages" }).click();
   await page.getByRole("checkbox", { name: "Basic" }).click();
 
@@ -177,14 +181,14 @@ test("move randomizer runs after abilities on the typical path", async ({ page }
   await expect(page.getByRole("heading", { name: /^Moves for /, level: 1 })).toBeVisible();
   await expect(page.getByRole("spinbutton", { name: "Move count" })).toHaveValue("8");
   await expect(page.getByRole("radio", { name: "2 moves per Pokémon" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /^Move categories/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Move types/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Clear categories" })).toBeHidden();
-  await page.getByRole("button", { name: /^Move categories/ }).click();
+  await openFilter(page, "Move categories");
+  await openFilter(page, "Move types");
+  await expect(page.getByRole("group", { name: "Move categories" })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Move types" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear categories" })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Physical" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Special" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Status" })).toBeChecked();
-  await page.getByRole("button", { name: /^Move types/ }).click();
   await expect(page.getByRole("checkbox", { name: "Fire" })).toBeChecked();
   await expect(page.getByText("moves match these filters")).toBeVisible();
   await expect(page.getByText(/Generate moves for .+ before continuing/)).toBeVisible();
@@ -259,9 +263,10 @@ test("move-first order lets the user apply a chosen number of moves then select 
   await expect(page.getByRole("heading", { name: "Move randomizer", level: 1 })).toBeVisible();
   await expect(page.getByRole("spinbutton", { name: "Move count" })).toHaveValue("8");
   await expect(page.getByRole("radio", { name: "4 moves per Pokémon (full moveset)" })).toBeChecked();
-  await expect(page.getByRole("button", { name: /^Move categories/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Move types/ })).toBeVisible();
-  await page.getByRole("button", { name: /^Move categories/ }).click();
+  await openFilter(page, "Move categories");
+  await openFilter(page, "Move types");
+  await expect(page.getByRole("group", { name: "Move categories" })).toBeVisible();
+  await expect(page.getByRole("group", { name: "Move types" })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Physical" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Special" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Status" })).toBeChecked();
@@ -326,7 +331,9 @@ test("item randomizer runs after moves on the typical path", async ({ page }) =>
   await page.getByRole("button", { name: /^Continue to items/ }).click();
   await expect(page.getByRole("heading", { name: /^Items for /, level: 1 })).toBeVisible();
   await expect(page.getByRole("spinbutton", { name: "Item count" })).toHaveValue("3");
-  await expect(page.getByRole("button", { name: /^Item categories/ })).toBeVisible();
+  await openFilter(page, "Item categories");
+  await openFilter(page, "Item categories");
+  await expect(page.getByRole("group", { name: "Item categories" })).toBeVisible();
   await expect(page.getByText("items match these filters")).toBeVisible();
   await expect(page.getByText(/Generate items for .+ before continuing/)).toBeVisible();
 
@@ -351,7 +358,9 @@ test("item-first order lets the user apply items then select a Pokémon", async 
   await page.getByRole("tab", { name: "Items" }).click();
   await expect(page.getByRole("heading", { name: "Item randomizer", level: 1 })).toBeVisible();
   await expect(page.getByRole("spinbutton", { name: "Item count" })).toHaveValue("3");
-  await expect(page.getByRole("button", { name: /^Item categories/ })).toBeVisible();
+  await openFilter(page, "Item categories");
+  await openFilter(page, "Item categories");
+  await expect(page.getByRole("group", { name: "Item categories" })).toBeVisible();
   await expect(page.getByText("items match these filters")).toBeVisible();
 
   await page.getByRole("button", { name: "Generate items" }).click();
@@ -386,8 +395,10 @@ test("item categories follow Showdown teambuilder groups", async ({ page }) => {
   await page.getByRole("tab", { name: "Items" }).click();
 
   await expect(page.getByRole("button", { name: /^Item categories All categories/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Clear item categories" })).toBeHidden();
-  await page.getByRole("button", { name: /^Item categories/ }).click();
+  await openFilter(page, "Item categories");
+  await openFilter(page, "Item categories");
+  await expect(page.getByRole("group", { name: "Item categories" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear item categories" })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Popular Items" })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Items", exact: true })).toBeChecked();
   await expect(page.getByRole("checkbox", { name: "Pokémon-Specific Items" })).toBeChecked();
@@ -522,15 +533,15 @@ test("re-roll keeps the current option when the remaining Pokémon pool is empty
   await page.goto("/randomizer");
 
   await page.getByRole("spinbutton", { name: "Pokémon count" }).fill("3");
-  await page.getByRole("button", { name: /^Generations/ }).click();
+  await openFilter(page, "Generations");
   await page.getByRole("button", { name: "Clear generations" }).click();
   await page.getByRole("checkbox", { name: "Gen 1" }).click();
-  await page.getByRole("button", { name: /^Types/ }).click();
+  await openFilter(page, "Types");
   await page.getByRole("button", { name: "Clear types" }).click();
   await page.getByRole("radio", { name: "Match every selected type" }).click();
   await page.getByRole("checkbox", { name: "Grass" }).click();
   await page.getByRole("checkbox", { name: "Poison" }).click();
-  await page.getByRole("button", { name: /^Evolution stages/ }).click();
+  await openFilter(page, "Evolution stages");
   await page.getByRole("button", { name: "Clear evolution stages" }).click();
   await page.getByRole("checkbox", { name: "Basic" }).click();
 
@@ -544,4 +555,110 @@ test("re-roll keeps the current option when the remaining Pokémon pool is empty
     page.getByRole("alert").filter({ hasText: "No other matching Pokémon" }),
   ).toContainText("No other matching Pokémon are left to re-roll this one");
   await expect(results.getByRole("heading", { level: 3 })).toHaveText(names);
+});
+
+test("type filters are elemental chips that show selection with a check, not color alone", async ({ page }) => {
+  await page.goto("/randomizer");
+
+  const types = await openFilter(page, "Types");
+  const fire = types.getByRole("checkbox", { name: "Fire" });
+  await expect(fire).toBeChecked();
+  await types.getByRole("button", { name: "Clear types" }).click();
+  await expect(fire).not.toBeChecked();
+  await expect(types.locator("label", { hasText: "Fire" }).locator("svg")).toHaveCount(0);
+
+  await types.locator("label", { hasText: "Fire" }).click();
+  await expect(fire).toBeChecked();
+  await expect(types.locator("label", { hasText: "Fire" }).locator("svg")).toHaveCount(1);
+  await expect(types.locator("label", { hasText: "Fire" })).toHaveCSS("background-color", "rgb(239, 68, 68)");
+});
+
+test("pipeline stages show their order and whether they run", async ({ page }) => {
+  await page.goto("/randomizer");
+
+  const steps = page.getByRole("list", { name: "Randomizer steps" });
+  await expect(steps.getByRole("listitem")).toHaveCount(4);
+  await expect(steps.getByRole("listitem").first()).toContainText("On");
+  const ability = steps.getByRole("listitem").filter({ hasText: "Ability randomizer" });
+  await expect(ability).toContainText("Off");
+  await expect(ability).toContainText("Skipped");
+  await page.getByRole("checkbox", { name: "Ability randomizer" }).check();
+  await expect(ability).toContainText("On");
+});
+
+test.describe("staged generation feedback", () => {
+  test.use({ reducedMotion: "no-preference" });
+
+  test("shows stepped progress text, then the results", async ({ page }) => {
+    await page.goto("/randomizer");
+
+    const generate = page.getByRole("button", { name: "Generate Pokémon" });
+    await waitForHydration(generate);
+
+    // Each step shows for 220 ms, which a slow test runner can miss between two polls. Record what
+    // the page shows as it changes, then check the record once the results are in.
+    await page.evaluate(() => {
+      const seen = { status: [] as string[], busy: false };
+      (window as unknown as { __generateSeen: typeof seen }).__generateSeen = seen;
+      const record = () => {
+        for (const element of document.querySelectorAll('[role="status"]')) {
+          const text = element.textContent?.trim();
+          if (text && !seen.status.includes(text)) {
+            seen.status.push(text);
+          }
+        }
+        if (document.querySelector('button[aria-busy="true"]')) {
+          seen.busy = true;
+        }
+      };
+      new MutationObserver(record).observe(document.body, {
+        subtree: true,
+        childList: true,
+        characterData: true,
+        attributes: true,
+      });
+    });
+    await generate.click();
+
+    const results = page.getByRole("list", { name: "Current generation" });
+    await expect(results.getByRole("listitem")).toHaveCount(6);
+    const seen = await page.evaluate(
+      () => (window as unknown as { __generateSeen: { status: string[]; busy: boolean } }).__generateSeen,
+    );
+    expect(seen.status.some((text) => text.includes("Scanning Pokédex"))).toBe(true);
+    expect(seen.status.some((text) => text.includes("Randomizing Pokémon"))).toBe(true);
+    expect(seen.busy).toBe(true);
+    await expect(generate).toHaveAttribute("aria-busy", "false");
+    await expect(page.getByRole("status").filter({ hasText: "Randomizing" })).toHaveCount(0);
+  });
+
+  test("a double click rolls only once", async ({ page }) => {
+    await page.goto("/randomizer");
+
+    const generate = page.getByRole("button", { name: "Generate Pokémon" });
+    await waitForHydration(generate);
+    await generate.dblclick();
+    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByRole("button", { name: "Previous generated Pokémon" })).toBeDisabled();
+  });
+});
+
+test.describe("reduced motion", () => {
+  test("skips the stepped progress and rolls at once", async ({ page }) => {
+    await page.goto("/randomizer");
+
+    await waitForHydration(page.getByRole("button", { name: "Generate Pokémon" }));
+    await page.getByRole("button", { name: "Generate Pokémon" }).click();
+    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByRole("status").filter({ hasText: "Scanning" })).toHaveCount(0);
+  });
+});
+
+test("result cards carry a type-tinted glow", async ({ page }) => {
+  await page.goto("/randomizer");
+
+  await waitForHydration(page.getByRole("button", { name: "Generate Pokémon" }));
+  await page.getByRole("button", { name: "Generate Pokémon" }).click();
+  const first = page.getByRole("list", { name: "Current generation" }).getByRole("listitem").first();
+  await expect(first.locator('[data-slot="card"]')).toHaveCSS("background-image", /radial-gradient/);
 });
