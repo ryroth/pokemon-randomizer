@@ -25,7 +25,7 @@ export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
 
   return (
     <PageFrame>
-      <header className="max-w-3xl space-y-3">
+      <header className="hero-panel max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">Teams</h1>
         <p className="text-base leading-7 text-muted-foreground">
           Each team holds up to {TEAM_SIZE} saved Pokémon. Open a saved Pokémon to see its recap and Showdown set, move it

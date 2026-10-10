@@ -22,7 +22,7 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
 
   return (
     <PageFrame width="wide">
-      <header className="max-w-3xl space-y-3">
+      <header className="hero-panel max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">Pokémon recap</h1>
         <p className="text-base leading-7 text-muted-foreground">
           Each Pokémon below is a finished set. Copy its text into Pokémon Showdown, or save it onto a team.

@@ -499,7 +499,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
 
   return (
     <PageFrame className="gap-10">
-      <header className="space-y-3">
+      <header className="hero-panel max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
         <p className="max-w-3xl text-base leading-7 text-muted-foreground">{intro}</p>
       </header>

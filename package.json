@@ -17,7 +17,8 @@
     "import:models": "tsx scripts/import/pokemon-models.ts",
     "import:genera": "tsx scripts/import/genera.ts",
     "import:dex-entries": "tsx scripts/import/dex-entries.ts",
-    "import:type-chart": "tsx scripts/import/type-chart.ts"
+    "import:type-chart": "tsx scripts/import/type-chart.ts",
+    "import:world-art": "tsx scripts/import/world-art.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -42,6 +43,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5",

@@ -16,13 +16,15 @@ export function RouteNotice({
   children?: ReactNode;
 }) {
   return (
-    <PageFrame width={width} className="gap-4">
-      <h1 className="text-h1 font-semibold tracking-tight">{title}</h1>
-      <p role={live ? "status" : undefined} className="text-base leading-7 text-muted-foreground">
-        {message}
-      </p>
-      {live ? <LoadingSprites className="mt-2" /> : null}
-      {children}
+    <PageFrame width={width}>
+      <div className="hero-panel flex flex-col gap-4">
+        <h1 className="text-h1 font-semibold tracking-tight">{title}</h1>
+        <p role={live ? "status" : undefined} className="text-base leading-7 text-muted-foreground">
+          {message}
+        </p>
+        {live ? <LoadingSprites className="mt-2" /> : null}
+        {children}
+      </div>
     </PageFrame>
   );
 }
