@@ -15,7 +15,7 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
   const { session, ready } = useRandomizerSession();
 
   if (!ready) {
-    return <RouteNotice title="Pokémon recap" message="Loading your recap…" live width="wide" />;
+    return <RouteNotice title="Pokémon Recap" message="Loading your recap…" live width="wide" />;
   }
 
   const recap = buildRecap(session, { pokemon, abilities, moves, items, natures });
@@ -23,7 +23,7 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
   return (
     <PageFrame width="wide">
       <header className="hero-panel max-w-3xl space-y-3">
-        <h1 className="text-3xl font-semibold tracking-tight">Pokémon recap</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Pokémon Recap</h1>
         <p className="text-base leading-7 text-muted-foreground">
           Each Pokémon below is a finished set. Copy its text into Pokémon Showdown, or save it onto a team.
         </p>

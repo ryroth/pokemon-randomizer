@@ -58,7 +58,7 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await expect(page.getByRole("button", { name: "Continue to recap" })).toBeEnabled();
   await page.getByRole("button", { name: "Continue to recap" }).click();
   await expect(page).toHaveURL(/\/recap$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Pokémon recap" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Pokémon Recap", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Back to the builder" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: name!, exact: true })).toBeVisible();
   await expect(page.getByRole("region", { name: name! })).toBeVisible();
