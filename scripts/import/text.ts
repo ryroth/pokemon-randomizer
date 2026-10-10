@@ -1,3 +1,5 @@
+import { dexVersion, dexVersionOrder, type DexEntryGroup } from "../../lib/data/dexVersions";
+
 export function englishName(
   names: Array<{ name: string; language: { name: string } }> | undefined,
   fallback: string,
@@ -58,6 +60,50 @@ export function uniqueEnglishFlavor(
     result.push({ version: entry.version, text: entry.text });
   }
   return result;
+}
+
+/**
+ * Every English Pokédex text, grouped by generation and oldest generation first. Games in the
+ * same generation that print identical words share one group. The same words in two different
+ * generations stay as two groups, so each generation can be read on its own. Versions this app
+ * does not know are left out and counted by the caller.
+ */
+export function englishFlavorByGeneration(entries: FlavorSource[] | undefined): {
+  groups: DexEntryGroup[];
+  unknownVersions: string[];
+} {
+  const unknown = new Set<string>();
+  const known: Array<{ version: string; generation: number; order: number; text: string }> = [];
+  for (const entry of entries ?? []) {
+    if (entry.language?.name !== "en") {
+      continue;
+    }
+    const text = flavorBody(entry);
+    const versionId = entry.version?.name ?? entry.version_group?.name;
+    if (text.length === 0 || !versionId) {
+      continue;
+    }
+    const version = dexVersion(versionId);
+    if (!version) {
+      unknown.add(versionId);
+      continue;
+    }
+    known.push({ version: versionId, generation: version.generation, order: dexVersionOrder(versionId), text });
+  }
+
+  known.sort((left, right) => left.order - right.order);
+  const groups: DexEntryGroup[] = [];
+  for (const entry of known) {
+    const existing = groups.find((group) => group.generation === entry.generation && group.text === entry.text);
+    if (existing) {
+      if (!existing.versions.includes(entry.version)) {
+        existing.versions.push(entry.version);
+      }
+      continue;
+    }
+    groups.push({ generation: entry.generation, versions: [entry.version], text: entry.text });
+  }
+  return { groups, unknownVersions: [...unknown].sort() };
 }
 
 export function officialEnglishFlavor(entries: FlavorSource[] | undefined): string {

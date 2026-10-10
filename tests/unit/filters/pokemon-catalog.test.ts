@@ -37,7 +37,7 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon filters", () => {
 
     expect(result.length).toBeGreaterThan(0);
     expect(result.length).toBeLessThan(catalog.pokemon.length);
-    expect(result.every((form) => form.formType === "base")).toBe(true);
+    expect(result.every((form) => ["base", "regional", "other"].includes(form.formType))).toBe(true);
 
     expect(ids.has(bySlug("mewtwo").id)).toBe(true);
     expect(ids.has(bySlug("articuno").id)).toBe(true);
@@ -49,17 +49,17 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon filters", () => {
     expect(ids.has(bySlug("kyogre").id)).toBe(true);
     expect(ids.has(bySlug("mew").id)).toBe(true);
 
-    expect(ids.has(bySlug("raichu-alola").id)).toBe(false);
+    expect(ids.has(bySlug("raichu-alola").id)).toBe(true);
+    expect(ids.has(bySlug("articuno-galar").id)).toBe(true);
+    expect(ids.has(bySlug("rotom-wash").id)).toBe(true);
     expect(ids.has(bySlug("venusaur-mega").id)).toBe(false);
     expect(ids.has(bySlug("charizard-mega-x").id)).toBe(false);
     expect(ids.has(bySlug("charizard-gmax").id)).toBe(false);
     expect(ids.has(bySlug("kyogre-primal").id)).toBe(false);
-    expect(ids.has(bySlug("articuno-galar").id)).toBe(false);
-    expect(ids.has(bySlug("rotom-wash").id)).toBe(false);
   });
 
   it("includes Alolan Raichu only when regional formes and gen 7 are enabled", () => {
-    const withoutRegional = idsOf(filter({ generations: [7] }));
+    const withoutRegional = idsOf(filter({ generations: [7], formTypes: ["base", "other"] }));
     expect(withoutRegional.has(bySlug("raichu-alola").id)).toBe(false);
     expect(withoutRegional.has(bySlug("nihilego").id)).toBe(true);
 

@@ -81,7 +81,7 @@ export function AbilityConfigForm({
         </p>
       ) : null}
       <p aria-live="polite" className="text-sm">
-        {poolSize} standard abilities are available.
+        <span className="font-mono tabular-nums">{poolSize}</span> standard abilities are available.
       </p>
     </fieldset>
   );

@@ -6,6 +6,7 @@ export { validateAbility, validateItem, validateNature } from "@/lib/validation/
 export { REQUIRED_MOVE_COUNT, validateMoves } from "@/lib/validation/moves";
 export {
   MAX_LEVEL,
+  DEFAULT_LEVEL,
   MIN_LEVEL,
   validateGender,
   validateHappiness,

@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import {
   builderItemPool,
   builderMovePool,
-  learnsetMoveIds,
+  learnMethodsForMove,
+  learnsetMoveIdsByMethod,
   type BuilderMoveList,
+  type LearnMethod,
+  applyDraftIvPreset,
   applySuggestedEvs,
-  canConfirmEvs,
-  confirmDraftEvs,
+  clearDraftEvs,
   finalizeBuilderSet,
   guessEvSpread,
   setDraftAbility,
@@ -30,8 +32,11 @@ import { PokemonPortrait } from "@/components/builder/pokemon-portrait";
 import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
 import { StatSpreadSheet } from "@/components/builder/stat-spread";
+import { TeraTypePicker } from "@/components/builder/tera-type-picker";
+import { TypeBadge } from "@/components/recap/type-badge";
 import { AbilityDropdown } from "@/components/builder/ability-dropdown";
 import { ItemPicker } from "@/components/builder/item-picker";
+import { NumberInput } from "@/components/builder/number-input";
 import { MovePicker } from "@/components/builder/move-picker";
 import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -44,8 +49,7 @@ import {
 } from "@/lib/builder/locks";
 import type { Ability, Item, Move, Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
-import { TERA_TYPES, TYPE_LABELS, type TeraType } from "@/lib/types/pokemon-type";
-import { DEFAULT_HAPPINESS, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, REQUIRED_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
+import { DEFAULT_HAPPINESS, DEFAULT_LEVEL, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, REQUIRED_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 const controlClass =
@@ -63,6 +67,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const router = useRouter();
   const { session, setSession, ready } = useRandomizerSession();
   const [moveList, setMoveList] = useState<BuilderMoveList>("all");
+  const [learnMethods, setLearnMethods] = useState<LearnMethod[]>([]);
 
   const pokemonById = useMemo(() => new Map(pokemon.map((form) => [form.id, form])), [pokemon]);
   const battleId = battlePokemonId(session);
@@ -89,7 +94,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const abilityPool = builderAbilityPool(battlePokemon, session);
   const movePool = builderMovePool(session, moves, {
     list: moveList,
-    learnsetIds: learnsetMoveIds(battlePokemon.id),
+    learnsetIds: learnsetMoveIdsByMethod(battlePokemon.id, learnMethods),
   });
   const itemPool = builderItemPool(session, items);
   const validation = validateSet(session.draft, battlePokemon);
@@ -128,10 +133,10 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         <Link href="/randomizer" className={cn(buttonVariants({ variant: "outline" }), "w-fit")}>
           Back to the randomizer
         </Link>
-        <h1 className="text-3xl font-semibold tracking-tight">Build {battlePokemon.displayName}</h1>
+        <h1 className="text-h1 font-semibold tracking-tight">Build {battlePokemon.displayName}</h1>
         <p className="max-w-3xl text-base leading-7 text-muted-foreground">
-          Finish the set by hand. EVs, Nature, Tera type, level, and shiny stay empty until you set
-          them. IVs start at 31. Mixed-gender Pokémon need a gender choice too.
+          Finish the set by hand. EVs, Nature, Tera type, and shiny stay empty until you set them.
+          Level starts at {DEFAULT_LEVEL} and IVs at 31. Mixed-gender Pokémon need a gender choice too.
         </p>
       </header>
 
@@ -169,9 +174,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           <p className="font-medium">{battlePokemon.displayName}</p>
           <p className="flex flex-wrap gap-1.5">
             {battlePokemon.types.map((type) => (
-              <span key={type} className="rounded-full border border-border px-2 py-0.5 text-xs">
-                {TYPE_LABELS[type]}
-              </span>
+              <TypeBadge key={type} type={type} />
             ))}
           </p>
         </div>
@@ -250,6 +253,16 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
             poolIds={movePool}
             selectedIds={session.draft.moveIds}
             lockedSlots={moveLocks}
+            pokemonTypes={battlePokemon.types}
+            learnFilter={
+              moveList === "learnset"
+                ? {
+                    methods: learnMethods,
+                    onChange: setLearnMethods,
+                    methodsFor: (moveId) => learnMethodsForMove(battlePokemon.id, moveId),
+                  }
+                : undefined
+            }
             onSelect={(slot, moveId) => {
               const current = session.draft.moveIds[slot];
               const allowed =
@@ -298,8 +311,6 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           natures={natures}
           suggestion={evSuggestion}
           evTotal={evTotal}
-          evsConfirmed={session.draft.evsConfirmed}
-          canConfirm={canConfirmEvs(session.draft.evs)}
           onEvChange={(stat, value) => setSession(setDraftEv(session, stat, value))}
           onIvChange={(stat, value) => setSession(setDraftIv(session, stat, value))}
           onNatureChange={(natureId) => setSession(setDraftNature(session, natureId, natures))}
@@ -309,34 +320,17 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
             );
             setSession(applySuggestedEvs(session, guess.evs, nature?.name, natures));
           }}
-          onConfirm={(confirmed) => setSession(confirmDraftEvs(session, confirmed))}
+          onApplyIvPreset={(presetId) => setSession(applyDraftIvPreset(session, presetId))}
+          onClearEvs={() => setSession(clearDraftEvs(session))}
         />
 
         <section className="space-y-3">
           <h2 className="text-lg font-medium">Tera, gender, level, shiny, happiness</h2>
 
-          <label className="block space-y-1.5 text-sm font-medium">
-            Tera type
-            <select
-              className={controlClass}
-              value={session.draft.teraType ?? ""}
-              onChange={(event) =>
-                setSession(
-                  setDraftTeraType(
-                    session,
-                    event.target.value ? (event.target.value as TeraType) : undefined,
-                  ),
-                )
-              }
-            >
-              <option value="">Choose a Tera type</option>
-              {TERA_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {TYPE_LABELS[type]}
-                </option>
-              ))}
-            </select>
-          </label>
+          <TeraTypePicker
+            value={session.draft.teraType}
+            onChange={(type) => setSession(setDraftTeraType(session, type))}
+          />
 
           <GenderField
             displayName={battlePokemon.displayName}
@@ -347,17 +341,12 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
 
           <label className="block max-w-xs space-y-1.5 text-sm font-medium">
             Level
-            <input
-              type="number"
-              inputMode="numeric"
+            <NumberInput
               min={MIN_LEVEL}
               max={MAX_LEVEL}
               className={controlClass}
-              value={session.draft.level ?? ""}
-              onChange={(event) => {
-                const raw = event.target.value;
-                setSession(setDraftLevel(session, raw === "" ? undefined : Number(raw)));
-              }}
+              value={session.draft.level ?? DEFAULT_LEVEL}
+              onCommit={(level) => setSession(setDraftLevel(session, level))}
             />
           </label>
 
@@ -405,17 +394,12 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
               />
               <label className="block w-full space-y-1.5 text-sm font-medium sm:w-24">
                 Happiness value
-                <input
-                  type="number"
-                  inputMode="numeric"
+                <NumberInput
                   min={MIN_HAPPINESS}
                   max={MAX_HAPPINESS}
                   className={controlClass}
                   value={session.draft.happiness ?? DEFAULT_HAPPINESS}
-                  onChange={(event) => {
-                    const raw = event.target.value;
-                    setSession(setDraftHappiness(session, raw === "" ? undefined : Number(raw)));
-                  }}
+                  onCommit={(happiness) => setSession(setDraftHappiness(session, happiness))}
                 />
               </label>
             </div>

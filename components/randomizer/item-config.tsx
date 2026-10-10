@@ -120,7 +120,7 @@ export function ItemConfigForm({
           </p>
         ) : null}
         <p aria-live="polite" className="text-sm">
-          {poolSize} {poolSize === 1 ? "item matches" : "items match"} these filters. None is
+          <span className="font-mono tabular-nums">{poolSize}</span> {poolSize === 1 ? "item matches" : "items match"} these filters. None is
           always a choice.
         </p>
       </fieldset>

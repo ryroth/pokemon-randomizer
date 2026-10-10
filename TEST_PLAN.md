@@ -22,7 +22,7 @@
 - Item category filters: Showdown teambuilder groups Popular Items, Items, Pokémon-Specific Items, Usually Useless Items, and Useless Items (all on by default; empty list matches nothing).
 - Filter combinations against the generated catalog (defaults, Alolan Raichu, Mega Venusaur, Charizard types, Primal Kyogre, Galarian Articuno).
 - Pokémon randomizer: unique overlapping evolution paths, split-branch compatibility, seed reproducibility, default pool excludes Mega, insufficient pools, invalid counts.
-- Catalog rolls: six unique base formes for a fixed seed; gen 1 + mega throws instead of a short list.
+- Catalog rolls: six unique base, regional, or other formes for a fixed seed; gen 1 + mega throws instead of a short list.
 - Evolution targets: later Showdown evos only; Charmander → Charmeleon/Charizard; Pikachu includes Alolan Raichu; Silcoon does not include Dustox; Mega/Gmax skipped.
 - Randomizer session helpers: keep earlier rolls, previous/next generation paging, select from history, ignore unknown ids, evolve the selected Pokémon or keep it.
 - Randomizer flow: custom `randomizerOrder`; skip Ability/Move/Item when off; open Ability, Move, or Item after Pokémon when on; Ability-first, Move-first, and Item-first open without a selected Pokémon; `builderAbilityPool` uses usual `abilityIds` when skipped and rolled options when on; user-applied unique extras before Pokémon; Move-before applies `movesPerPokemon` unique moves (1–4, default 4). Order tiles drag and drop (keyboard: Space to pick up, Up/Down to move, Space to drop).

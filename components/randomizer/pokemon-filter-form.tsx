@@ -16,9 +16,13 @@ import {
   SPECIAL_FLAGS,
 } from "@/components/randomizer/pokemon-filter-summary";
 import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/builder/number-input";
 import {
+  DEFAULT_SHINY_CHANCE,
   MAX_POKEMON_COUNT,
+  MAX_SHINY_CHANCE,
   MIN_POKEMON_COUNT,
+  MIN_SHINY_CHANCE,
   resetPokemonFilters,
 } from "@/lib/randomizer/defaults";
 import { TYPE_LABELS, POKEMON_TYPES } from "@/lib/types/pokemon-type";
@@ -96,7 +100,36 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
         </p>
       </fieldset>
 
-      <div className="space-y-3">
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">Shiny chance</legend>
+        <div className="flex items-center gap-2">
+          <NumberInput
+            id="shiny-chance"
+            aria-label="Shiny chance in percent"
+            aria-describedby="shiny-chance-help"
+            min={MIN_SHINY_CHANCE}
+            max={MAX_SHINY_CHANCE}
+            step="any"
+            className="h-8 w-24 rounded-lg border border-input bg-background text-center text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            value={config.shinyChance}
+            onCommit={(next) => onChange({ ...config, shinyChance: next })}
+          />
+          <span aria-hidden="true" className="text-sm text-muted-foreground">
+            %
+          </span>
+        </div>
+        <p id="shiny-chance-help" className="text-sm text-muted-foreground">
+          Each generated Pokémon rolls this chance on its own. Use {MIN_SHINY_CHANCE} to turn shiny rolls off.
+          A shiny Pokémon starts with Shiny set to Yes in the builder. Default is {DEFAULT_SHINY_CHANCE}%.
+        </p>
+        {config.shinyChance < MIN_SHINY_CHANCE || config.shinyChance > MAX_SHINY_CHANCE ? (
+          <p role="alert" className="text-sm font-medium text-destructive">
+            Choose a shiny chance between {MIN_SHINY_CHANCE}% and {MAX_SHINY_CHANCE}%.
+          </p>
+        ) : null}
+      </fieldset>
+
+      <div className="grid items-start gap-[var(--grid-gap)] md:grid-cols-2">
         <FilterDropdown label="Generations" summary={describeGenerationFilter(config)}>
           <FilterToolbar
             legend="generations"
@@ -120,7 +153,30 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
           </div>
         </FilterDropdown>
 
-        <FilterDropdown label="Types" summary={describeTypeFilter(config)}>
+        <FilterDropdown label="Evolution stages" summary={describeEvolutionStageFilter(config)}>
+          <FilterToolbar
+            legend="evolution stages"
+            onSelectAll={() => onChange({ ...config, evolutionStages: [...EVOLUTION_STAGES] })}
+            onClear={() => onChange({ ...config, evolutionStages: [] })}
+          />
+          <div className="flex flex-wrap gap-2">
+            {EVOLUTION_STAGES.map((stage) => (
+              <ToggleChip
+                key={stage}
+                label={EVOLUTION_STAGE_LABELS[stage]}
+                checked={config.evolutionStages.includes(stage)}
+                onChange={() =>
+                  onChange({
+                    ...config,
+                    evolutionStages: toggleFilterValue(config.evolutionStages, stage),
+                  })
+                }
+              />
+            ))}
+          </div>
+        </FilterDropdown>
+
+        <FilterDropdown label="Types" summary={describeTypeFilter(config)} className="md:col-span-2">
           <FilterToolbar
             legend="types"
             onSelectAll={() => onChange({ ...config, types: [...POKEMON_TYPES] })}
@@ -151,6 +207,7 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
             {POKEMON_TYPES.map((type) => (
               <ToggleChip
                 key={type}
+                type={type}
                 label={TYPE_LABELS[type]}
                 checked={config.types.includes(type)}
                 onChange={() =>
@@ -164,7 +221,7 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
         <FilterDropdown
           label="Formes"
           summary={describeFormTypeFilter(config)}
-          description="Base formes are on by default. Mega Evolutions, regional formes, Primals, Gigantamax, and other formes stay off until you enable them."
+          description="Base, regional, and other formes are on by default. Mega Evolutions, Primals, and Gigantamax stay off until you enable them."
         >
           <FilterToolbar
             legend="formes"
@@ -188,28 +245,6 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
           </div>
         </FilterDropdown>
 
-        <FilterDropdown label="Evolution stages" summary={describeEvolutionStageFilter(config)}>
-          <FilterToolbar
-            legend="evolution stages"
-            onSelectAll={() => onChange({ ...config, evolutionStages: [...EVOLUTION_STAGES] })}
-            onClear={() => onChange({ ...config, evolutionStages: [] })}
-          />
-          <div className="flex flex-wrap gap-2">
-            {EVOLUTION_STAGES.map((stage) => (
-              <ToggleChip
-                key={stage}
-                label={EVOLUTION_STAGE_LABELS[stage]}
-                checked={config.evolutionStages.includes(stage)}
-                onChange={() =>
-                  onChange({
-                    ...config,
-                    evolutionStages: toggleFilterValue(config.evolutionStages, stage),
-                  })
-                }
-              />
-            ))}
-          </div>
-        </FilterDropdown>
 
         <FilterDropdown
           label="Special classifications"
@@ -243,12 +278,14 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
         <p aria-live="polite" className="text-sm">
           {poolTooSmall ? (
             <span>
-              Only {poolSize} Pokémon match these filters. Reduce the count or broaden the filters
+              Only <span className="font-mono tabular-nums">{poolSize}</span> Pokémon match these filters. Reduce the count or broaden the filters
               before generating.
             </span>
           ) : (
             <span>
-              {poolSize} Pokémon match these filters. Ready to generate {config.pokemonCount}.
+              <span className="font-mono tabular-nums">{poolSize}</span> Pokémon match these
+              filters. Ready to generate{" "}
+              <span className="font-mono tabular-nums">{config.pokemonCount}</span>.
             </span>
           )}
         </p>

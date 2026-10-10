@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import { preferredIdleAnimation } from "@/lib/recap/animation";
-import { colorSlotsFromGlb, pairShinyColors } from "@/lib/recap/shinyColors";
 import { buildRecap, type RecapCatalog } from "@/lib/recap/entries";
 import { calculateBattleStats } from "@/lib/stats/battleStat";
 import {
+  idleModelPlan,
   loadPokemonModelIndex,
   pokemonIdleModelUrl,
+  pokemonShinyModelUrl,
   type PokemonModelIndex,
 } from "@/lib/recap/model";
 import { createInitialSession } from "@/lib/randomizer/session";
@@ -124,6 +125,34 @@ describe("pokemonIdleModelUrl", () => {
   });
 });
 
+describe("shiny 3D models", () => {
+  const bulbasaur = { id: "bulbasaur", nationalDexNumber: 1, form: "base" };
+
+  it("only returns a shiny model when a separate shiny file was published", () => {
+    expect(pokemonShinyModelUrl(bulbasaur, index)).toContain("/shiny/1.glb");
+    expect(pokemonShinyModelUrl(bulbasaur, { ...index, paths: ["regular/1.glb"] })).toBeNull();
+    expect(pokemonShinyModelUrl({ id: "raichualola", nationalDexNumber: 26, form: "Alola" }, index)).toBeNull();
+    expect(pokemonShinyModelUrl({ id: "taurospaldeacombat", nationalDexNumber: 128, form: "Paldea-Combat" }, index)).toBeNull();
+  });
+
+  it("plans the regular model for a regular Pokémon and regular plus shiny textures for a shiny one", () => {
+    expect(idleModelPlan(bulbasaur, false, index)).toEqual({
+      src: expect.stringContaining("/regular/1.glb"),
+      shinySrc: null,
+    });
+    expect(idleModelPlan(bulbasaur, true, index)).toEqual({
+      src: expect.stringContaining("/regular/1.glb"),
+      shinySrc: expect.stringContaining("/shiny/1.glb"),
+    });
+  });
+
+  it("has no plan for a shiny Pokémon without a shiny model, so the shiny picture is used", () => {
+    expect(idleModelPlan(bulbasaur, true, { ...index, paths: ["regular/1.glb"] })).toBeNull();
+    expect(idleModelPlan(bulbasaur, true, { ...index, paths: ["shiny/1.glb"] })).toBeNull();
+    expect(idleModelPlan(bulbasaur, false, { ...index, paths: [] })).toBeNull();
+  });
+});
+
 describe("buildRecap", () => {
   const catalog: RecapCatalog = {
     pokemon: [
@@ -137,7 +166,7 @@ describe("buildRecap", () => {
         types: ["water", "ground"],
         dexEntries: [{ text: "It can swim while towing a large ship." }],
         baseStats: { hp: 100, atk: 110, def: 90, spa: 85, spd: 90, spe: 60 },
-        sprites: { sprite: null, spriteShiny: "shiny.png", artwork: "art.png" },
+        sprites: { sprite: null, spriteShiny: "shiny.png", artwork: "art.png", artworkShiny: "art-shiny.png" },
       },
     ],
     abilities: [{ id: "damp", showdownName: "Damp", description: "Prevents explosive moves." }],
@@ -216,7 +245,8 @@ describe("buildRecap", () => {
         minusStat: "spa",
       }).stats,
     );
-    expect(entry?.modelUrl).toContain("/regular/260.glb");
+    expect(entry?.idleModel?.src).toContain("/regular/260.glb");
+    expect(entry?.idleModel?.shinySrc).toBeNull();
     expect(entry?.imageUrl).toBe("art.png");
     expect(entry?.showdownText).toBe(
       [
@@ -235,18 +265,41 @@ describe("buildRecap", () => {
     );
   });
 
-  it("uses the shiny model and shiny sprite when the set is shiny", () => {
-    const recap = buildRecap(sessionWith({ ...swampertSet, pokemonId: "swampert", shiny: true }), {
-      ...catalog,
-      pokemon: [{ ...catalog.pokemon[0]!, nationalDexNumber: 1, id: "swampert" }],
-    }, index);
+  function shinyEntry(overrides: Partial<RecapCatalog["pokemon"][number]>, modelIndex: PokemonModelIndex = index) {
+    const recap = buildRecap(
+      sessionWith({ ...swampertSet, pokemonId: overrides.id ?? "swampert", shiny: true }),
+      { ...catalog, pokemon: [{ ...catalog.pokemon[0]!, id: "swampert", ...overrides }] },
+      modelIndex,
+    );
     expect(recap.status).toBe("ready");
     if (recap.status !== "ready") {
-      return;
+      throw new Error("Expected a recap");
     }
-    expect(recap.entries[0]?.modelUrl).toContain("/shiny/1.glb");
-    expect(recap.entries[0]?.regularModelUrl).toContain("/regular/1.glb");
-    expect(recap.entries[0]?.imageUrl).toBe("shiny.png");
+    return recap.entries[0]!;
+  }
+
+  it("uses the shiny 3D model when the set is shiny and a shiny model exists", () => {
+    const entry = shinyEntry({ nationalDexNumber: 1 });
+    // The viewer animates the regular file, which has the idle clip, and paints the shiny file's textures on it.
+    expect(entry.idleModel?.src).toContain("/regular/1.glb");
+    expect(entry.idleModel?.shinySrc).toContain("/shiny/1.glb");
+  });
+
+  it("never shows a shiny Pokémon in a regular-colored 3D model", () => {
+    // Swampert (#260) has a regular model but no shiny model in this index.
+    const noShinyFile = shinyEntry({ nationalDexNumber: 260 });
+    expect(noShinyFile.idleModel).toBeNull();
+    // Alolan Raichu has one model for both colors, so there is nothing shiny to show in 3D.
+    const sharedFile = shinyEntry({ id: "raichualola", form: "Alola", nationalDexNumber: 26 });
+    expect(sharedFile.idleModel).toBeNull();
+  });
+
+  it("falls back to the shiny sprite, then the shiny artwork, when there is no shiny 3D model", () => {
+    const sprites = { sprite: "sprite.png", spriteShiny: "sprite-shiny.png", artwork: "art.png", artworkShiny: "art-shiny.png" };
+    expect(shinyEntry({ nationalDexNumber: 260, sprites }).imageUrl).toBe("sprite-shiny.png");
+    expect(
+      shinyEntry({ nationalDexNumber: 260, sprites: { ...sprites, spriteShiny: null } }).imageUrl,
+    ).toBe("art-shiny.png");
   });
 
   it("explains when the finished Pokémon is not in the catalog", () => {

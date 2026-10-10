@@ -15,6 +15,11 @@ import { PokemonFilterForm } from "@/components/randomizer/pokemon-filter-form";
 import { PokemonResults } from "@/components/randomizer/pokemon-results";
 import { RandomizerFlowList } from "@/components/randomizer/randomizer-flow";
 import { RandomizerTabs } from "@/components/randomizer/randomizer-tabs";
+import {
+  GenerationStatus,
+  POKEMON_GENERATE_STEPS,
+  useStagedGenerate,
+} from "@/components/randomizer/staged-generate";
 import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
 import { useRandomizerSession } from "@/components/session/session-provider";
@@ -97,6 +102,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const [abilityErrorMessage, setAbilityErrorMessage] = useState<string | null>(null);
   const [moveErrorMessage, setMoveErrorMessage] = useState<string | null>(null);
   const [itemErrorMessage, setItemErrorMessage] = useState<string | null>(null);
+  // Cards that were just rolled come out of a ball. Each reveal plays once.
+  const [revealTokens, setRevealTokens] = useState<ReadonlyMap<string, number>>(new Map());
+  const revealCounter = useRef(0);
   const resultsRef = useRef<HTMLDivElement>(null);
   const evolutionRef = useRef<HTMLDivElement>(null);
   const latestSeed = session.pokemonRolls[0]?.seed;
@@ -302,6 +310,19 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
     evolutionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [session.selectedPokemonId, session.tab]);
 
+  /** A new roll reveals every card. A reroll adds only the replacement and leaves the others alone. */
+  function startReveal(ids: readonly string[], keepOthers = false) {
+    revealCounter.current += 1;
+    const token = revealCounter.current;
+    setRevealTokens((current) => {
+      const next = new Map(keepOthers ? current : []);
+      for (const id of ids) {
+        next.set(id, token);
+      }
+      return next;
+    });
+  }
+
   function clearExtraErrors() {
     setAbilityErrorMessage(null);
     setMoveErrorMessage(null);
@@ -312,11 +333,14 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
     try {
       const result = randomizePokemon(pokemon, session.config, createSeed());
       setSession(applyPokemonRoll(session, result));
+      startReveal(result.pokemon.map((form) => form.id));
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage(userFacingRandomizerMessage(error));
     }
   }
+
+  const stagedPokemon = useStagedGenerate(POKEMON_GENERATE_STEPS, handleGenerate);
 
   function handleGenerateAbilities() {
     if (!abilityBeforePokemon && !chosenBattlePokemonId) {
@@ -378,7 +402,10 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
       if (!replacement) {
         return;
       }
-      setSession(replaceRolledPokemon(session, pokemonId, replacement.id));
+      setSession(
+        replaceRolledPokemon(session, pokemonId, replacement.id, result.shinyIds.includes(replacement.id)),
+      );
+      startReveal([replacement.id], true);
       setErrorMessage(null);
     } catch (error) {
       setErrorMessage(userFacingRandomizerMessage(error));
@@ -692,7 +719,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                 className="space-y-8"
                 onSubmit={(event) => {
                   event.preventDefault();
-                  handleGenerate();
+                  stagedPokemon.start();
                 }}
               >
                 <PokemonFilterForm
@@ -739,10 +766,21 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                   </p>
                 ) : null}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <Button type="submit" size="lg">
+                  <Button
+                    type="submit"
+                    size="lg"
+                    aria-disabled={stagedPokemon.busy}
+                    aria-busy={stagedPokemon.busy}
+                    className="aria-disabled:opacity-60"
+                  >
                     <Shuffle />
                     Generate Pokémon
                   </Button>
+                  <GenerationStatus
+                    label={stagedPokemon.stepLabel}
+                    stepIndex={stagedPokemon.stepIndex}
+                    stepCount={stagedPokemon.stepCount}
+                  />
                   {generationCount > 0 ? (
                     <a
                       href="#generated-pokemon"
@@ -784,6 +822,8 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               showPokedexEntry={session.config.showPokedexEntry}
               generationNumber={generationNumber}
               generationCount={generationCount}
+              revealTokens={revealTokens}
+              shinyIds={viewedRoll?.shinyPokemonIds}
               onSelect={(pokemonId) => {
                 clearExtraErrors();
                 setSession(selectRolledPokemon(session, pokemonId));

@@ -47,7 +47,7 @@ function makeForm(
     isUltraBeast: false,
     isBaby: false,
     dexEntries: [],
-    sprites: { sprite: null, spriteShiny: null, artwork: null },
+    sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
     evolutionTargetIds: [],

@@ -29,7 +29,7 @@ function makeForm(overrides: Partial<PokemonForm> & Pick<PokemonForm, "id">): Po
     isUltraBeast: false,
     isBaby: false,
     dexEntries: [],
-    sprites: { sprite: null, spriteShiny: null, artwork: null },
+    sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
     evolutionTargetIds: [],
@@ -126,11 +126,19 @@ const pool = [
 ];
 
 describe("filterPokemonForms", () => {
-  it("uses default config: base formes only, all specials allowed", () => {
+  it("uses default config: base, regional, and other formes, all specials allowed", () => {
     const result = filterPokemonForms(pool, DEFAULT_RANDOMIZER_CONFIG);
 
-    expect(ids(result)).toEqual(["charizard", "charmander", "mewtwo", "dragonite", "walkingwake"]);
-    expect(result.every((form) => form.formType === "base")).toBe(true);
+    expect(ids(result)).toEqual([
+      "charizard",
+      "charmander",
+      "raichualola",
+      "mewtwo",
+      "dragonite",
+      "walkingwake",
+      "rotomwash",
+    ]);
+    expect(result.some((form) => form.formType === "mega")).toBe(false);
   });
 
   it("filters by generation", () => {
@@ -177,7 +185,7 @@ describe("filterPokemonForms", () => {
   it("filters by evolution stage", () => {
     const result = filterPokemonForms(pool, filterConfig({ evolutionStages: ["stage2"] }));
 
-    expect(ids(result)).toEqual(["charizard", "dragonite"]);
+    expect(ids(result)).toEqual(["charizard", "raichualola", "dragonite"]);
   });
 
   it("excludes special classifications independently", () => {
@@ -190,7 +198,7 @@ describe("filterPokemonForms", () => {
       }),
     );
 
-    expect(ids(result)).toEqual(["charizard", "charmander"]);
+    expect(ids(result)).toEqual(["charizard", "charmander", "raichualola", "rotomwash"]);
     expect(ids(result)).not.toContain("mewtwo");
     expect(ids(result)).not.toContain("dragonite");
     expect(ids(result)).not.toContain("walkingwake");
@@ -220,7 +228,15 @@ describe("filterPokemonForms", () => {
 
   it("preserves catalog order", () => {
     const result = filterPokemonForms(pool, DEFAULT_RANDOMIZER_CONFIG);
-    expect(ids(result)).toEqual(["charizard", "charmander", "mewtwo", "dragonite", "walkingwake"]);
+    expect(ids(result)).toEqual([
+      "charizard",
+      "charmander",
+      "raichualola",
+      "mewtwo",
+      "dragonite",
+      "walkingwake",
+      "rotomwash",
+    ]);
   });
 });
 

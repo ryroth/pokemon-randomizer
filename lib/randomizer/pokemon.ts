@@ -12,6 +12,7 @@ import {
 import { InvalidAbilityCountError } from "@/lib/randomizer/abilities";
 import { InvalidItemCountError } from "@/lib/randomizer/items";
 import { InvalidMoveCountError } from "@/lib/randomizer/moves";
+import { assertShinyChance, InvalidShinyChanceError, rollShinyIds } from "@/lib/randomizer/shiny";
 import {
   createRng,
   InsufficientPoolError,
@@ -37,6 +38,8 @@ export interface PokemonRandomizerResult {
   seed: string;
   poolSize: number;
   pokemon: PokemonForm[];
+  /** Ids from `pokemon` that rolled shiny. */
+  shinyIds: string[];
 }
 
 export function assertPokemonCount(count: number): void {
@@ -59,6 +62,7 @@ export function randomizePokemon(
   seed: string,
 ): PokemonRandomizerResult {
   assertPokemonCount(config.pokemonCount);
+  assertShinyChance(config.shinyChance);
 
   const context = evolutionConflictContext(pokemon);
   const pool = filterPokemonForms(pokemon, config);
@@ -69,6 +73,7 @@ export function randomizePokemon(
     seed,
     poolSize,
     pokemon: rolled,
+    shinyIds: rollShinyIds(rolled, config.shinyChance, seed),
   };
 }
 
@@ -80,6 +85,7 @@ export function rerollPokemon(
   seed: string,
 ): PokemonRandomizerResult {
   assertPokemonCount(config.pokemonCount);
+  assertShinyChance(config.shinyChance);
 
   const context = evolutionConflictContext(pokemon);
   const pool = filterPokemonForms(pokemon, config);
@@ -109,6 +115,7 @@ export function rerollPokemon(
     seed,
     poolSize: candidates.length,
     pokemon: [replacement],
+    shinyIds: rollShinyIds([replacement], config.shinyChance, seed),
   };
 }
 
@@ -159,6 +166,7 @@ function pickCompatiblePokemon(
 export function userFacingRandomizerMessage(error: unknown): string {
   if (
     error instanceof InvalidPokemonCountError ||
+    error instanceof InvalidShinyChanceError ||
     error instanceof InvalidAbilityCountError ||
     error instanceof InvalidItemCountError ||
     error instanceof InvalidMoveCountError

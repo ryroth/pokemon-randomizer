@@ -1,15 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RerollButton } from "@/components/randomizer/reroll-button";
+import { TypeBadge } from "@/components/recap/type-badge";
+import { DexEntryCycler } from "@/components/dex/dex-entry-cycler";
+import { BallBadge, PokeballReveal } from "@/components/randomizer/pokeball";
+import { typeGlow } from "@/components/type-colors";
+import { baseStatTotal, ballForPokemon } from "@/lib/randomizer/ball";
 import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/randomizer/applyExtras";
 import { NONE_ITEM_ID, NONE_ITEM_SELECT_VALUE } from "@/lib/randomizer/items";
 import { filledMoveCount } from "@/lib/randomizer/session";
+import { cardImage } from "@/lib/recap/entries";
 import type { Ability, Item, Move } from "@/lib/types/catalog-entities";
-import { TYPE_LABELS } from "@/lib/types/pokemon-type";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import { FORM_TYPE_LABELS } from "@/lib/types/taxonomy";
 import { cn } from "@/lib/utils";
@@ -30,6 +35,10 @@ interface PokemonResultsProps {
   showPokedexEntry: boolean;
   generationNumber: number;
   generationCount: number;
+  /** Cards that were just rolled come out of a ball. Maps a Pokémon to the roll that revealed it. */
+  revealTokens?: ReadonlyMap<string, number>;
+  /** Pokémon in this roll that came up shiny. */
+  shinyIds?: readonly string[];
   onSelect: (pokemonId: string) => void;
   onApplyAbility?: (pokemonId: string, abilityId: string | undefined) => void;
   onApplyMove?: (pokemonId: string, slotIndex: number, moveId: string | undefined) => void;
@@ -55,6 +64,8 @@ export function PokemonResults({
   showPokedexEntry,
   generationNumber,
   generationCount,
+  revealTokens,
+  shinyIds,
   onSelect,
   onApplyAbility,
   onApplyMove,
@@ -145,10 +156,14 @@ export function PokemonResults({
         aria-label={isCurrent ? "Current generation" : `Generation ${generationNumber}`}
         className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {pokemon.map((form) => {
+        {pokemon.map((form, position) => {
           const selected = form.id === selectedPokemonId;
           const dexText = form.dexEntries[0]?.text;
-          const imageSrc = form.sprites.artwork ?? form.sprites.sprite;
+          const ball = ballForPokemon(form);
+          const revealToken = revealTokens?.get(form.id);
+          const playKey = revealToken === undefined ? undefined : `${revealToken}:${form.id}`;
+          const shiny = shinyIds?.includes(form.id) ?? false;
+          const imageSrc = cardImage(form, shiny);
           const appliedAbilityId = appliedAbilityIds?.[form.id];
           const appliedAbility = abilityChoicesByPokemon?.[form.id]?.find(
             (ability) => ability.id === appliedAbilityId,
@@ -169,12 +184,14 @@ export function PokemonResults({
           const itemChoices = itemChoicesByPokemon?.[form.id] ?? [];
 
           return (
-            <li key={form.id}>
+            <li key={playKey ?? form.id}>
+              <PokeballReveal kind={ball} playKey={playKey} index={position}>
               <Card
                 className={cn(
                   "flex h-full flex-col",
                   selected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
                 )}
+                style={{ backgroundImage: typeGlow(form.types) }}
               >
                 <button
                   type="button"
@@ -199,12 +216,23 @@ export function PokemonResults({
                         </div>
                       )}
                     </div>
-                    <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                      #{String(form.nationalDexNumber).padStart(4, "0")} · Gen {form.generation}
+                    <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                      <span>
+                        #{String(form.nationalDexNumber).padStart(4, "0")} · Gen {form.generation}
+                      </span>
+                      <span aria-hidden="true">·</span>
+                      <span className="font-mono tabular-nums">BST {baseStatTotal(form.baseStats)}</span>
+                      <BallBadge kind={ball} />
                     </p>
                     <CardTitle>
                       <h3 className="contents">{form.displayName}</h3>
                     </CardTitle>
+                    {shiny ? (
+                      <p className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-500 bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-950 dark:border-amber-400 dark:bg-amber-950 dark:text-amber-100">
+                        <Sparkles aria-hidden="true" className="size-3.5" />
+                        Shiny
+                      </p>
+                    ) : null}
                     {selected ? (
                       <p className="text-sm font-medium text-primary">Selected</p>
                     ) : canSelect ? (
@@ -222,12 +250,7 @@ export function PokemonResults({
                   <CardContent className="space-y-3">
                     <p className="flex flex-wrap gap-1.5">
                       {form.types.map((type) => (
-                        <span
-                          key={type}
-                          className="rounded-full border border-border px-2 py-0.5 text-xs"
-                        >
-                          {TYPE_LABELS[type]}
-                        </span>
+                        <TypeBadge key={type} type={type} />
                       ))}
                       {form.formType !== "base" ? (
                         <span className="rounded-full border border-border px-2 py-0.5 text-xs">
@@ -264,11 +287,17 @@ export function PokemonResults({
                           </span>
                         ))}
                     </p>
-                    {showPokedexEntry && dexText ? (
-                      <p className="text-sm leading-6 text-muted-foreground">{dexText}</p>
-                    ) : null}
                   </CardContent>
                 </button>
+                {showPokedexEntry ? (
+                  <div className="px-6 pb-4">
+                    <DexEntryCycler
+                      speciesId={form.speciesId}
+                      name={form.displayName}
+                      fallbackText={dexText ?? null}
+                    />
+                  </div>
+                ) : null}
                 {onApplyAbility ? (
                   <div className="border-t border-border px-6 py-4">
                     <label className="block space-y-1 text-sm">
@@ -365,6 +394,7 @@ export function PokemonResults({
                 ) : null}
                 <RerollButton name={form.displayName} onClick={() => onReroll(form.id)} />
               </Card>
+              </PokeballReveal>
             </li>
           );
         })}

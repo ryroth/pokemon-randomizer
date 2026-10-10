@@ -23,7 +23,6 @@ export interface PokemonSetDraft {
   nickname?: string;
   /** 0–255. Defaults to 255 when the builder opens. */
   happiness?: number;
-  evsConfirmed: boolean;
 }
 
 export interface PokemonSet {
@@ -47,6 +46,8 @@ export type AppStep = "configure" | "results" | "builder" | "recap";
 export interface PokemonRoll {
   seed: string;
   pokemonIds: string[];
+  /** Ids from `pokemonIds` that rolled shiny. Missing in sessions saved before shiny rolls existed. */
+  shinyPokemonIds?: string[];
   appliedAbilityIds?: Array<string | undefined>;
   appliedMoveIds?: Array<Array<string | undefined>>;
   appliedItemIds?: Array<string | null | undefined>;

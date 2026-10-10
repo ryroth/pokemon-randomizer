@@ -6,8 +6,8 @@ import {
 } from "@/lib/randomizer/defaults";
 
 describe("DEFAULT_RANDOMIZER_CONFIG", () => {
-  it("enables only base formes by default", () => {
-    expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base"]);
+  it("enables base, regional, and other formes by default", () => {
+    expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base", "regional", "other"]);
   });
 });
 
@@ -21,7 +21,7 @@ describe("cloneRandomizerConfig", () => {
     clone.itemCategories.pop();
     clone.randomizerOrder.pop();
 
-    expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base"]);
+    expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base", "regional", "other"]);
     expect(DEFAULT_RANDOMIZER_CONFIG.generations).toHaveLength(9);
     expect(DEFAULT_RANDOMIZER_CONFIG.moveCategories).toEqual([
       "physical",
@@ -63,7 +63,7 @@ describe("resetPokemonFilters", () => {
 
     expect(reset.pokemonCount).toBe(6);
     expect(reset.generations).toEqual(DEFAULT_RANDOMIZER_CONFIG.generations);
-    expect(reset.formTypes).toEqual(["base"]);
+    expect(reset.formTypes).toEqual(["base", "regional", "other"]);
     expect(reset.allowLegendary).toBe(true);
     expect(reset.randomizeAbilities).toBe(true);
     expect(reset.abilityCount).toBe(5);

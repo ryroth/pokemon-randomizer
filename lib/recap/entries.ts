@@ -1,5 +1,5 @@
 import { speciesGenus } from "@/lib/data/genera";
-import { pokemonIdleModelUrl, formatDexNumber, type PokemonModelIndex } from "@/lib/recap/model";
+import { formatDexNumber, idleModelPlan, type IdleModelPlan, type PokemonModelIndex } from "@/lib/recap/model";
 import { exportShowdownSet } from "@/lib/showdown/exportSet";
 import { calculateBattleStats, type CalculatedStat } from "@/lib/stats/battleStat";
 import type { MoveCategory } from "@/lib/types/catalog-entities";
@@ -22,6 +22,7 @@ export interface RecapPokemon {
     sprite: string | null;
     spriteShiny: string | null;
     artwork: string | null;
+    artworkShiny: string | null;
   };
 }
 
@@ -76,6 +77,8 @@ export interface RecapMoveView {
 /** One Pokémon that will be pasted into Pokémon Showdown. */
 export interface RecapEntry {
   pokemonId: string;
+  /** Species whose Pokédex entries from every generation can be shown. */
+  speciesId: string;
   speciesName: string;
   /** English PokéAPI genus, such as EleFish Pokémon. */
   genus: string | null;
@@ -83,9 +86,12 @@ export interface RecapEntry {
   dexNumber: string;
   types: PokemonType[];
   dexText: string | null;
-  modelUrl: string | null;
-  /** Non-shiny model. The viewer animates this file and, when the materials match, paints the shiny textures onto it. */
-  regularModelUrl: string | null;
+  /**
+   * The 3D model to animate, or null when there is none to show. A shiny Pokémon only gets one
+   * when a shiny model exists, so it never appears in regular colors.
+   */
+  idleModel: IdleModelPlan | null;
+  /** The picture used when there is no 3D model: shiny sprite, then shiny artwork, for a shiny Pokémon. */
   imageUrl: string | null;
   abilityName: string;
   abilityDescription: string;
@@ -156,20 +162,16 @@ export function buildRecapEntry(
 
   return {
     pokemonId: pokemon.id,
+    speciesId: pokemon.speciesId,
     speciesName: pokemon.displayName,
     genus: speciesGenus(pokemon.speciesId),
     nickname,
     dexNumber: formatDexNumber(pokemon.nationalDexNumber),
     types: pokemon.types,
     dexText,
-    modelUrl: pokemonIdleModelUrl(
+    idleModel: idleModelPlan(
       { id: pokemon.id, nationalDexNumber: pokemon.nationalDexNumber, form: pokemon.form },
       set.shiny,
-      index,
-    ),
-    regularModelUrl: pokemonIdleModelUrl(
-      { id: pokemon.id, nationalDexNumber: pokemon.nationalDexNumber, form: pokemon.form },
-      false,
       index,
     ),
     imageUrl: fallbackImage(pokemon, set.shiny),
@@ -236,9 +238,24 @@ function resolveMoves(
   return null;
 }
 
-function fallbackImage(pokemon: RecapPokemon, shiny: boolean): string | null {
+/**
+ * The picture shown when there is no usable 3D model. A shiny Pokémon uses the shiny sprite, then
+ * the shiny artwork, and only uses a regular-colored picture when neither shiny picture exists.
+ * A regular Pokémon uses the official artwork, then the small sprite.
+ */
+export function fallbackImage(pokemon: Pick<RecapPokemon, "sprites">, shiny: boolean): string | null {
+  const { sprite, spriteShiny, artwork, artworkShiny } = pokemon.sprites;
   if (shiny) {
-    return pokemon.sprites.spriteShiny ?? pokemon.sprites.artwork ?? pokemon.sprites.sprite;
+    return spriteShiny ?? artworkShiny ?? artwork ?? sprite;
   }
-  return pokemon.sprites.artwork ?? pokemon.sprites.sprite;
+  return artwork ?? sprite;
+}
+
+/** The large picture for a result card, where no 3D model is shown: artwork first, in the matching colors. */
+export function cardImage(pokemon: Pick<RecapPokemon, "sprites">, shiny: boolean): string | null {
+  const { sprite, spriteShiny, artwork, artworkShiny } = pokemon.sprites;
+  if (shiny) {
+    return artworkShiny ?? spriteShiny ?? artwork ?? sprite;
+  }
+  return artwork ?? sprite;
 }

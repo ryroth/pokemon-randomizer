@@ -1,8 +1,7 @@
 "use client";
 
-import { Shuffle } from "lucide-react";
 import { RerollButton } from "@/components/randomizer/reroll-button";
-import { Button } from "@/components/ui/button";
+import { ITEM_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NONE_ITEM_ID } from "@/lib/randomizer/items";
 import { ITEM_CATEGORY_LABELS, type Item } from "@/lib/types/catalog-entities";
@@ -39,10 +38,7 @@ export function ItemResults({
           {errorMessage}
         </p>
       ) : null}
-      <Button type="button" size="lg" onClick={onGenerate}>
-        <Shuffle />
-        Generate items
-      </Button>
+      <GenerateButton label="Generate items" steps={ITEM_GENERATE_STEPS} onGenerate={onGenerate} />
       {items.length > 0 ? (
         <ul
           aria-label="Generated items"

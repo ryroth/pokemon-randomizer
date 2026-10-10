@@ -16,6 +16,8 @@ export type RandomizerTab = "pokemon" | "ability" | "move" | "item";
 
 export interface RandomizerConfig {
   pokemonCount: number;
+  /** Percent chance (0–100) that each rolled Pokémon is shiny. */
+  shinyChance: number;
   generations: Generation[];
   types: PokemonType[];
   typeMatchMode: TypeMatchMode;

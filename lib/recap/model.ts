@@ -99,6 +99,52 @@ export function pokemonIdleModelUrl(
   return `https://raw.githubusercontent.com/Pokemon-3D-api/assets/${index.commit}/models/opt/${chosen}`;
 }
 
+/**
+ * The shiny 3D model, only when a separate shiny file was published for this forme. It never
+ * falls back to the regular model, because that would show regular colors for a shiny Pokémon.
+ */
+export function pokemonShinyModelUrl(
+  form: ModelFormRef,
+  index: PokemonModelIndex = loadPokemonModelIndex(),
+): string | null {
+  const shinyPath = pokemonModelRelativePath(form, true);
+  if (shinyPath === null || shinyPath === pokemonModelRelativePath(form, false)) {
+    return null;
+  }
+  return availablePaths(index).has(shinyPath) ? modelUrl(index, shinyPath) : null;
+}
+
+/**
+ * How to show a Pokémon in 3D. The viewer always animates `src`, the regular model, because the
+ * shiny files carry no idle clip. For a shiny Pokémon `shinySrc` is the shiny file whose
+ * textures are painted on. Shiny with no shiny file has no plan, so the page uses the shiny
+ * sprite or artwork instead of showing regular colors.
+ */
+export interface IdleModelPlan {
+  src: string;
+  shinySrc: string | null;
+}
+
+export function idleModelPlan(
+  form: ModelFormRef,
+  shiny: boolean,
+  index: PokemonModelIndex = loadPokemonModelIndex(),
+): IdleModelPlan | null {
+  const src = pokemonIdleModelUrl(form, false, index);
+  if (!src) {
+    return null;
+  }
+  if (!shiny) {
+    return { src, shinySrc: null };
+  }
+  const shinySrc = pokemonShinyModelUrl(form, index);
+  return shinySrc ? { src, shinySrc } : null;
+}
+
+function modelUrl(index: PokemonModelIndex, relativePath: string): string {
+  return `https://raw.githubusercontent.com/Pokemon-3D-api/assets/${index.commit}/models/opt/${relativePath}`;
+}
+
 function availablePaths(index: PokemonModelIndex): ReadonlySet<string> {
   const existing = pathSets.get(index);
   if (existing) {

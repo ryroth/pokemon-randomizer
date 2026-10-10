@@ -14,6 +14,7 @@ import {
   clearPokemonRolls,
   createInitialSession,
   startNextRandomizer,
+  isRolledShiny,
   itemChoicesForPokemon,
   moveChoicesForPokemon,
   openRandomizerTab,
@@ -66,7 +67,7 @@ function makeForm(id: string): PokemonForm {
     isUltraBeast: false,
     isBaby: false,
     dexEntries: [],
-    sprites: { sprite: null, spriteShiny: null, artwork: null },
+    sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
     evolutionTargetIds: [],
@@ -135,7 +136,7 @@ describe("randomizer session helpers", () => {
     expect(session.resultPokemonIds).toEqual([]);
     expect(session.pokemonRolls).toEqual([]);
     expect(session.viewedRollIndex).toBe(0);
-    expect(session.config.formTypes).toEqual(["base"]);
+    expect(session.config.formTypes).toEqual(["base", "regional", "other"]);
     expect(session.config.randomizeAbilities).toBe(false);
     expect(session.abilityOptions).toEqual([]);
     expect(session.draft.moveIds).toHaveLength(4);
@@ -208,6 +209,134 @@ describe("randomizer session helpers", () => {
     expect(rolledPokemonIds(rerolled)).toEqual(["c", "d", "a", "b"]);
   });
 
+  it("clears Tera type, gender, shiny, and nickname when a different Pokémon is selected or rolled", () => {
+    const rolled = applyPokemonRoll(createInitialSession(), {
+      seed: "abc",
+      poolSize: 10,
+      pokemon: [makeForm("a"), makeForm("b")],
+    });
+    const built = selectRolledPokemon(rolled, "a");
+    const customized = {
+      ...built,
+      draft: {
+        ...built.draft,
+        teraType: "water" as const,
+        gender: "F" as const,
+        shiny: true,
+        nickname: "Ace",
+      },
+    };
+
+    const switched = selectRolledPokemon(customized, "b");
+    expect(switched.draft.nickname).toBeUndefined();
+    expect(switched.draft.teraType).toBeUndefined();
+    expect(switched.draft.gender).toBeUndefined();
+    expect(switched.draft.shiny).toBeUndefined();
+
+    // Picking the same Pokémon again keeps what was chosen.
+    const same = selectRolledPokemon(customized, "a");
+    expect(same.draft.nickname).toBe("Ace");
+    expect(same.draft.teraType).toBe("water");
+    expect(same.draft.gender).toBe("F");
+    expect(same.draft.shiny).toBe(true);
+
+    const rerolled = applyPokemonRoll(customized, {
+      seed: "def",
+      poolSize: 10,
+      pokemon: [makeForm("a"), makeForm("c")],
+    });
+    expect(rerolled.draft.nickname).toBeUndefined();
+    expect(rerolled.draft.teraType).toBeUndefined();
+    expect(rerolled.draft.gender).toBeUndefined();
+    expect(rerolled.draft.shiny).toBeUndefined();
+
+    const cleared = clearPokemonRolls(customized);
+    expect(cleared.draft.teraType).toBeUndefined();
+    expect(cleared.draft.gender).toBeUndefined();
+    expect(cleared.draft.shiny).toBeUndefined();
+  });
+
+  it("starts a shiny-rolled Pokémon with Shiny set to Yes, and others without it", () => {
+    const rolled = applyPokemonRoll(createInitialSession(), {
+      seed: "abc",
+      poolSize: 10,
+      pokemon: [makeForm("a"), makeForm("b")],
+      shinyIds: ["b"],
+    });
+    expect(rolled.pokemonRolls[0]?.shinyPokemonIds).toEqual(["b"]);
+    expect(isRolledShiny(rolled, "a")).toBe(false);
+    expect(isRolledShiny(rolled, "b")).toBe(true);
+
+    expect(selectRolledPokemon(rolled, "b").draft.shiny).toBe(true);
+    expect(selectRolledPokemon(rolled, "a").draft.shiny).toBeUndefined();
+
+    // Moving from the shiny one to a regular one drops the shiny default.
+    expect(selectRolledPokemon(selectRolledPokemon(rolled, "b"), "a").draft.shiny).toBeUndefined();
+    // Picking the shiny one again keeps what the user chose after that.
+    const optedOut = selectRolledPokemon(rolled, "b");
+    optedOut.draft.shiny = false;
+    expect(selectRolledPokemon(optedOut, "b").draft.shiny).toBe(false);
+  });
+
+  it("keeps a rolled shiny when the Pokémon evolves, and sets it for a kept selection on a new roll", () => {
+    const base = { ...makeForm("a"), evolutionTargetIds: ["a2"] };
+    const later = makeForm("a2");
+    const selected = selectRolledPokemon(
+      applyPokemonRoll(createInitialSession(), {
+        seed: "abc",
+        poolSize: 10,
+        pokemon: [base],
+        shinyIds: ["a"],
+      }),
+      "a",
+    );
+    const evolved = chooseEvolvedPokemon(selected, base, later.id);
+    expect(evolved.draft.shiny).toBe(true);
+    expect(evolved.draft.pokemonId).toBe("a2");
+
+    const rolledAgain = applyPokemonRoll(evolved, {
+      seed: "def",
+      poolSize: 10,
+      pokemon: [makeForm("a"), makeForm("c")],
+      shinyIds: [],
+    });
+    expect(rolledAgain.selectedPokemonId).toBe("a");
+    expect(rolledAgain.draft.shiny).toBeUndefined();
+  });
+
+  it("re-rolls shiny with a replaced Pokémon", () => {
+    const rolled = applyPokemonRoll(createInitialSession(), {
+      seed: "abc",
+      poolSize: 10,
+      pokemon: [makeForm("a"), makeForm("b")],
+      shinyIds: ["a"],
+    });
+
+    const toShiny = replaceRolledPokemon(rolled, "b", "c", true);
+    expect(toShiny.pokemonRolls[0]?.shinyPokemonIds?.sort()).toEqual(["a", "c"]);
+
+    const toPlain = replaceRolledPokemon(rolled, "a", "d", false);
+    expect(toPlain.pokemonRolls[0]?.shinyPokemonIds).toEqual([]);
+    expect(isRolledShiny(toPlain, "a")).toBe(false);
+
+    // Replacing the selected Pokémon selects the replacement with its own shiny result.
+    const selected = selectRolledPokemon(rolled, "a");
+    expect(selected.draft.shiny).toBe(true);
+    const swapped = replaceRolledPokemon(selected, "a", "e", false);
+    expect(swapped.selectedPokemonId).toBe("e");
+    expect(swapped.draft.shiny).toBeUndefined();
+  });
+
+  it("treats a roll saved before shiny rolls existed as not shiny", () => {
+    const rolled = applyPokemonRoll(createInitialSession(), {
+      seed: "abc",
+      poolSize: 10,
+      pokemon: [makeForm("a")],
+    });
+    delete rolled.pokemonRolls[0]?.shinyPokemonIds;
+    expect(isRolledShiny(rolled, "a")).toBe(false);
+  });
+
   it("clears EVs and Nature when a new Pokémon is rolled or selected", () => {
     const trained = selectRolledPokemon(
       applyPokemonRoll(createInitialSession(), {
@@ -219,7 +348,6 @@ describe("randomizer session helpers", () => {
     );
     trained.draft.evs = { atk: 252, spe: 252 };
     trained.draft.natureId = "jolly";
-    trained.draft.evsConfirmed = true;
 
     const rerolled = applyPokemonRoll(trained, {
       seed: "def",
@@ -228,18 +356,16 @@ describe("randomizer session helpers", () => {
     });
     expect(rerolled.draft.evs).toBeUndefined();
     expect(rerolled.draft.natureId).toBeUndefined();
-    expect(rerolled.draft.evsConfirmed).toBe(false);
 
     const switched = selectRolledPokemon(
       {
         ...trained,
-        draft: { ...trained.draft, evs: { hp: 4 }, natureId: "adamant", evsConfirmed: true },
+        draft: { ...trained.draft, evs: { hp: 4 }, natureId: "adamant" },
       },
       "b",
     );
     expect(switched.draft.evs).toBeUndefined();
     expect(switched.draft.natureId).toBeUndefined();
-    expect(switched.draft.evsConfirmed).toBe(false);
   });
 
   it("allows selecting a Pokémon from an earlier roll", () => {
@@ -357,7 +483,7 @@ describe("randomizer session helpers", () => {
   it("does not mutate the default config arrays", () => {
     const session = createInitialSession();
     session.config.formTypes.push("mega");
-    expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base"]);
+    expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base", "regional", "other"]);
   });
 
   it("stores an ability roll only for the current battle Pokémon", () => {

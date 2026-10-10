@@ -84,7 +84,7 @@ function StatReadout({ stat, ev }: { stat: CalculatedStat; ev: number }) {
           </>
         ) : null}
       </p>
-      <p className={`text-lg font-semibold tabular-nums leading-none ${tone}`}>{stat.value}</p>
+      <p className={`text-lg font-mono font-semibold tabular-nums leading-none ${tone}`}>{stat.value}</p>
       <p className="text-[11px] text-[#b7d4ff]">EV {ev}</p>
     </div>
   );

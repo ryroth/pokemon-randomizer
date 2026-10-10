@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { CommandPalette, type PaletteSection } from "@/components/builder/command-palette";
+import { ToggleChip, toggleFilterValue } from "@/components/randomizer/filter-dropdown";
+import { LEARN_METHODS, type LearnMethod } from "@/lib/builder/learnsets";
 import { TYPE_COLORS } from "@/components/type-colors";
+import { Button } from "@/components/ui/button";
+import { isStabMove } from "@/lib/builder/stab";
 import { searchMovesByName, moveNameMatchSpan } from "@/lib/builder/moveSearch";
 import { nextMoveSort, sortMoves, type MoveSort, type MoveSortColumn } from "@/lib/builder/moveSort";
 import {
@@ -14,174 +19,210 @@ import { TYPE_LABELS, type PokemonType } from "@/lib/types/pokemon-type";
 import { REQUIRED_MOVE_COUNT } from "@/lib/validation/moves";
 import { cn } from "@/lib/utils";
 
-const ROW_GRID =
-  "grid grid-cols-[minmax(7rem,1.15fr)_4.75rem_1.75rem_2.75rem_3.25rem_2.25rem_minmax(12rem,2.2fr)] items-center gap-x-2";
+type ColumnAlign = "start" | "center" | "end";
 
-const scrollRegionClass = "overflow-x-auto rounded-lg border border-border";
+const SORT_COLUMNS: ReadonlyArray<{ column: MoveSortColumn; label: string; align: ColumnAlign }> = [
+  { column: "name", label: "Name", align: "start" },
+  { column: "type", label: "Type", align: "start" },
+  { column: "category", label: "Cat", align: "center" },
+  { column: "power", label: "Pow", align: "end" },
+  { column: "accuracy", label: "Acc", align: "end" },
+  { column: "pp", label: "PP", align: "end" },
+];
 
+const LEARN_SHORT_LABELS: Record<LearnMethod, string> = {
+  "level-up": "Lv.",
+  tm: "TM",
+  egg: "Egg",
+  tutor: "Tutor",
+};
+
+/** Name, type, category, power, accuracy, PP, then (when shown) how it is learned, then the effect. */
+function gridClass(showLearned: boolean): string {
+  return cn(
+    "grid items-center gap-x-3",
+    showLearned
+      ? "grid-cols-[minmax(7.5rem,1.3fr)_4.75rem_2.25rem_2.75rem_2.75rem_2.5rem_6.5rem_minmax(11rem,3fr)]"
+      : "grid-cols-[minmax(7.5rem,1.3fr)_4.75rem_2.25rem_2.75rem_2.75rem_2.5rem_minmax(11rem,3fr)]",
+  );
+}
+
+/**
+ * Four move slots. Choosing a slot opens a search palette over the standard list or the
+ * Pokémon's learnset. Every row is one line of aligned columns, and each column heading sorts.
+ */
 export function MovePicker({
   moves,
   poolIds,
   selectedIds,
   lockedSlots,
+  pokemonTypes,
   onSelect,
+  learnFilter,
 }: {
   moves: readonly Move[];
   poolIds: readonly string[];
   selectedIds: readonly (string | undefined)[];
   lockedSlots?: readonly boolean[];
+  pokemonTypes: readonly PokemonType[];
   onSelect: (slot: number, moveId: string | undefined) => void;
+  /** Present when the list is the Pokémon's own moves: chips to narrow it, and how each move is learned. */
+  learnFilter?: {
+    methods: readonly LearnMethod[];
+    onChange: (methods: LearnMethod[]) => void;
+    methodsFor: (moveId: string) => readonly LearnMethod[];
+  };
 }) {
-  const firstOpen = lockedSlots?.findIndex((locked) => !locked) ?? 0;
+  const showLearned = learnFilter !== undefined;
+  const [openSlot, setOpenSlot] = useState<number | null>(null);
   const [query, setQuery] = useState("");
-  const [activeSlot, setActiveSlot] = useState(firstOpen === -1 ? 0 : firstOpen);
   const [sort, setSort] = useState<MoveSort | null>(null);
-  const allLocked = lockedSlots?.every(Boolean) ?? false;
   const movesById = new Map(moves.map((move) => [move.id, move]));
-  const taken = new Set(selectedIds.filter((id, index) => index !== activeSlot && id));
-  const pool = poolIds.flatMap((id) => {
-    if (taken.has(id)) return [];
-    const move = movesById.get(id);
-    return move ? [move] : [];
-  });
-  const { matches } = searchMovesByName(pool, query);
-  const listed = sort ? sortMoves(matches, sort) : matches;
-  const selected = movesById.get(selectedIds[activeSlot] ?? "");
 
-  function choose(moveId: string) {
-    if (lockedSlots?.[activeSlot]) {
-      return;
-    }
-    onSelect(activeSlot, moveId);
+  function close() {
+    setOpenSlot(null);
     setQuery("");
-    const nextEmpty = selectedIds.findIndex((id, index) => index !== activeSlot && !id);
-    if (nextEmpty !== -1) {
-      setActiveSlot(nextEmpty);
-    }
   }
+
+  const sections: PaletteSection[] = [];
+  if (openSlot !== null) {
+    const taken = new Set(selectedIds.filter((id, index) => index !== openSlot && id));
+    const pool = poolIds.flatMap((id) => {
+      if (taken.has(id)) return [];
+      const move = movesById.get(id);
+      return move ? [move] : [];
+    });
+    const { matches } = searchMovesByName(pool, query);
+    const listed = sort ? sortMoves(matches, sort) : matches;
+    const current = selectedIds[openSlot];
+    sections.push({
+      id: "moves",
+      options: listed.map((move) => ({
+        id: move.id,
+        label: moveLabel(move, pokemonTypes),
+        selected: move.id === current,
+        content: (
+          <MoveRow
+            move={move}
+            query={query}
+            stab={isStabMove(move, pokemonTypes)}
+            learned={learnFilter ? learnFilter.methodsFor(move.id) : undefined}
+          />
+        ),
+      })),
+    });
+  }
+
+  const listedCount = sections[0]?.options.length ?? 0;
 
   return (
     <div className="space-y-3">
-      <div className="grid gap-2 sm:grid-cols-2">
+      <ul className="grid gap-2 sm:grid-cols-2">
         {Array.from({ length: REQUIRED_MOVE_COUNT }, (_, slot) => {
           const move = movesById.get(selectedIds[slot] ?? "");
           const locked = Boolean(lockedSlots?.[slot]);
-          const active = slot === activeSlot;
           return (
-            <div key={slot} className="flex items-center gap-2">
-              <button
-                type="button"
-                aria-pressed={active}
-                className={cn(
-                  "h-9 min-w-0 flex-1 rounded-lg border px-2.5 text-left text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-                  locked
-                    ? active
-                      ? "border-ring bg-muted"
-                      : "border-input bg-muted text-foreground"
-                    : active
-                      ? "border-ring bg-accent"
-                      : "border-input bg-background",
-                )}
-                onClick={() => setActiveSlot(slot)}
-              >
-                <span className="font-medium">Move {slot + 1}</span>
-                <span className="ml-2 text-muted-foreground">{move?.name ?? "Empty"}</span>
-              </button>
-              {move && !locked ? (
+            <li key={slot} className="space-y-1.5 rounded-lg border border-border bg-card p-2.5">
+              <div className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
+                <span>Move {slot + 1}</span>
+                {locked ? <span>Set by the randomizer</span> : null}
+              </div>
+              {locked ? (
+                <MoveSummary move={move} stab={move ? isStabMove(move, pokemonTypes) : false} />
+              ) : (
                 <button
                   type="button"
-                  className="text-sm text-muted-foreground underline-offset-2 outline-none hover:underline focus-visible:underline"
-                  onClick={() => onSelect(slot, undefined)}
+                  aria-haspopup="dialog"
+                  aria-label={`Choose move ${slot + 1}${move ? `, currently ${move.name}` : ""}`}
+                  className="block w-full rounded-md border border-input bg-background px-2 py-1.5 text-left outline-none hover:bg-muted/60 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                  onClick={() => setOpenSlot(slot)}
                 >
-                  Clear move {slot + 1}
+                  <MoveSummary move={move} stab={move ? isStabMove(move, pokemonTypes) : false} />
                 </button>
+              )}
+              {move && !locked ? (
+                <Button type="button" variant="ghost" size="sm" onClick={() => onSelect(slot, undefined)}>
+                  Clear move {slot + 1}
+                </Button>
               ) : null}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
-      {lockedSlots?.[activeSlot] && selected ? (
-        <div
-          className={scrollRegionClass}
-          tabIndex={0}
-          role="region"
-          aria-label="Locked move, scroll sideways if the columns do not fit"
-        >
-          <div className={cn(ROW_GRID, "border-b border-border bg-muted/60 px-2 py-1.5 text-xs font-medium text-muted-foreground")}>
-            <span>Name</span>
-            <span>Type</span>
-            <span>Cat</span>
-            <span>Pow</span>
-            <span>Acc</span>
-            <span>PP</span>
-            <span>Effect</span>
-          </div>
-          <div className={cn(ROW_GRID, "bg-primary/15 px-2 py-1.5 text-foreground")}>
-            <MoveColumns move={selected} descriptionClassName="text-foreground" />
-          </div>
-        </div>
-      ) : allLocked ? null : (
-        <>
-      <label className="block space-y-1.5 text-sm font-medium">
-        Search moves
-        <input
-          className="h-9 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-      </label>
-      <p className="text-sm text-muted-foreground">Choosing move {activeSlot + 1}.</p>
-
-      <div
-        className={scrollRegionClass}
-        tabIndex={0}
-        role="region"
-        aria-label="Matching moves, scroll sideways if the columns do not fit"
-      >
-        <div className={cn(ROW_GRID, "border-b border-border bg-muted/60 px-2 py-1.5 text-xs font-medium text-muted-foreground")}>
-          <SortHeader label="Name" column="name" sort={sort} onSort={setSort} />
-          <SortHeader label="Type" column="type" sort={sort} onSort={setSort} />
-          <SortHeader label="Cat" column="category" sort={sort} onSort={setSort} />
-          <SortHeader label="Pow" column="power" sort={sort} onSort={setSort} />
-          <SortHeader label="Acc" column="accuracy" sort={sort} onSort={setSort} />
-          <SortHeader label="PP" column="pp" sort={sort} onSort={setSort} />
-          <SortHeader label="Effect" column="effect" sort={sort} onSort={setSort} />
-        </div>
-        {selected ? (
-          <div className={cn(ROW_GRID, "border-b border-border bg-primary/15 px-2 py-1.5 text-foreground")}>
-            <MoveColumns move={selected} descriptionClassName="text-foreground" />
-          </div>
-        ) : null}
-        {listed.length > 0 ? (
-          <ul aria-label="Matching moves" className="max-h-80 overflow-y-auto">
-            {listed.map((move) => (
-              <li key={move.id} className="border-b border-border/70 last:border-b-0">
-                <button
-                  type="button"
-                  aria-label={`${move.name}, ${TYPE_LABELS[move.type]}, ${MOVE_CATEGORY_LABELS[move.category]}, power ${formatMoveTablePower(move.power)}, accuracy ${formatMoveTableAccuracy(move.accuracy)}, PP ${formatMoveTablePp(move.pp)}`}
+      <CommandPalette
+        open={openSlot !== null}
+        onClose={close}
+        title={openSlot === null ? "Choose a move" : `Choose move ${openSlot + 1}`}
+        searchLabel="Search moves"
+        listLabel="Matching moves"
+        query={query}
+        onQueryChange={setQuery}
+        sections={sections}
+        emptyText="No moves match that search."
+        toolbar={
+          learnFilter ? (
+            <fieldset className="flex flex-wrap items-center gap-2">
+              <legend className="sr-only">How the move is learned</legend>
+              <span aria-hidden="true" className="text-xs font-medium text-muted-foreground">
+                Learned by
+              </span>
+              {LEARN_METHODS.map((method) => (
+                <ToggleChip
+                  key={method.id}
+                  label={method.label}
+                  checked={learnFilter.methods.includes(method.id)}
+                  onChange={() => learnFilter.onChange(toggleFilterValue(learnFilter.methods, method.id))}
+                />
+              ))}
+              <span className="text-xs text-muted-foreground">
+                {learnFilter.methods.length === 0
+                  ? "Showing every move."
+                  : `${listedCount} ${listedCount === 1 ? "move" : "moves"} match.`}
+              </span>
+            </fieldset>
+          ) : undefined
+        }
+        columns={{
+          minWidth: showLearned ? "52rem" : "44rem",
+          header: (
+            <div className={cn(gridClass(showLearned), "text-xs font-medium text-muted-foreground")}>
+              {SORT_COLUMNS.map(({ column, label, align }) => (
+                <div
+                  key={column}
                   className={cn(
-                    ROW_GRID,
-                    "w-full px-2 py-1.5 text-left outline-none hover:bg-muted/70 focus-visible:bg-muted focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+                    "flex",
+                    align === "end" ? "justify-end" : align === "center" ? "justify-center" : "justify-start",
                   )}
-                  onClick={() => choose(move.id)}
                 >
-                  <MoveColumns move={move} query={query} />
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="px-2 py-3 text-sm text-muted-foreground">No moves match that search.</p>
-        )}
-      </div>
-        </>
-      )}
+                  <SortButton label={label} column={column} sort={sort} onSort={setSort} />
+                </div>
+              ))}
+              {showLearned ? <span>Learned</span> : null}
+              <div>
+                <SortButton label="Effect" column="effect" sort={sort} onSort={setSort} />
+              </div>
+            </div>
+          ),
+        }}
+        onSelect={(moveId) => {
+          if (openSlot === null || lockedSlots?.[openSlot]) {
+            return;
+          }
+          onSelect(openSlot, moveId);
+          close();
+        }}
+      />
     </div>
   );
 }
 
-function SortHeader({
+function moveLabel(move: Move, pokemonTypes: readonly PokemonType[]): string {
+  const stab = isStabMove(move, pokemonTypes) ? ", same-type attack bonus" : "";
+  return `${move.name}, ${TYPE_LABELS[move.type]}, ${MOVE_CATEGORY_LABELS[move.category]}, power ${formatMoveTablePower(move.power)}, accuracy ${formatMoveTableAccuracy(move.accuracy)}, PP ${formatMoveTablePp(move.pp)}${stab}`;
+}
+
+function SortButton({
   label,
   column,
   sort,
@@ -198,7 +239,10 @@ function SortHeader({
     <button
       type="button"
       aria-label={directionLabel ? `${label}, sorted ${directionLabel}` : `Sort by ${label}`}
-      className="inline-flex items-center gap-1 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className={cn(
+        "inline-flex min-h-6 items-center gap-0.5 rounded px-1 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring",
+        active && "font-semibold text-foreground",
+      )}
       onClick={() => onSort(nextMoveSort(sort, column))}
     >
       {label}
@@ -209,36 +253,101 @@ function SortHeader({
   );
 }
 
-function MoveColumns({
+/** One slot's chosen move: name, type, category, power, accuracy, STAB, then the effect. */
+function MoveSummary({ move, stab }: { move: Move | undefined; stab: boolean }) {
+  if (!move) {
+    return <span className="block py-1 text-sm text-muted-foreground">Choose a move</span>;
+  }
+  return (
+    <span className="block space-y-1">
+      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <span className="font-medium">{move.name}</span>
+        <TypePill type={move.type} />
+        <CategoryMark category={move.category} />
+        <MoveNumbers move={move} />
+        {stab ? <StabTag /> : null}
+      </span>
+      {move.description ? (
+        <span className="line-clamp-2 block text-xs text-muted-foreground">{move.description}</span>
+      ) : null}
+    </span>
+  );
+}
+
+/** One palette row. Its columns line up with the headings in `columns.header`. */
+function MoveRow({
   move,
-  query = "",
-  descriptionClassName = "text-muted-foreground",
+  query,
+  stab,
+  learned,
 }: {
   move: Move;
-  query?: string;
-  descriptionClassName?: string;
+  query: string;
+  stab: boolean;
+  learned: readonly LearnMethod[] | undefined;
 }) {
-  const typeColor = TYPE_COLORS[move.type];
   return (
-    <>
-      <HighlightedName name={move.name} query={query} />
-      <TypePill type={move.type} background={typeColor.background} color={typeColor.color} />
-      <CategoryMark category={move.category} />
-      <span className="tabular-nums">{formatMoveTablePower(move.power)}</span>
-      <span className="tabular-nums">{formatMoveTableAccuracy(move.accuracy)}</span>
-      <span className="tabular-nums">{formatMoveTablePp(move.pp)}</span>
-      <span className={cn("truncate", descriptionClassName)}>{move.description}</span>
-    </>
+    <div className={gridClass(learned !== undefined)}>
+      <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+        <HighlightedName name={move.name} query={query} />
+        {stab ? <StabTag /> : null}
+      </div>
+      <div className="justify-self-start">
+        <TypePill type={move.type} />
+      </div>
+      <div className="justify-self-center">
+        <CategoryMark category={move.category} />
+      </div>
+      <span className="text-right font-mono text-xs tabular-nums">{formatMoveTablePower(move.power)}</span>
+      <span className="text-right font-mono text-xs tabular-nums">{formatMoveTableAccuracy(move.accuracy)}</span>
+      <span className="text-right font-mono text-xs tabular-nums">{formatMoveTablePp(move.pp)}</span>
+      {learned !== undefined ? (
+        <span className="text-xs">
+          {learned.length > 0 ? learned.map((method) => LEARN_SHORT_LABELS[method]).join(", ") : "Transfer"}
+        </span>
+      ) : null}
+      <p className="line-clamp-2 text-xs text-muted-foreground">{move.description}</p>
+    </div>
+  );
+}
+
+function MoveNumbers({ move }: { move: Move }) {
+  return (
+    <span className="flex items-center gap-2 font-mono text-xs tabular-nums text-muted-foreground">
+      <span>
+        <span className="font-sans">Pow </span>
+        {formatMoveTablePower(move.power)}
+      </span>
+      <span>
+        <span className="font-sans">Acc </span>
+        {formatMoveTableAccuracy(move.accuracy)}
+      </span>
+      <span>
+        <span className="font-sans">PP </span>
+        {formatMoveTablePp(move.pp)}
+      </span>
+    </span>
+  );
+}
+
+function StabTag() {
+  return (
+    <span
+      title="Same-type attack bonus: 1.5× power"
+      className="inline-flex h-5 items-center rounded-sm border border-foreground/40 px-1 text-[10px] font-bold tracking-wide"
+    >
+      STAB
+    </span>
   );
 }
 
 function HighlightedName({ name, query }: { name: string; query: string }) {
   const span = moveNameMatchSpan(name, query);
   if (!span) {
-    return <span className="truncate font-medium">{name}</span>;
+    return <span className="font-medium">{name}</span>;
   }
   return (
-    <span className="truncate font-medium">
+    <span className="font-medium">
       {name.slice(0, span.start)}
       <span className="font-bold text-primary">{name.slice(span.start, span.end)}</span>
       {name.slice(span.end)}
@@ -246,19 +355,12 @@ function HighlightedName({ name, query }: { name: string; query: string }) {
   );
 }
 
-function TypePill({
-  type,
-  background,
-  color,
-}: {
-  type: PokemonType;
-  background: string;
-  color: string;
-}) {
+function TypePill({ type }: { type: PokemonType }) {
+  const colors = TYPE_COLORS[type];
   return (
     <span
       className="inline-flex h-5 items-center justify-center rounded-sm px-1.5 text-[10px] font-bold tracking-wide uppercase"
-      style={{ backgroundColor: background, color }}
+      style={{ backgroundColor: colors.background, color: colors.color }}
     >
       {TYPE_LABELS[type]}
     </span>
@@ -268,7 +370,7 @@ function TypePill({
 function CategoryMark({ category }: { category: MoveCategory }) {
   const label = MOVE_CATEGORY_LABELS[category];
   return (
-    <span title={label} aria-label={label} className="inline-flex justify-center">
+    <span title={label} role="img" aria-label={label} className="inline-flex justify-center">
       {category === "physical" ? <PhysicalMark /> : category === "special" ? <SpecialMark /> : <StatusMark />}
     </span>
   );

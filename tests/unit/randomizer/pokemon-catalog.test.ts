@@ -18,7 +18,9 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon randomizer", () => {
 
     expect(ids).toHaveLength(6);
     expect(new Set(ids).size).toBe(6);
-    expect(result.pokemon.every((form) => form.formType === "base")).toBe(true);
+    expect(
+      result.pokemon.every((form) => ["base", "regional", "other"].includes(form.formType)),
+    ).toBe(true);
     expect(result.poolSize).toBeGreaterThanOrEqual(6);
 
     const again = randomizePokemon(catalog.pokemon, DEFAULT_RANDOMIZER_CONFIG, "catalog-seed");

@@ -1,3 +1,4 @@
+import { cloneRandomizerConfig, DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import type { RandomizerSession } from "@/lib/types/session";
 
 export const RANDOMIZER_SESSION_STORAGE_KEY = "pokemon-randomizer.session.v1";
@@ -8,7 +9,11 @@ export function parseStoredSession(raw: string): RandomizerSession | null {
     if (!isSession(value)) {
       return null;
     }
-    return value;
+    // Sessions saved before a setting existed get that setting's default.
+    return {
+      ...value,
+      config: { ...cloneRandomizerConfig(DEFAULT_RANDOMIZER_CONFIG), ...value.config },
+    };
   } catch {
     return null;
   }
@@ -31,5 +36,5 @@ function isSession(value: unknown): value is RandomizerSession {
   if (!session.draft || typeof session.draft !== "object" || !Array.isArray(session.draft.moveIds)) {
     return false;
   }
-  return typeof session.draft.evsConfirmed === "boolean";
+  return true;
 }

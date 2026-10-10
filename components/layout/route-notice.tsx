@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { LoadingSprites } from "@/components/layout/loading-sprites";
 import { PageFrame } from "@/components/layout/page-frame";
 
 export function RouteNotice({
@@ -16,10 +17,11 @@ export function RouteNotice({
 }) {
   return (
     <PageFrame width={width} className="gap-4">
-      <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+      <h1 className="text-h1 font-semibold tracking-tight">{title}</h1>
       <p role={live ? "status" : undefined} className="text-base leading-7 text-muted-foreground">
         {message}
       </p>
+      {live ? <LoadingSprites className="mt-2" /> : null}
       {children}
     </PageFrame>
   );

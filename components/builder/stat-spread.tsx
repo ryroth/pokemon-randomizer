@@ -1,5 +1,11 @@
-import { formatGuessedSpread, type EvSuggestion } from "@/lib/builder";
-import { natureChoiceLabel } from "@/lib/builder/labels";
+import {
+  evBudgetPercent,
+  formatGuessedSpread,
+  IV_PRESETS,
+  matchingIvPreset,
+  type EvSuggestion,
+} from "@/lib/builder";
+import { natureChoiceLabel, natureEffect } from "@/lib/builder/labels";
 import { calculateBattleStats } from "@/lib/stats/battleStat";
 import type { Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
@@ -18,7 +24,7 @@ const ROW_LABELS: Record<StatId, string> = {
 };
 
 const numberClass =
-  "h-8 w-12 rounded-md border border-input bg-background px-1 text-right text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-8 w-12 rounded-md border border-input bg-background px-1 text-right font-mono text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function StatSpreadSheet({
   pokemon,
@@ -29,13 +35,12 @@ export function StatSpreadSheet({
   natures,
   suggestion,
   evTotal,
-  evsConfirmed,
-  canConfirm,
   onEvChange,
   onIvChange,
   onNatureChange,
   onApplySuggestion,
-  onConfirm,
+  onApplyIvPreset,
+  onClearEvs,
 }: {
   pokemon: PokemonForm;
   ivs?: Partial<StatSpread>;
@@ -45,13 +50,12 @@ export function StatSpreadSheet({
   natures: readonly Nature[];
   suggestion?: EvSuggestion;
   evTotal: number;
-  evsConfirmed: boolean;
-  canConfirm: boolean;
   onEvChange: (stat: StatId, value: number | undefined) => void;
   onIvChange: (stat: StatId, value: number | undefined) => void;
   onNatureChange: (natureId: string | undefined) => void;
   onApplySuggestion: (suggestion: EvSuggestion) => void;
-  onConfirm: (confirmed: boolean) => void;
+  onApplyIvPreset: (presetId: string) => void;
+  onClearEvs: () => void;
 }) {
   const calculated = calculateBattleStats({
     base: pokemon.baseStats,
@@ -118,7 +122,7 @@ export function StatSpreadSheet({
                   <th scope="row" className="pr-2 text-left font-medium">
                     {ROW_LABELS[stat.stat]}
                   </th>
-                  <td className="w-10 tabular-nums">{base}</td>
+                  <td className="w-10 font-mono tabular-nums">{base}</td>
                   <td className="w-24 pr-3">
                     <span className="block h-2.5 overflow-hidden rounded-sm bg-muted" aria-hidden="true">
                       <span
@@ -184,7 +188,7 @@ export function StatSpreadSheet({
                       }}
                     />
                   </td>
-                  <td className="text-right tabular-nums">
+                  <td className="text-right font-mono tabular-nums">
                     <span
                       aria-label={`${ROW_LABELS[stat.stat]} ${stat.value}${
                         stat.natureEffect === "boost"
@@ -204,9 +208,60 @@ export function StatSpreadSheet({
           </tbody>
         </table>
       </div>
-      <p className={cn("text-sm", remaining < 0 ? "text-destructive" : "text-muted-foreground")}>
-        Remaining: {remaining}
-      </p>
+      <div className="space-y-1.5">
+        <div className="flex items-baseline justify-between gap-3 text-sm">
+          <span className="font-medium">EVs used</span>
+          <span className={cn("font-mono tabular-nums", remaining < 0 ? "text-destructive" : "text-muted-foreground")}>
+            {evTotal} / {MAX_EV_TOTAL}
+          </span>
+        </div>
+        <div
+          role="progressbar"
+          aria-label="EVs used"
+          aria-valuemin={0}
+          aria-valuemax={MAX_EV_TOTAL}
+          aria-valuenow={Math.min(evTotal, MAX_EV_TOTAL)}
+          aria-valuetext={`${evTotal} of ${MAX_EV_TOTAL} EVs used`}
+          className="h-2.5 overflow-hidden rounded-full bg-muted"
+        >
+          <div
+            className={cn("h-full rounded-full transition-[width]", remaining <= 0 ? "bg-status-success" : "bg-accent-electric")}
+            style={{ width: `${evBudgetPercent(evTotal)}%` }}
+          />
+        </div>
+        <p className={cn("text-sm", remaining < 0 ? "text-destructive" : "text-muted-foreground")}>
+          Remaining: <span className="font-mono tabular-nums">{remaining}</span>
+          {remaining === 0 ? " (full)" : null}
+        </p>
+      </div>
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="block min-w-48 space-y-1.5 text-sm font-medium">
+          IV spreads
+          <select
+            className="h-9 w-full rounded-lg border border-input bg-background px-2.5 font-mono text-sm tabular-nums outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            value={matchingIvPreset(ivs)?.id ?? ""}
+            onChange={(event) => {
+              if (event.target.value) {
+                onApplyIvPreset(event.target.value);
+              }
+            }}
+          >
+            <option value="">Custom</option>
+            {IV_PRESETS.map((preset) => (
+              <optgroup key={preset.id} label={preset.group}>
+                <option value={preset.id}>{preset.label}</option>
+              </optgroup>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+          onClick={onClearEvs}
+        >
+          Clear all EVs
+        </button>
+      </div>
       <label className="block max-w-sm space-y-1.5 text-sm font-medium">
         Nature
         <select
@@ -224,19 +279,21 @@ export function StatSpreadSheet({
             ))}
         </select>
       </label>
+      {nature ? (
+        <p className="text-sm text-muted-foreground" aria-live="polite">
+          {natureEffect(nature) ? (
+            <>
+              Raises <strong className="font-semibold text-foreground">{natureEffect(nature)?.plus}</strong>, lowers{" "}
+              <strong className="font-semibold text-foreground">{natureEffect(nature)?.minus}</strong>.
+            </>
+          ) : (
+            "This Nature does not change any stat."
+          )}
+        </p>
+      ) : null}
       <p className="text-sm text-muted-foreground">
-        Blank EV slots count as 0. The total cannot pass {MAX_EV_TOTAL}. Confirm the spread once it
-        looks right.
+        Blank EV slots count as 0. The total cannot pass {MAX_EV_TOTAL}.
       </p>
-      <label className="flex items-center gap-2 text-sm font-medium">
-        <input
-          type="checkbox"
-          checked={evsConfirmed}
-          disabled={!canConfirm}
-          onChange={(event) => onConfirm(event.target.checked)}
-        />
-        I confirm this EV spread
-      </label>
     </section>
   );
 }

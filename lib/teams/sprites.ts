@@ -4,13 +4,14 @@ const SPRITE_ID = /\/sprites\/pokemon\/(?:shiny\/)?(\d+)\.png$/;
 
 /**
  * Pokémon HOME is the latest sprite set. Official art and the default sprite follow
- * when a HOME file is missing.
+ * when a HOME file is missing. A shiny set tries every shiny picture (HOME, sprite, then
+ * artwork) before it ever falls back to a regular-colored one.
  */
 export function latestSpriteCandidates(sprites: PokemonSprites, shiny: boolean): string[] {
   const idSource = shiny ? (sprites.spriteShiny ?? sprites.sprite) : sprites.sprite;
   const home = homeSpriteUrl(idSource, shiny);
   const ordered = shiny
-    ? [home, sprites.spriteShiny, sprites.artwork, sprites.sprite]
+    ? [home, sprites.spriteShiny, sprites.artworkShiny, sprites.artwork, sprites.sprite]
     : [home, sprites.artwork, sprites.sprite];
   return ordered.filter((url): url is string => typeof url === "string" && url.length > 0);
 }
