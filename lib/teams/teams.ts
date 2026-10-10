@@ -139,6 +139,73 @@ export function moveSetToSlot(box: TeamBox, teamId: string, fromIndex: number, t
   };
 }
 
+export type TeamImportResult =
+  | { ok: true; box: TeamBox; teamId: string; teamName: string; added: number }
+  | { ok: false; message: string };
+
+/**
+ * Adds imported Pokémon either to the open slots of the active team or as a new team. Nothing is
+ * changed when they do not fit.
+ */
+export function importSetsToTeam(
+  box: TeamBox,
+  sets: readonly PokemonSet[],
+  target: "active" | "new",
+): TeamImportResult {
+  if (sets.length === 0) {
+    return { ok: false, message: "There are no Pokémon to add." };
+  }
+  if (sets.length > TEAM_SIZE) {
+    return { ok: false, message: `A team holds ${TEAM_SIZE} Pokémon, and this paste has ${sets.length}.` };
+  }
+  const cloned = sets.map(clonePokemonSet);
+
+  if (target === "new") {
+    const team: SavedTeam = { id: createTeamId(), name: `Team ${box.teams.length + 1}`, sets: cloned };
+    return {
+      ok: true,
+      box: { activeTeamId: team.id, teams: [...box.teams, team] },
+      teamId: team.id,
+      teamName: team.name,
+      added: cloned.length,
+    };
+  }
+
+  const team = box.teams.find((candidate) => candidate.id === box.activeTeamId);
+  if (!team) {
+    return { ok: false, message: "There is no active team yet. Save these as a new team instead." };
+  }
+  const open = TEAM_SIZE - team.sets.length;
+  if (cloned.length > open) {
+    return {
+      ok: false,
+      message:
+        open === 0
+          ? `${team.name} is full. Save these as a new team instead.`
+          : `${team.name} has ${open} open ${open === 1 ? "slot" : "slots"}, and this paste has ${cloned.length} Pokémon. Save them as a new team instead.`,
+    };
+  }
+  const nextTeam: SavedTeam = { ...team, sets: [...team.sets, ...cloned] };
+  return {
+    ok: true,
+    box: {
+      activeTeamId: team.id,
+      teams: box.teams.map((candidate) => (candidate.id === team.id ? nextTeam : candidate)),
+    },
+    teamId: team.id,
+    teamName: team.name,
+    added: cloned.length,
+  };
+}
+
+/** Dropping on an empty slot lands on the last filled one, so the team stays packed. */
+export function clampToFilledSlot(slotIndex: number, filledCount: number): number {
+  if (filledCount <= 0) {
+    return 0;
+  }
+  return Math.min(Math.max(slotIndex, 0), filledCount - 1);
+}
+
 /** Where a viewed slot lands after another Pokémon moves. */
 export function slotIndexAfterMove(selected: number | null, fromIndex: number, toIndex: number): number | null {
   if (selected === null || fromIndex === toIndex) {

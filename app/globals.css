@@ -19,7 +19,7 @@
   --muted-foreground: oklch(0.48 0.02 50);
   --accent: oklch(0.94 0.015 85);
   --accent-foreground: oklch(0.22 0.02 50);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(0.505 0.2 27);
   --border: oklch(0.9 0.02 80);
   --input: oklch(0.9 0.02 80);
   --ring: oklch(0.52 0.18 29);
@@ -37,40 +37,94 @@
   --sidebar-accent-foreground: oklch(0.22 0.02 50);
   --sidebar-border: oklch(0.9 0.02 80);
   --sidebar-ring: oklch(0.52 0.18 29);
+
+  /* Design tokens: surfaces and elevation (light values) */
+  --bg-canvas: oklch(0.97 0.012 85);
+  --bg-surface-1: oklch(0.99 0.008 85);
+  --bg-surface-2: oklch(0.94 0.015 85);
+  --bg-surface-elevated: oklch(1 0 0);
+  --border-subtle: oklch(0.9 0.02 80);
+  --border-accent: oklch(0.8 0.03 80);
+
+  /* Brand accents and status (darker in light mode so text stays readable) */
+  --accent-electric: #0369a1;
+  --accent-yellow: #a16207;
+  --status-success: #15803d;
+  --status-warning: #c2410c;
+  --status-danger: #b91c1c;
+
+  /* Fluid spacing scale */
+  --space-page-x: clamp(1rem, 4vw, 3.5rem);
+  --space-card-p: clamp(1rem, 2vw, 1.75rem);
+  --grid-gap: clamp(0.75rem, 1.5vw, 1.5rem);
+
+  /* Fluid body text. Headings use the text-h1 and text-h2 utilities from @theme. */
+  --text-fluid-base: clamp(0.9375rem, 0.85rem + 0.35vw, 1.0625rem);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: oklch(0.18 0.015 50);
+    --bg-canvas: #090d12;
+    --bg-surface-1: #111923;
+    --bg-surface-2: #16212c;
+    --bg-surface-elevated: #1a2733;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-accent: #2a3947;
+    --accent-electric: #38bdf8;
+    --accent-yellow: #eab308;
+    --status-success: #22c55e;
+    --status-warning: #f97316;
+    --status-danger: #ef4444;
+
+    --background: var(--bg-canvas);
     --foreground: oklch(0.96 0.01 85);
-    --card: oklch(0.22 0.016 50);
+    --card: var(--bg-surface-1);
     --card-foreground: oklch(0.96 0.01 85);
-    --popover: oklch(0.22 0.016 50);
+    --popover: var(--bg-surface-elevated);
     --popover-foreground: oklch(0.96 0.01 85);
     --primary: oklch(0.68 0.16 29);
     --primary-foreground: oklch(0.18 0.015 50);
-    --secondary: oklch(0.28 0.015 50);
+    --secondary: var(--bg-surface-2);
     --secondary-foreground: oklch(0.96 0.01 85);
-    --muted: oklch(0.28 0.015 50);
+    --muted: var(--bg-surface-2);
     --muted-foreground: oklch(0.78 0.015 80);
-    --accent: oklch(0.28 0.015 50);
+    --accent: var(--bg-surface-2);
     --accent-foreground: oklch(0.96 0.01 85);
     --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 12%);
+    --border: var(--border-subtle);
     --input: oklch(1 0 0 / 14%);
     --ring: oklch(0.68 0.16 29);
-    --sidebar: oklch(0.22 0.016 50);
+    --sidebar: var(--bg-surface-1);
     --sidebar-foreground: oklch(0.96 0.01 85);
     --sidebar-primary: oklch(0.68 0.16 29);
     --sidebar-primary-foreground: oklch(0.18 0.015 50);
-    --sidebar-accent: oklch(0.28 0.015 50);
+    --sidebar-accent: var(--bg-surface-2);
     --sidebar-accent-foreground: oklch(0.96 0.01 85);
-    --sidebar-border: oklch(1 0 0 / 12%);
+    --sidebar-border: var(--border-subtle);
     --sidebar-ring: oklch(0.68 0.16 29);
   }
 }
 
+@theme {
+  --text-h1: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  --text-h1--line-height: 1.15;
+  --text-h2: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --text-h2--line-height: 1.25;
+}
+
 @theme inline {
+  --color-bg-canvas: var(--bg-canvas);
+  --color-surface-1: var(--bg-surface-1);
+  --color-surface-2: var(--bg-surface-2);
+  --color-surface-elevated: var(--bg-surface-elevated);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-accent: var(--border-accent);
+  --color-accent-electric: var(--accent-electric);
+  --color-accent-yellow: var(--accent-yellow);
+  --color-status-success: var(--status-success);
+  --color-status-warning: var(--status-warning);
+  --color-status-danger: var(--status-danger);
+  --font-mono: var(--font-mono);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
@@ -124,11 +178,197 @@
 
   body {
     @apply bg-background text-foreground;
+    font-size: var(--text-fluid-base);
+  }
+
+  /* Stat meters, EV and IV fields, and counters must not shift as digits change. */
+  input[type="number"],
+  input[type="range"],
+  output,
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
   }
 
   *:focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 3px;
+  }
+}
+
+/* Pokéball reveal: the ball drops, wiggles twice like a catch, then opens and releases the card.
+   Timings match BALL_RELEASE_MS in components/randomizer/pokeball.tsx. */
+@keyframes ball-flight {
+  0% {
+    opacity: 0;
+    transform: translateY(-4.5rem) scale(0.4);
+  }
+  14% {
+    opacity: 1;
+    transform: translateY(0.4rem) scale(1.05);
+  }
+  18% {
+    transform: translateY(-0.3rem) scale(0.98);
+  }
+  22%,
+  80% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: scale(1.3);
+    filter: brightness(1.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+    filter: brightness(2.6);
+  }
+}
+
+@keyframes ball-wiggle {
+  0%,
+  48%,
+  88%,
+  100% {
+    transform: rotate(0deg);
+  }
+  8% {
+    transform: rotate(-26deg);
+  }
+  16% {
+    transform: rotate(26deg);
+  }
+  24% {
+    transform: rotate(-18deg);
+  }
+  32% {
+    transform: rotate(10deg);
+  }
+  38% {
+    transform: rotate(0deg);
+  }
+  56% {
+    transform: rotate(28deg);
+  }
+  64% {
+    transform: rotate(-28deg);
+  }
+  72% {
+    transform: rotate(18deg);
+  }
+  80% {
+    transform: rotate(-10deg);
+  }
+}
+
+@keyframes ball-flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  30% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+@keyframes card-release {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+    filter: brightness(2.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+.ball-flight {
+  animation: ball-flight 1750ms ease-out both;
+}
+
+.ball-wiggle {
+  transform-origin: 50% 90%;
+  animation: ball-wiggle 1100ms ease-in-out both;
+}
+
+.ball-flash {
+  position: absolute;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff 0%, rgb(255 255 255 / 0.5) 45%, transparent 70%);
+  animation: ball-flash 450ms ease-out both;
+}
+
+.ball-card {
+  animation: card-release 450ms cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+
+/* Loading screen: sprites run left to right across the track, bobbing as they go. */
+.loading-track {
+  position: relative;
+  height: 5rem;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.loading-runner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  animation: loading-run 6s linear infinite both;
+}
+
+.loading-bob {
+  animation: loading-bob 0.36s steps(2, jump-none) infinite;
+}
+
+@keyframes loading-run {
+  from {
+    transform: translateX(-6rem);
+  }
+  to {
+    transform: translateX(calc(100cqw + 2rem));
+  }
+}
+
+@keyframes loading-bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-0.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-track {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.75rem;
+    height: auto;
+  }
+
+  .loading-runner {
+    position: static;
+    animation: none !important;
+  }
+
+  .loading-bob {
+    animation: none !important;
   }
 }
 

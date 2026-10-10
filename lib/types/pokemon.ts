@@ -16,6 +16,8 @@ export interface PokemonSprites {
   sprite: string | null;
   spriteShiny: string | null;
   artwork: string | null;
+  /** Official artwork in the shiny colors. */
+  artworkShiny: string | null;
 }
 
 export interface PokemonForm {

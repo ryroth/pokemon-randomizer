@@ -34,14 +34,6 @@ export function validateSet(
     });
   }
 
-  if (!draft.evsConfirmed) {
-    errors.push({
-      code: "evs.unconfirmed",
-      field: "evs",
-      message: "Review and confirm the EV spread before finishing this Pokémon.",
-    });
-  }
-
   const evs = validateEvs(evsCountingBlanksAsZero(draft.evs));
   const ivs = validateSpreadField(draft.ivs, "ivs", "IVs", validateIvs);
   const nature = validateNature(draft.natureId);

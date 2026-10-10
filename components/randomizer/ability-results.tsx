@@ -1,8 +1,7 @@
 "use client";
 
-import { Shuffle } from "lucide-react";
 import { RerollButton } from "@/components/randomizer/reroll-button";
-import { Button } from "@/components/ui/button";
+import { ABILITY_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Ability } from "@/lib/types/catalog-entities";
 import { cn } from "@/lib/utils";
@@ -36,10 +35,7 @@ export function AbilityResults({
           {errorMessage}
         </p>
       ) : null}
-      <Button type="button" size="lg" onClick={onGenerate}>
-        <Shuffle />
-        Generate abilities
-      </Button>
+      <GenerateButton label="Generate abilities" steps={ABILITY_GENERATE_STEPS} onGenerate={onGenerate} />
       {abilities.length > 0 ? (
         <ul
           aria-label="Generated abilities"

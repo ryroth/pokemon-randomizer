@@ -59,6 +59,8 @@ export function validateGender(
 
 export const MIN_LEVEL = 1;
 export const MAX_LEVEL = 100;
+/** Where the builder starts. Doubles and VGC sets are played at level 50. */
+export const DEFAULT_LEVEL = 50;
 export const MIN_HAPPINESS = 0;
 export const MAX_HAPPINESS = 255;
 export const DEFAULT_HAPPINESS = 255;

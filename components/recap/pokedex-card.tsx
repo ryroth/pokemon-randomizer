@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { DexEntryCycler } from "@/components/dex/dex-entry-cycler";
 import { ModelArtwork } from "@/components/recap/model-artwork";
 import { MovePanel } from "@/components/recap/move-panel";
 import type { IdleMotion } from "@/components/recap/pokemon-idle-model";
@@ -23,14 +24,15 @@ const PokemonIdleModel = dynamic(
 );
 
 export function PokedexCard({ entry }: { entry: RecapEntry }) {
-  const animatedUrl = entry.regularModelUrl ?? entry.modelUrl;
-  const shinySrc =
-    entry.shiny && entry.modelUrl && animatedUrl && entry.modelUrl !== animatedUrl ? entry.modelUrl : null;
+  // A shiny Pokémon only gets the 3D model when a shiny model exists. Otherwise it shows the
+  // shiny sprite, then the shiny artwork, never regular colors.
+  const animatedUrl = entry.idleModel?.src ?? null;
+  const shinySrc = entry.idleModel?.shinySrc ?? null;
   const [artworkOnly, setArtworkOnly] = useState(animatedUrl === null);
   const [motion, setMotion] = useState<IdleMotion | "loading">(animatedUrl ? "loading" : "still");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const stageLabel = artworkOnly
-    ? `${entry.shiny ? "Shiny artwork" : "Artwork"} of ${entry.speciesName}`
+    ? `${entry.shiny ? "Shiny picture" : "Artwork"} of ${entry.speciesName}`
     : `${entry.shiny ? "Shiny 3D idle animation" : "3D idle animation"} of ${entry.speciesName}`;
   const displayName = entry.nickname ?? entry.speciesName;
 
@@ -119,11 +121,11 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
                 <dt className="text-[#b7d4ff]">Nature</dt>
                 <dd className="font-semibold">{entry.natureName}</dd>
                 <dt className="text-[#b7d4ff]">Level</dt>
-                <dd className="font-semibold tabular-nums">{entry.level}</dd>
+                <dd className="font-mono font-semibold tabular-nums">{entry.level}</dd>
                 <dt className="text-[#b7d4ff]">Shiny</dt>
                 <dd className="font-semibold">{entry.shiny ? "Yes" : "No"}</dd>
                 <dt className="text-[#b7d4ff]">Happiness</dt>
-                <dd className="font-semibold tabular-nums">{entry.happiness}</dd>
+                <dd className="font-mono font-semibold tabular-nums">{entry.happiness}</dd>
                 {entry.gender ? (
                   <>
                     <dt className="text-[#b7d4ff]">Gender</dt>
@@ -140,16 +142,19 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
                 ) : null}
               </div>
 
-              {entry.dexText ? (
-                <figure className="space-y-1 border-t border-white/15 pt-3">
-                  <figcaption className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">
-                    Pokédex entry
-                  </figcaption>
-                  <blockquote className="text-sm leading-6 text-[#e7f1ff]">{entry.dexText}</blockquote>
-                </figure>
-              ) : (
-                <p className="border-t border-white/15 pt-3 text-sm text-[#d6e6ff]">No Pokédex entry is available.</p>
-              )}
+              <div className="space-y-1 border-t border-white/15 pt-3">
+                <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Pokédex entry</h3>
+                {entry.dexText ? (
+                  <DexEntryCycler
+                    speciesId={entry.speciesId}
+                    name={entry.speciesName}
+                    fallbackText={entry.dexText}
+                    variant="recap"
+                  />
+                ) : (
+                  <p className="text-sm text-[#d6e6ff]">No Pokédex entry is available.</p>
+                )}
+              </div>
             </div>
           </div>
         </section>

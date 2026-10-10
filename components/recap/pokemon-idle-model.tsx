@@ -50,7 +50,7 @@ export function PokemonIdleModel({
     if (!element?.loaded) {
       return;
     }
-    paintShiny(element, shinySrcRef.current, paintAbortRef);
+    void paintShiny(element, shinySrcRef.current, paintAbortRef);
   }, [shinySrc]);
 
   const bindViewer = useCallback((element: ModelViewerElement | null) => {
@@ -68,25 +68,42 @@ export function PokemonIdleModel({
     const playIdle = () => {
       const clips = element.availableAnimations;
       const idle = preferredIdleAnimation(clips);
-      if (idle) {
-        element.animationName = idle;
-      }
-      paintShiny(element, shinySrcRef.current, paintAbortRef);
-      if (reduceMotion) {
-        element.removeAttribute("autoplay");
-        element.pause();
-        const motion: IdleMotion = idle ? "paused" : "still";
-        setPhase(motion);
-        onMotionRef.current(motion);
-        return;
-      }
       if (!idle) {
-        setPhase("still");
-        onMotionRef.current("still");
+        // A model with no animation at all would stand in its bind pose, often a T-pose.
+        // The artwork looks better than that, so hand over to the artwork instead.
+        paintAbortRef.current?.abort();
+        onUnavailableRef.current();
         return;
       }
-      setPhase("playing");
-      onMotionRef.current("playing");
+      element.animationName = idle;
+
+      const startPlaying = () => {
+        if (reduceMotion) {
+          element.removeAttribute("autoplay");
+          element.pause();
+          setPhase("paused");
+          onMotionRef.current("paused");
+          return;
+        }
+        setPhase("playing");
+        onMotionRef.current("playing");
+      };
+
+      const shinyUrl = shinySrcRef.current;
+      if (!shinyUrl) {
+        paintShiny(element, null, paintAbortRef);
+        startPlaying();
+        return;
+      }
+      // A shiny Pokémon must not appear in regular colors. The model stays hidden until the shiny
+      // textures are on, and if they cannot be applied the page falls back to the shiny picture.
+      void paintShiny(element, shinyUrl, paintAbortRef).then((outcome) => {
+        if (outcome === "painted") {
+          startPlaying();
+        } else if (outcome === "failed") {
+          onUnavailableRef.current();
+        }
+      });
     };
 
     const onError = () => {
@@ -132,32 +149,40 @@ export function PokemonIdleModel({
         shadow-intensity="0.85"
         exposure="1.05"
         className="h-full w-full bg-transparent"
-        style={{ touchAction: "pan-y" }}
+        style={{ touchAction: "pan-y", opacity: shinySrc && phase === "loading" ? 0 : 1 }}
       />
     </>
   );
 }
 
-function paintShiny(
+/** "painted": shiny textures are on. "failed": they could not be applied. "aborted": a newer request replaced this one. */
+type PaintOutcome = "painted" | "failed" | "aborted" | "none";
+
+async function paintShiny(
   element: ModelViewerElement,
   shinyUrl: string | null,
   paintAbortRef: { current: AbortController | null },
-) {
+): Promise<PaintOutcome> {
   paintAbortRef.current?.abort();
   if (!shinyUrl || shinyUrl === element.src) {
     paintAbortRef.current = null;
-    return;
+    return "none";
   }
   const controller = new AbortController();
   paintAbortRef.current = controller;
-  void applyShinyColors(element, shinyUrl, controller.signal);
+  return applyShinyColors(element, shinyUrl, controller.signal);
 }
 
-async function applyShinyColors(element: ModelViewerElement, shinyUrl: string, signal: AbortSignal) {
+async function applyShinyColors(
+  element: ModelViewerElement,
+  shinyUrl: string,
+  signal: AbortSignal,
+): Promise<PaintOutcome> {
+  const failed = (): PaintOutcome => (signal.aborted ? "aborted" : "failed");
   try {
     const response = await fetch(shinyUrl, { signal });
     if (!response.ok || signal.aborted) {
-      return;
+      return failed();
     }
     const shinySlots = colorSlotsFromGlb(await response.arrayBuffer());
     const materials = (element.model?.materials ?? []).filter(
@@ -171,13 +196,13 @@ async function applyShinyColors(element: ModelViewerElement, shinyUrl: string, s
       shinySlots,
     );
     if (!paints || signal.aborted) {
-      return;
+      return failed();
     }
     const ready: { materialName: string; texture: NonNullable<Awaited<ReturnType<ModelViewerElement["createTexture"]>>> }[] =
       [];
     for (const paint of paints) {
       if (signal.aborted) {
-        return;
+        return "aborted";
       }
       const bytes = new Uint8Array(paint.bytes.byteLength);
       bytes.set(paint.bytes);
@@ -185,7 +210,7 @@ async function applyShinyColors(element: ModelViewerElement, shinyUrl: string, s
       try {
         const texture = await element.createTexture(url, paint.mimeType);
         if (!texture) {
-          return;
+          return failed();
         }
         ready.push({ materialName: paint.materialName, texture });
       } finally {
@@ -193,14 +218,16 @@ async function applyShinyColors(element: ModelViewerElement, shinyUrl: string, s
       }
     }
     if (signal.aborted) {
-      return;
+      return "aborted";
     }
     for (const paint of ready) {
       element.model?.materials
         .find((material) => material.name === paint.materialName)
         ?.pbrMetallicRoughness.baseColorTexture?.setTexture(paint.texture);
     }
+    return "painted";
   } catch {
-    // Keep the regular textures and the idle clip when the shiny file cannot be painted.
+    // The caller falls back to the shiny picture, so a shiny Pokémon is never shown in regular colors.
+    return failed();
   }
 }

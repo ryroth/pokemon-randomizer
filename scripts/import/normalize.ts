@@ -377,6 +377,7 @@ function buildPokemonForm(input: {
       sprite: poke?.sprites.front_default ?? null,
       spriteShiny: poke?.sprites.front_shiny ?? null,
       artwork: poke?.sprites.other?.["official-artwork"]?.front_default ?? null,
+      artworkShiny: poke?.sprites.other?.["official-artwork"]?.front_shiny ?? null,
     },
     baseStats: statsForForm(showdownSpecies, poke),
     genderRule: genderRuleFromShowdown(showdownSpecies),

@@ -41,7 +41,6 @@ export function createInitialSession(
     itemOptions: [],
     draft: {
       moveIds: emptyMoveSlots(),
-      evsConfirmed: false,
     },
   };
 }
@@ -53,12 +52,13 @@ export function startNextRandomizer(): RandomizerSession {
 
 export function applyPokemonRoll(
   session: RandomizerSession,
-  result: PokemonRandomizerResult,
+  result: Omit<PokemonRandomizerResult, "shinyIds"> & { shinyIds?: readonly string[] },
 ): RandomizerSession {
   const pokemonIds = result.pokemon.map((form) => form.id);
   const latest: PokemonRoll = {
     seed: result.seed,
     pokemonIds,
+    shinyPokemonIds: [...(result.shinyIds ?? [])],
   };
   const pokemonRolls = [latest, ...session.pokemonRolls];
   const selectedPokemonId = selectionStillPresent(session.selectedPokemonId, pokemonRolls)
@@ -78,11 +78,14 @@ export function applyPokemonRoll(
       viewedRollIndex: 0,
       selectedPokemonId,
       evolvedPokemonId,
-      draft: freshTraining({
-        ...session.draft,
-        pokemonId: evolvedPokemonId,
-        moveIds: [...session.draft.moveIds],
-      }),
+      draft: freshTraining(
+        {
+          ...session.draft,
+          pokemonId: evolvedPokemonId,
+          moveIds: [...session.draft.moveIds],
+        },
+        selectedPokemonId ? rolledAsShiny(pokemonRolls, 0, selectedPokemonId) : false,
+      ),
     },
     session,
   );
@@ -126,11 +129,14 @@ export function selectRolledPokemon(
             pokemonId,
             moveIds: [...session.draft.moveIds],
           }
-        : freshTraining({
-            ...session.draft,
-            pokemonId,
-            moveIds: [...session.draft.moveIds],
-          }),
+        : freshTraining(
+            {
+              ...session.draft,
+              pokemonId,
+              moveIds: [...session.draft.moveIds],
+            },
+            isRolledShiny(session, pokemonId),
+          ),
     },
     session,
   );
@@ -153,11 +159,15 @@ export function chooseEvolvedPokemon(
     {
       ...session,
       evolvedPokemonId: nextBattlePokemonId,
-      draft: freshTraining({
-        ...session.draft,
-        pokemonId: nextBattlePokemonId,
-        moveIds: [...session.draft.moveIds],
-      }),
+      // The same Pokémon evolving stays shiny if it rolled shiny.
+      draft: freshTraining(
+        {
+          ...session.draft,
+          pokemonId: nextBattlePokemonId,
+          moveIds: [...session.draft.moveIds],
+        },
+        isRolledShiny(session, selected.id),
+      ),
     },
     session,
   );
@@ -429,10 +439,29 @@ export function viewedPokemonRoll(session: RandomizerSession): PokemonRoll | und
   return session.pokemonRolls[clampViewedRollIndex(session)];
 }
 
+/** Did this Pokémon roll shiny? Looks at the viewed roll first, then any other roll that has it. */
+export function isRolledShiny(session: RandomizerSession, pokemonId: string): boolean {
+  return rolledAsShiny(session.pokemonRolls, clampViewedRollIndex(session), pokemonId);
+}
+
+function rolledAsShiny(
+  rolls: readonly PokemonRoll[],
+  viewedIndex: number,
+  pokemonId: string,
+): boolean {
+  const viewed = rolls[viewedIndex];
+  const roll = viewed?.pokemonIds.includes(pokemonId)
+    ? viewed
+    : rolls.find((candidate) => candidate.pokemonIds.includes(pokemonId));
+  return roll?.shinyPokemonIds?.includes(pokemonId) ?? false;
+}
+
+/** The replacement rolls its own shiny chance. Pass whether it came up shiny. */
 export function replaceRolledPokemon(
   session: RandomizerSession,
   previousId: string,
   nextId: string,
+  nextIsShiny = false,
 ): RandomizerSession {
   if (previousId === nextId) {
     return session;
@@ -452,7 +481,11 @@ export function replaceRolledPokemon(
   const pokemonIds = [...roll.pokemonIds];
   pokemonIds[slot] = nextId;
   const pokemonRolls = [...session.pokemonRolls];
-  pokemonRolls[viewedIndex] = { ...roll, pokemonIds };
+  const shinyPokemonIds = (roll.shinyPokemonIds ?? []).filter((id) => id !== previousId);
+  if (nextIsShiny) {
+    shinyPokemonIds.push(nextId);
+  }
+  pokemonRolls[viewedIndex] = { ...roll, pokemonIds, shinyPokemonIds };
 
   const next: RandomizerSession = {
     ...session,
@@ -1163,10 +1196,22 @@ function appliedMoveIdsOnSameRoll(session: RandomizerSession, pokemonId: string)
   return [];
 }
 
-function freshTraining(draft: PokemonSetDraft): PokemonSetDraft {
-  const next = { ...draft, evsConfirmed: false };
+/**
+ * What belongs to one Pokémon's build and must not carry over to the next: EVs, Nature, Tera type,
+ * gender, shiny, and nickname. Shiny starts at Yes only when the Pokémon rolled shiny. Otherwise
+ * the builder fills in No when it opens.
+ */
+function freshTraining(draft: PokemonSetDraft, rolledShiny = false): PokemonSetDraft {
+  const next = { ...draft };
   delete next.evs;
   delete next.natureId;
+  delete next.teraType;
+  delete next.gender;
+  delete next.shiny;
+  delete next.nickname;
+  if (rolledShiny) {
+    next.shiny = true;
+  }
   return next;
 }
 

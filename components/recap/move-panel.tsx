@@ -30,7 +30,7 @@ export function MovePanel({ moves }: { moves: readonly RecapMoveView[] }) {
               >
                 <TypeBadge type={candidate.type} />
                 <span className="min-w-0 flex-1 truncate font-medium">{candidate.name}</span>
-                <span className="rounded-md bg-[#0c2b62] px-2 py-0.5 text-xs font-semibold tabular-nums">
+                <span className="rounded-md bg-[#0c2b62] px-2 py-0.5 text-xs font-mono font-semibold tabular-nums">
                   PP {formatMoveTablePp(candidate.pp)}
                 </span>
               </button>
@@ -51,11 +51,11 @@ export function MovePanel({ moves }: { moves: readonly RecapMoveView[] }) {
           </div>
           <div>
             <dt className="text-[11px] uppercase tracking-wide text-[#b7d4ff]">Power</dt>
-            <dd className="mt-1 font-semibold tabular-nums">{formatMoveTablePower(move.power)}</dd>
+            <dd className="mt-1 font-mono font-semibold tabular-nums">{formatMoveTablePower(move.power)}</dd>
           </div>
           <div>
             <dt className="text-[11px] uppercase tracking-wide text-[#b7d4ff]">Accuracy</dt>
-            <dd className="mt-1 font-semibold tabular-nums">{formatMoveTableAccuracy(move.accuracy)}</dd>
+            <dd className="mt-1 font-mono font-semibold tabular-nums">{formatMoveTableAccuracy(move.accuracy)}</dd>
           </div>
         </dl>
       </div>

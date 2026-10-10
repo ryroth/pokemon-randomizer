@@ -5,6 +5,7 @@ import { parseStoredTeams, TEAM_STORAGE_KEY } from "@/lib/teams/storage";
 import {
   clearTeam as clearTeamInBox,
   createEmptyTeamBox,
+  importSetsToTeam,
   moveSetToSlot,
   removeSetFromTeam,
   saveSetToNewTeam,
@@ -12,6 +13,7 @@ import {
   setActiveTeam,
   type TeamBox,
   type TeamClearResult,
+  type TeamImportResult,
   type TeamMoveResult,
   type TeamRemoveResult,
   type TeamSaveResult,
@@ -27,6 +29,7 @@ interface TeamContextValue {
   removeFromTeam: (teamId: string, slotIndex: number) => TeamRemoveResult;
   moveWithinTeam: (teamId: string, fromIndex: number, toIndex: number) => TeamMoveResult;
   clearTeam: (teamId: string) => TeamClearResult;
+  importSets: (sets: readonly PokemonSet[], target: "active" | "new") => TeamImportResult;
 }
 
 const TeamContext = createContext<TeamContextValue | null>(null);
@@ -86,6 +89,13 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     },
     clearTeam: (teamId) => {
       const result = clearTeamInBox(box, teamId);
+      if (result.ok) {
+        setBox(result.box);
+      }
+      return result;
+    },
+    importSets: (sets, target) => {
+      const result = importSetsToTeam(box, sets, target);
       if (result.ok) {
         setBox(result.box);
       }

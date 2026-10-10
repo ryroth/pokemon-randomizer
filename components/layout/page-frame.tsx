@@ -20,7 +20,7 @@ export function PageFrame({
   return (
     <div
       className={cn(
-        "mx-auto flex w-full flex-1 flex-col gap-8 px-4 py-10 sm:px-6 sm:py-14",
+        "mx-auto flex w-full flex-1 flex-col gap-8 px-[var(--space-page-x)] py-10 sm:py-14",
         widths[width],
         className,
       )}

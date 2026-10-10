@@ -4,8 +4,13 @@ import { Dex } from "@pkmn/dex";
 import type { Species } from "@pkmn/dex";
 import { loadGeneratedCatalog } from "../../lib/data/loadCatalog";
 
-/** Level-up, egg, TM/HM/TR, tutor, and transfer. Event and Dream World sources stay out. */
-const NATURAL_SOURCE = /[LEMTV]/;
+/**
+ * Level-up (L), TM/HM/TR (M), egg (E), tutor (T), and transfer (V). Event and Dream World sources
+ * stay out. Each move is written as `moveId:CODES`, such as `surf:MT`, so the builder can filter
+ * by how a move is learned.
+ */
+const NATURAL_SOURCE = /[LEMTV]/g;
+const SOURCE_ORDER = "LMETV";
 
 /**
  * Writes each catalog form's in-game learnset.
@@ -18,8 +23,11 @@ async function main() {
   const learnsets: Record<string, string[]> = {};
 
   for (const form of catalog.pokemon) {
-    const moveIds = await learnableMoveIds(form.id);
-    learnsets[form.id] = [...moveIds].filter((id) => standardMoves.has(id)).sort();
+    const moves = await learnableMoves(form.id);
+    learnsets[form.id] = [...moves]
+      .filter(([id]) => standardMoves.has(id))
+      .map(([id, codes]) => `${id}:${sortCodes(codes)}`)
+      .sort();
   }
 
   const filePath = path.join(process.cwd(), "data", "generated", "learnsets.json");
@@ -30,8 +38,12 @@ async function main() {
   console.log(`  ${Object.keys(learnsets).length} forms, ${withMoves} with a learnset`);
 }
 
-async function learnableMoveIds(speciesId: string): Promise<Set<string>> {
-  const moves = new Set<string>();
+function sortCodes(codes: ReadonlySet<string>): string {
+  return [...codes].sort((a, b) => SOURCE_ORDER.indexOf(a) - SOURCE_ORDER.indexOf(b)).join("");
+}
+
+async function learnableMoves(speciesId: string): Promise<Map<string, Set<string>>> {
+  const moves = new Map<string, Set<string>>();
   const seen = new Set<string>();
   let species = Dex.species.getByID(speciesId as Species["id"]);
   if (!species.exists) {
@@ -43,8 +55,13 @@ async function learnableMoveIds(speciesId: string): Promise<Set<string>> {
     const learnsetSpecies = await speciesWithLearnset(species);
     const learnset = await Dex.learnsets.getByID(learnsetSpecies.id);
     for (const [moveId, sources] of Object.entries(learnset.learnset ?? {})) {
-      if (sources.some((source) => NATURAL_SOURCE.test(source.replace(/\d/g, "")))) {
-        moves.add(moveId);
+      const codes = sources.flatMap((source) => source.replace(/\d/g, "").match(NATURAL_SOURCE) ?? []);
+      if (codes.length > 0) {
+        const known = moves.get(moveId) ?? new Set<string>();
+        for (const code of codes) {
+          known.add(code);
+        }
+        moves.set(moveId, known);
       }
     }
     species = species.prevo ? Dex.species.get(species.prevo) : Dex.species.get("");

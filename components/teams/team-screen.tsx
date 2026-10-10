@@ -6,6 +6,7 @@ import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
 import { MoveSlotControl, slotLabel } from "@/components/recap/save-to-team";
 import { PokedexCard } from "@/components/recap/pokedex-card";
+import { NextRandomizerButton } from "@/components/session/next-randomizer-button";
 import { useTeams } from "@/components/teams/team-provider";
 import { TeamSlotSprite } from "@/components/teams/team-slot-sprite";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
           Each team holds up to {TEAM_SIZE} saved Pokémon. Open a saved Pokémon to see its recap and Showdown set, move it
           to another slot, copy one set or the whole team, remove it, or clear the team.
         </p>
+        <NextRandomizerButton />
       </header>
 
       {clearedMessage ? (
@@ -136,7 +138,8 @@ function TeamCard({
             {team.name}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {team.sets.length} of {TEAM_SIZE} Pokémon{current ? ". This team receives the next save." : ""}
+            <span className="font-mono tabular-nums">{team.sets.length}</span> of{" "}
+            <span className="font-mono tabular-nums">{TEAM_SIZE}</span> Pokémon{current ? ". This team receives the next save." : ""}
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">

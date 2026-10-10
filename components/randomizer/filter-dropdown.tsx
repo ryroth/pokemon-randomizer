@@ -1,26 +1,33 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
+import { typeColors } from "@/components/type-colors";
 import { Button } from "@/components/ui/button";
+import type { TeraType } from "@/lib/types/pokemon-type";
 import { cn } from "@/lib/utils";
 
+/**
+ * A collapsed filter: a title and a one-line summary of what is selected. Opening it shows the
+ * chips. Keeping each filter closed until it is needed keeps the page quiet.
+ */
 export function FilterDropdown({
   label,
   summary,
   description,
+  className,
   children,
 }: {
   label: string;
   summary: string;
   description?: string;
+  className?: string;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-
   return (
     <details
-      className="group rounded-xl border border-border bg-background"
+      className={cn("group rounded-xl border border-border bg-background", className)}
       onToggle={(event) => setOpen(event.currentTarget.open)}
     >
       <summary
@@ -39,7 +46,7 @@ export function FilterDropdown({
           />
         </span>
       </summary>
-      <div className="space-y-3 border-t border-border px-4 py-4">
+      <div className="border-t border-border px-4 py-4">
         <fieldset className="space-y-3">
           <legend className="sr-only">{label}</legend>
           {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
@@ -71,25 +78,51 @@ export function FilterToolbar({
   );
 }
 
+/**
+ * Multi-select chip. A selected chip shows a check mark as well as a fill, so state never depends
+ * on color alone. Pass `type` for an elemental chip: a type-colored dot when off, the full type
+ * color when on.
+ */
 export function ToggleChip({
   label,
   checked,
   onChange,
+  type,
 }: {
   label: string;
   checked: boolean;
   onChange: () => void;
+  type?: TeraType;
 }) {
+  const colors = type ? typeColors(type) : null;
   return (
     <label
       className={cn(
-        "inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50",
+        "relative inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border-2 px-3 text-sm font-medium transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/60",
         checked
-          ? "border-primary bg-primary/10 text-foreground"
-          : "border-border bg-background text-muted-foreground",
+          ? colors
+            ? "border-foreground"
+            : "border-primary bg-primary/10 text-foreground"
+          : "border-border bg-background text-muted-foreground hover:text-foreground",
       )}
+      style={checked && colors ? { backgroundColor: colors.background, color: colors.color } : undefined}
     >
-      <input type="checkbox" checked={checked} onChange={onChange} />
+      {/* The real checkbox covers the whole chip, so pointer and keyboard use the native control. */}
+      <input
+        type="checkbox"
+        className="absolute inset-0 size-full cursor-pointer opacity-0"
+        checked={checked}
+        onChange={onChange}
+      />
+      {checked ? (
+        <Check aria-hidden="true" className="size-3.5 shrink-0" />
+      ) : colors ? (
+        <span
+          aria-hidden="true"
+          className="size-2.5 shrink-0 rounded-full"
+          style={{ backgroundColor: colors.background }}
+        />
+      ) : null}
       <span>{label}</span>
     </label>
   );

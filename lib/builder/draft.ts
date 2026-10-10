@@ -1,3 +1,4 @@
+import { ivPresetById } from "@/lib/builder/ivPresets";
 import { battlePokemonId } from "@/lib/randomizer/session";
 import {
   abilityLockedByRandomizer,
@@ -12,6 +13,7 @@ import { PERFECT_IVS, STAT_IDS, type StatId, type StatSpread } from "@/lib/types
 import type { Gender, GenderRule } from "@/lib/types/taxonomy";
 import {
   DEFAULT_HAPPINESS,
+  DEFAULT_LEVEL,
   MAX_HAPPINESS,
   MAX_NICKNAME_LENGTH,
   MIN_HAPPINESS,
@@ -56,12 +58,22 @@ export function openBuilder(session: RandomizerSession): RandomizerSession {
   });
 }
 
-/** IVs start at 31. Happiness starts at 255. Existing choices are kept. */
+/**
+ * IVs start at 31, happiness at 255, level at 50, and shiny at No. Existing choices are kept.
+ * Tera type and gender have no default: the builder shows them unselected.
+ */
 export function applyBuilderDefaults(session: RandomizerSession): RandomizerSession {
   const ivs = ivsDefaultingTo31(session.draft.ivs);
   const happiness = session.draft.happiness ?? DEFAULT_HAPPINESS;
+  const level = session.draft.level ?? DEFAULT_LEVEL;
+  const shiny = session.draft.shiny ?? false;
   const ivsAlreadySet = STAT_IDS.every((stat) => session.draft.ivs?.[stat] === ivs[stat]);
-  if (ivsAlreadySet && session.draft.happiness === happiness) {
+  if (
+    ivsAlreadySet &&
+    session.draft.happiness === happiness &&
+    session.draft.level === level &&
+    session.draft.shiny === shiny
+  ) {
     return session;
   }
 
@@ -71,6 +83,8 @@ export function applyBuilderDefaults(session: RandomizerSession): RandomizerSess
       ...session.draft,
       ivs,
       happiness,
+      level,
+      shiny,
       moveIds: padMoves(session.draft.moveIds),
     },
   };
@@ -155,17 +169,21 @@ export function setDraftEv(
     const cap = maxEvForStat(session.draft.evs, stat);
     evs[stat] = Math.min(Math.max(0, value), cap);
   }
-  return replaceDraft(session, { evs, evsConfirmed: false });
+  return replaceDraft(session, { evs });
 }
 
-export function confirmDraftEvs(
-  session: RandomizerSession,
-  confirmed: boolean,
-): RandomizerSession {
-  if (confirmed && !canConfirmEvs(session.draft.evs)) {
+/** Fills every IV from a spread in the Showdown "IV spreads" menu. EVs are not touched. */
+export function applyDraftIvPreset(session: RandomizerSession, presetId: string): RandomizerSession {
+  const preset = ivPresetById(presetId);
+  if (!preset) {
     return session;
   }
-  return replaceDraft(session, { evsConfirmed: confirmed });
+  return replaceDraft(session, { ivs: { ...preset.ivs } });
+}
+
+/** Back to blank EV slots, which count as 0. */
+export function clearDraftEvs(session: RandomizerSession): RandomizerSession {
+  return replaceDraft(session, { evs: undefined });
 }
 
 export function applySuggestedEvs(
@@ -174,13 +192,12 @@ export function applySuggestedEvs(
   natureName: string | undefined,
   natures: readonly Nature[],
 ): RandomizerSession {
-  if (!canConfirmEvs(evs)) {
+  if (!isLegalEvSpread(evs)) {
     return session;
   }
   const natureId = natureIdForSuggestion(natureName, natures);
   return replaceDraft(session, {
     evs,
-    evsConfirmed: false,
     ...(natureId ? { natureId } : {}),
   });
 }
@@ -201,7 +218,7 @@ function natureIdForSuggestion(
   )?.id;
 }
 
-export function canConfirmEvs(evs: Partial<StatSpread> | undefined): boolean {
+export function isLegalEvSpread(evs: Partial<StatSpread> | undefined): boolean {
   return validateEvs(evsCountingBlanksAsZero(evs)).ok;
 }
 

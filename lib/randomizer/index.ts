@@ -65,6 +65,7 @@ export {
   userFacingRandomizerMessage,
 } from "@/lib/randomizer/pokemon";
 export type { PokemonRandomizerResult } from "@/lib/randomizer/pokemon";
+export { assertShinyChance, InvalidShinyChanceError, rollShinyIds } from "@/lib/randomizer/shiny";
 export {
   createRng,
   createSeed,
@@ -111,6 +112,7 @@ export {
   createInitialSession,
   startNextRandomizer,
   filledMoveCount,
+  isRolledShiny,
   itemChoicesForPokemon,
   moveChoicesForPokemon,
   openRandomizerTab,

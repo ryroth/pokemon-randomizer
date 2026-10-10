@@ -1,8 +1,7 @@
 "use client";
 
-import { Shuffle } from "lucide-react";
 import { RerollButton } from "@/components/randomizer/reroll-button";
-import { Button } from "@/components/ui/button";
+import { MOVE_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatMoveAccuracy, formatMovePower } from "@/lib/data/moveDisplay";
 import { MOVES_ASSIGNED_PER_POKEMON } from "@/lib/randomizer/applyExtras";
@@ -43,10 +42,7 @@ export function MoveResults({
           {errorMessage}
         </p>
       ) : null}
-      <Button type="button" size="lg" onClick={onGenerate}>
-        <Shuffle />
-        Generate moves
-      </Button>
+      <GenerateButton label="Generate moves" steps={MOVE_GENERATE_STEPS} onGenerate={onGenerate} />
       {selectable && moves.length > 0 ? (
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {selectedCount} of {MOVES_ASSIGNED_PER_POKEMON} moves selected.

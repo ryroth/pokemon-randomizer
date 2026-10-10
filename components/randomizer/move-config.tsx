@@ -95,6 +95,7 @@ export function MoveConfigForm({
             {POKEMON_TYPES.map((type) => (
               <ToggleChip
                 key={type}
+                type={type}
                 label={TYPE_LABELS[type]}
                 checked={config.moveTypes.includes(type)}
                 onChange={() =>
@@ -172,7 +173,7 @@ export function MoveConfigForm({
           </p>
         ) : null}
         <p aria-live="polite" className="text-sm">
-          {poolSize} {poolSize === 1 ? "move matches" : "moves match"} these filters.
+          <span className="font-mono tabular-nums">{poolSize}</span> {poolSize === 1 ? "move matches" : "moves match"} these filters.
         </p>
       </fieldset>
 

@@ -15,6 +15,11 @@ export const MIN_POKEMON_COUNT = 1;
 export const MAX_POKEMON_COUNT = 12;
 export const DEFAULT_POKEMON_COUNT = 6;
 
+/** Percent chance that each rolled Pokémon is shiny. 0 turns shiny rolls off. */
+export const MIN_SHINY_CHANCE = 0;
+export const MAX_SHINY_CHANCE = 100;
+export const DEFAULT_SHINY_CHANCE = 1;
+
 export const MIN_ABILITY_COUNT = 1;
 export const MAX_ABILITY_COUNT = 12;
 export const DEFAULT_ABILITY_COUNT = 3;
@@ -33,10 +38,11 @@ export const DEFAULT_ITEM_COUNT = 3;
 
 export const DEFAULT_RANDOMIZER_CONFIG: RandomizerConfig = {
   pokemonCount: DEFAULT_POKEMON_COUNT,
+  shinyChance: DEFAULT_SHINY_CHANCE,
   generations: [...GENERATIONS],
   types: [...POKEMON_TYPES],
   typeMatchMode: "or",
-  formTypes: ["base"],
+  formTypes: ["base", "regional", "other"],
   evolutionStages: [...EVOLUTION_STAGES],
   allowPseudoLegendary: true,
   allowSubLegendary: true,
@@ -85,6 +91,7 @@ export function resetPokemonFilters(config: RandomizerConfig): RandomizerConfig 
   return cloneRandomizerConfig({
     ...config,
     pokemonCount: DEFAULT_RANDOMIZER_CONFIG.pokemonCount,
+    shinyChance: DEFAULT_RANDOMIZER_CONFIG.shinyChance,
     generations: DEFAULT_RANDOMIZER_CONFIG.generations,
     types: DEFAULT_RANDOMIZER_CONFIG.types,
     typeMatchMode: DEFAULT_RANDOMIZER_CONFIG.typeMatchMode,

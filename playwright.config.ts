@@ -8,6 +8,9 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
+    // The staged generate steps are skipped under reduced motion, which keeps the suite fast.
+    // The staged-loading tests switch motion back on for themselves.
+    reducedMotion: "reduce",
   },
   projects: [
     {

@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
 import { PokedexCard } from "@/components/recap/pokedex-card";
 import { SaveToTeam } from "@/components/recap/save-to-team";
+import { NextRandomizerButton } from "@/components/session/next-randomizer-button";
 import { useRandomizerSession } from "@/components/session/session-provider";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { startNextRandomizer } from "@/lib/randomizer/session";
+import { buttonVariants } from "@/components/ui/button";
 import { buildRecap, type RecapCatalog } from "@/lib/recap/entries";
 import { cn } from "@/lib/utils";
 
@@ -64,24 +63,5 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
         <NextRandomizerButton />
       </div>
     </PageFrame>
-  );
-}
-
-function NextRandomizerButton() {
-  const { setSession } = useRandomizerSession();
-  const router = useRouter();
-
-  return (
-    <Button
-      type="button"
-      size="lg"
-      className="w-fit"
-      onClick={() => {
-        setSession(startNextRandomizer());
-        router.push("/randomizer");
-      }}
-    >
-      Next Randomizer
-    </Button>
   );
 }

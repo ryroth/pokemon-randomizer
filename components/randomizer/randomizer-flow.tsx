@@ -1,6 +1,6 @@
 "use client";
 
-import { GripVertical } from "lucide-react";
+import { Backpack, CircleDot, GripVertical, Sparkles, Swords, type LucideIcon } from "lucide-react";
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { TYPICAL_RANDOMIZER_ORDER } from "@/lib/randomizer/defaults";
@@ -18,6 +18,20 @@ const STEP_LABELS: Record<RandomizerTab, string> = {
   ability: "Ability randomizer",
   move: "Move randomizer",
   item: "Item randomizer",
+};
+
+const STEP_HINTS: Record<RandomizerTab, string> = {
+  pokemon: "Always runs. Rolls unique Pokémon.",
+  ability: "Rolls a pool of abilities.",
+  move: "Rolls a pool of moves.",
+  item: "Rolls a pool of held items.",
+};
+
+const STAGE_ICONS: Record<RandomizerTab, LucideIcon> = {
+  pokemon: CircleDot,
+  ability: Sparkles,
+  move: Swords,
+  item: Backpack,
 };
 
 const POINTER_DRAG_THRESHOLD_PX = 8;
@@ -257,7 +271,7 @@ export function RandomizerFlowList({ config, onChange }: RandomizerFlowListProps
         ref={listRef}
         aria-describedby={hintId}
         aria-label="Randomizer steps"
-        className={cn("space-y-2", draggingTab ? "select-none" : null)}
+        className={cn("flex flex-col gap-4", draggingTab ? "select-none" : null)}
         onDragOver={(event) => {
           if (draggingTabRef.current == null) {
             return;
@@ -287,6 +301,7 @@ export function RandomizerFlowList({ config, onChange }: RandomizerFlowListProps
             (tab === "move" && config.randomizeMoves) ||
             (tab === "item" && config.randomizeItems);
           const active = draggingTab === tab || liftedTab === tab;
+          const StageIcon = STAGE_ICONS[tab];
 
           return (
             <li
@@ -315,7 +330,10 @@ export function RandomizerFlowList({ config, onChange }: RandomizerFlowListProps
                 }
               }}
               className={cn(
-                "flex cursor-grab items-center gap-3 rounded-xl border border-border bg-card p-3 touch-none",
+                "relative flex cursor-grab touch-none items-center gap-3 rounded-xl border-2 bg-card p-3 transition-colors",
+                // A short connector joins each stage card to the one above it.
+                "not-first:before:absolute not-first:before:-top-[18px] not-first:before:left-[4.95rem] not-first:before:h-[18px] not-first:before:w-0.5 not-first:before:bg-border",
+                enabled ? "border-border" : "border-dashed border-border bg-muted/40",
                 active ? "cursor-grabbing border-ring ring-3 ring-ring/50" : null,
               )}
             >
@@ -325,7 +343,7 @@ export function RandomizerFlowList({ config, onChange }: RandomizerFlowListProps
                 aria-describedby={hintId}
                 aria-label={`Reorder ${STEP_LABELS[tab]}`}
                 aria-pressed={liftedTab === tab}
-                className="inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-lg text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="inline-flex size-10 shrink-0 cursor-grab items-center justify-center rounded-lg text-muted-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
                 onClick={(event) => {
                   event.preventDefault();
                 }}
@@ -356,28 +374,53 @@ export function RandomizerFlowList({ config, onChange }: RandomizerFlowListProps
               >
                 <GripVertical aria-hidden="true" />
               </span>
-              <span className="w-6 shrink-0 text-sm font-medium text-muted-foreground">
-                {index + 1}.
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold tabular-nums",
+                  enabled
+                    ? "bg-accent-electric text-background"
+                    : "border-2 border-dashed border-border text-muted-foreground",
+                )}
+              >
+                {index + 1}
               </span>
+              <StageIcon
+                aria-hidden="true"
+                className={cn("size-5 shrink-0", enabled ? "text-foreground" : "text-muted-foreground")}
+              />
               {optional ? (
-                <label className="flex min-w-0 items-start gap-2 text-sm">
+                <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-2 text-sm font-medium">
                   <input
                     type="checkbox"
-                    className="mt-0.5"
+                    className="mt-0.5 size-4"
                     checked={enabled}
                     disabled={!implemented}
                     onChange={() => setEnabled(tab, !enabled)}
                   />
                   <span>
                     {STEP_LABELS[tab]}
-                    {!implemented ? (
-                      <span className="block text-muted-foreground">Not available yet</span>
-                    ) : null}
+                    <span className="block font-normal text-muted-foreground">
+                      {!implemented ? "Not available yet" : enabled ? STEP_HINTS[tab] : "Skipped"}
+                    </span>
                   </span>
                 </label>
               ) : (
-                <p className="text-sm font-medium">{STEP_LABELS[tab]}</p>
+                <p className="min-w-0 flex-1 text-sm font-medium">
+                  {STEP_LABELS[tab]}
+                  <span className="block font-normal text-muted-foreground">{STEP_HINTS[tab]}</span>
+                </p>
               )}
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
+                  enabled
+                    ? "border border-accent-electric text-foreground"
+                    : "border border-transparent bg-muted text-muted-foreground",
+                )}
+              >
+                {enabled ? "On" : "Off"}
+              </span>
             </li>
           );
         })}
