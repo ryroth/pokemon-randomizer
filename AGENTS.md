@@ -30,7 +30,7 @@ Cursor should follow these rules on every change.
 - PokéAPI: dex text, sprites/artwork, evolution chains, official species flags, and English move/ability/item flavor plus `effect_entries` (the same official wording Pokémon Database, Bulbapedia, and Serebii reprint).
 - Pokémon Showdown: teambuilder names, forme identity, Restricted Legendary / Sub-Legendary / Mythical / Paradox / Ultra Beast tags, and battling `shortDesc`/`desc` when PokéAPI effect text omits numeric mechanics (for example Punk Rock’s 1.3× sound boost).
 - Dual-write `pokeApiSlug` and `showdownName` on every entity. Export only Showdown names.
-- Do not invent, paraphrase, or rewrite Pokédex, ability, move, or item descriptions. Pokédex entries use the latest unique English PokéAPI flavor only. Ability, move, and item `description` prefers PokéAPI English `short_effect`/`effect` when it includes numbers, then Showdown battling text with numbers, then flavor. Never invent multipliers. Leave the field empty when no source has English text.
+- Do not invent, paraphrase, or rewrite Pokédex, ability, move, or item descriptions. Pokédex entries use unique English PokéAPI flavor texts only, kept for every generation in `data/generated/dex-entries.json` (the catalog keeps the latest as a fallback), and the UI cycles through them. Ability, move, and item `description` prefers PokéAPI English `short_effect`/`effect` when it includes numbers, then Showdown battling text with numbers, then flavor. Never invent multipliers. Leave the field empty when no source has English text.
 - Do not invent Pokémon data when an authoritative source exists.
 - Do not hardcode large catalogs inside React components.
 
@@ -39,7 +39,7 @@ Cursor should follow these rules on every change.
 - Use `lib/randomizer/randomUtils.ts` for all randomness. Do not call `Math.random()` in product code.
 - Pokémon results in a roll must be unique along overlapping evolution paths. Split branches may appear together (Cascoon with Silcoon or Beautifly). A shared ancestor (Wurmple) or the rest of the same branch (Dustox with Cascoon) may not.
 - Insufficient pools are errors. Never silently return fewer results.
-- Do not auto-assign EVs, Nature, Tera type, gender (when mixed), level, or shiny. IVs default to 31 and can be edited. Happiness defaults to 255 (range 0–255). Nickname is optional.
+- Do not auto-assign EVs, Nature, Tera type, or gender (when mixed). The Pokémon randomizer rolls shiny per Pokémon at a user-set percentage (`shinyChance`, 0–100, default 1, via `lib/randomizer/shiny.ts`). A shiny Pokémon starts the builder with Shiny set to Yes. Every other Pokémon starts at No. Starting a build for a different Pokémon clears EVs, Nature, Tera type, gender, shiny, and nickname back to those defaults. Level defaults to 50 and can be edited. IVs default to 31 and can be edited. Happiness defaults to 255 (range 0–255). Nickname is optional.
 - Mega Evolutions are a first-class form type and are off by default. Dynamax is not a form. Gigantamax is a form and is off by default.
 
 ## Testing and quality
