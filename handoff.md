@@ -23,9 +23,9 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 | Current work | None. Later features only if the user asks |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | See `git log`. The Battle Laboratory PR is the newest merge (PR number in the table below) |
+| Latest on `master` | `93fcb67` — Merge pull request #8. The following commit refreshes this handoff |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, PR_BATTLE_LAB Battle Laboratory overhaul |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul |
 | Rename `master` → `main` | Still pending |
 
 Phases 1–8 and the Battle Laboratory overhaul are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
@@ -380,4 +380,4 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8 are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8 and the Battle Laboratory overhaul (PR #8) are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
