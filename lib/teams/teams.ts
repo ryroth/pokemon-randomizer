@@ -243,7 +243,7 @@ export function clearTeam(box: TeamBox, teamId: string): TeamClearResult {
 export function clonePokemonSet(set: PokemonSet): PokemonSet {
   return {
     ...set,
-    moveIds: [set.moveIds[0], set.moveIds[1], set.moveIds[2], set.moveIds[3]],
+    moveIds: [...set.moveIds],
     evs: { ...set.evs },
     ivs: { ...set.ivs },
     nickname: set.nickname,

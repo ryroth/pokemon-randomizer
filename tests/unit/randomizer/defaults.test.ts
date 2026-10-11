@@ -6,7 +6,7 @@ import {
 } from "@/lib/randomizer/defaults";
 
 describe("DEFAULT_RANDOMIZER_CONFIG", () => {
-  it("enables base, regional, and other formes by default", () => {
+  it("enables base, regional, and other forms by default", () => {
     expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base", "regional", "other"]);
   });
 });

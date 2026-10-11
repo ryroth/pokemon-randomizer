@@ -19,13 +19,13 @@ Every entity keeps both `pokeApiSlug` and `showdownName`. Catalog `id` values ar
 
 `npm run import:data` snapshots PokéAPI over HTTP (cached in `data/cache/pokeapi/`, gitignored) and joins `@pkmn/dex` at import time.
 
-- Pokémon rows start from Showdown teambuilder species (including Past mega/Gmax formes; excluding CAP, LGPE, and cosmetic-only formes).
+- Pokémon rows start from Showdown teambuilder species (including Past mega/Gmax forms; excluding CAP, LGPE, and cosmetic-only forms).
 - PokéAPI supplies dex text, official artwork URLs, evolution chains, gender, baby flags, and English ability/move/item flavor plus `effect_entries`. Pokédex cards use the latest unique English flavor (control characters and in-game line breaks collapsed to spaces). Ability, move, and item `description` prefers PokéAPI `short_effect`/`effect` when that text includes numeric mechanics (20%, 1/16, 1.5×), then Showdown `shortDesc`/`desc` when PokéAPI only has flavor (Punk Rock 1.3×). Do not invent multipliers. Do not scrape Pokémon Database, Bulbapedia, or Serebii.
-- Showdown `evos` supply `evolutionTargetIds` on each form: later stages in that forme's line, excluding Mega, Primal, and Gigantamax.
-- Unmatched records are written to `data/generated/join-report.json` instead of being dropped silently. Showdown-only Pokémon stay in the catalog with empty dex/sprite fields. Typical leftovers are plate/drive/Tera/cosmetic formes that PokéAPI stores as form records rather than `/pokemon` varieties.
+- Showdown `evos` supply `evolutionTargetIds` on each form: later stages in that form's line, excluding Mega, Primal, and Gigantamax.
+- Unmatched records are written to `data/generated/join-report.json` instead of being dropped silently. Showdown-only Pokémon stay in the catalog with empty dex/sprite fields. Typical leftovers are plate/drive/Tera/cosmetic forms that PokéAPI stores as form records rather than `/pokemon` varieties.
 - Sprites are stored as PokéAPI official-artwork URLs. Images are not vendored.
 - The app must not call PokéAPI in the browser. Re-run the importer when source data changes.
-- `data/generated/pokemon-model-index.json` is a snapshot of optimized GLB paths from `Pokemon-3D-api/assets` (`npm run import:models`, commit `429de1288cea0d43f5b4f56305d2276e94239d65`). The recap animates the regular GLB and paints shiny textures onto it when materials pair. Do not hand-edit the index. Forms without a snapshotted model fall back to catalog artwork.
+- `data/generated/pokemon-art.json` and `data/generated/item-icons.json` come from `npm run import:art`. They fill still artwork and shiny artwork for forms the main import left without any (PokéAPI official-artwork or HOME, then Showdown `home` / `home-shiny`, then the base form) and give held items an icon (PokéAPI, then Serebii). `loadGeneratedCatalog` overlays them onto `sprites.artwork`, `sprites.artworkShiny`, and `Item.iconUrl`. Do not hand-edit them. The app uses still images only: no 3D models, GIFs, or animated sprites.
 - `data/generated/genera.json` is the English PokéAPI genus (`npm run import:genera`). Do not hand-edit it. The recap name plate shows that genus under the species name.
 - Saved teams are not catalog data. They live in browser `localStorage` under `pokemon-randomizer.teams.v1`.
 
@@ -47,8 +47,8 @@ Branching lines (Eevee) assign each species its own depth. Alolan Raichu stays s
 - `regional` — Alola, Galar, Hisui, Paldea
 - `primal` — Primal Kyogre / Groudon
 - `gmax` — Gigantamax
-- `base` — default forme
-- `other` — remaining named formes
+- `base` — default form
+- `other` — remaining named forms
 
 Dynamax is not a form.
 
@@ -119,4 +119,4 @@ Each generated option can be replaced in place any number of times. `rerollPokem
 
 ## Set draft vs finalized set
 
-`PokemonSetDraft` allows unset fields. EV spreads may be partial until every stat has a number. IVs default to 31 when the builder opens. Happiness defaults to 255 and must stay from 0 to 255. Nickname is optional, at most 18 characters, and spaces count toward that limit. `PokemonSet` is only produced by `validateSet`. Required builder fields: ability, four unique moves, item or explicit none, confirmed EVs, IVs, Nature, Tera type, gender when mixed, level, shiny, happiness. The builder move pool is `moveOptions` when Move randomization is on, and the standard catalog when it is off. The item pool always includes explicit None.
+`PokemonSetDraft` allows unset fields. EV spreads may be partial until every stat has a number. IVs default to 31 when the builder opens. Happiness defaults to 255 and must stay from 0 to 255. Nickname is optional, at most 18 characters, and spaces count toward that limit. `PokemonSet` is only produced by `validateSet`. Required builder fields: ability, one to four unique moves, item or explicit none, EVs, IVs, Nature, level, shiny, happiness. Tera type may be blank (it becomes the primary type) and gender may be blank when mixed (it is rolled 50/50 at finalize). The builder move pool is `moveOptions` when Move randomization is on, and the standard catalog when it is off. The item pool always includes explicit None.

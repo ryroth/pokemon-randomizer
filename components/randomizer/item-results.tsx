@@ -1,5 +1,6 @@
 "use client";
 
+import { ItemIcon } from "@/components/items/item-icon";
 import { RerollButton } from "@/components/randomizer/reroll-button";
 import { ITEM_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -123,6 +124,7 @@ function ItemCardBody({
   return (
     <>
       <CardHeader>
+        <ItemIcon iconUrl={item.iconUrl} className="size-10" />
         <CardTitle>
           <h3 className="contents">{item.name}</h3>
         </CardTitle>

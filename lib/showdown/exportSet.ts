@@ -8,7 +8,7 @@ export interface ExportNames {
   ability: string;
   item: string | null;
   nature: string;
-  moves: [string, string, string, string];
+  moves: readonly string[];
 }
 
 function formatStatLine(prefix: string, spread: StatSpread, includeStat: (value: number) => boolean) {

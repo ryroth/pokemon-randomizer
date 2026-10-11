@@ -26,6 +26,7 @@ import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { openBuilder } from "@/lib/builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { pokemonImage } from "@/lib/art/pokemonImage";
 import { evolutionChoices } from "@/lib/data/evolution";
 import {
   applyAbilityRoll,
@@ -64,6 +65,7 @@ import {
   replaceRolledMove,
   replaceRolledPokemon,
   requiredMovesPerPokemon,
+  resetDisallowedEvolution,
   rerollAbility,
   rerollItem,
   rerollMove,
@@ -142,7 +144,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
     ? pokemonById.get(session.selectedPokemonId)
     : undefined;
   const selectedEvolutionChoices = selectedPokemon
-    ? evolutionChoices(selectedPokemon, pokemonById)
+    ? evolutionChoices(selectedPokemon, pokemonById, session.config.evolutionStages)
     : [];
   const chosenBattlePokemonId = battlePokemonId(session);
   const chosenBattlePokemon = chosenBattlePokemonId
@@ -728,10 +730,13 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                   onChange={(config) => {
                     setErrorMessage(null);
                     setSession(
-                      syncRandomizerTab({
-                        ...session,
-                        config,
-                      }),
+                      resetDisallowedEvolution(
+                        syncRandomizerTab({
+                          ...session,
+                          config,
+                        }),
+                        pokemonById,
+                      ),
                     );
                   }}
                 />
@@ -1009,7 +1014,7 @@ function continueLabel(
 }
 
 function BattlePokemonSummary({ pokemon }: { pokemon: PokemonForm }) {
-  const imageSrc = pokemon.sprites.artwork ?? pokemon.sprites.sprite;
+  const imageSrc = pokemonImage(pokemon, false);
 
   return (
     <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">

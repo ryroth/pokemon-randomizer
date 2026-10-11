@@ -58,7 +58,7 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon filters", () => {
     expect(ids.has(bySlug("kyogre-primal").id)).toBe(false);
   });
 
-  it("includes Alolan Raichu only when regional formes and gen 7 are enabled", () => {
+  it("includes Alolan Raichu only when regional forms and gen 7 are enabled", () => {
     const withoutRegional = idsOf(filter({ generations: [7], formTypes: ["base", "other"] }));
     expect(withoutRegional.has(bySlug("raichu-alola").id)).toBe(false);
     expect(withoutRegional.has(bySlug("nihilego").id)).toBe(true);
@@ -133,7 +133,7 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon filters", () => {
     expect(result.has(bySlug("pichu").id)).toBe(false);
   });
 
-  it("combines regional formes with a sub-legendary exclusion", () => {
+  it("combines regional forms with a sub-legendary exclusion", () => {
     const allowed = idsOf(filter({ formTypes: ["regional"] }));
     const excluded = idsOf(
       filter({

@@ -1,12 +1,18 @@
 "use client";
 
+import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { TypeBadge } from "@/components/recap/type-badge";
 import { formatMoveTableAccuracy, formatMoveTablePower, formatMoveTablePp } from "@/lib/data/moveDisplay";
 import { MOVE_CATEGORY_LABELS, type MoveCategory } from "@/lib/types/catalog-entities";
 import type { RecapMoveView } from "@/lib/recap/entries";
 
-export function MovePanel({ moves }: { moves: readonly RecapMoveView[] }) {
+/**
+ * `editable` adds an Edit link on each move that opens that move slot in the builder. Saved team
+ * recaps are read-only and leave it off.
+ */
+export function MovePanel({ moves, editable = false }: { moves: readonly RecapMoveView[]; editable?: boolean }) {
   const [selected, setSelected] = useState(0);
   const move = moves[selected] ?? moves[0];
   if (!move) {
@@ -19,12 +25,12 @@ export function MovePanel({ moves }: { moves: readonly RecapMoveView[] }) {
         {moves.map((candidate, index) => {
           const pressed = index === selected;
           return (
-            <li key={`${candidate.name}-${index}`}>
+            <li key={`${candidate.name}-${index}`} className="flex items-stretch gap-1.5">
               <button
                 type="button"
                 aria-pressed={pressed}
                 onClick={() => setSelected(index)}
-                className={`flex w-full items-center gap-3 rounded-lg border px-2.5 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#f2c14e] ${
+                className={`flex min-w-0 flex-1 items-center gap-3 rounded-lg border px-2.5 py-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-[#f2c14e] ${
                   pressed ? "border-[#f2c14e] bg-[#245fb4]" : "border-transparent bg-[#12367a] hover:bg-[#1a4694]"
                 }`}
               >
@@ -34,6 +40,16 @@ export function MovePanel({ moves }: { moves: readonly RecapMoveView[] }) {
                   PP {formatMoveTablePp(candidate.pp)}
                 </span>
               </button>
+              {editable ? (
+                <Link
+                  href={`/builder#move-${index + 1}`}
+                  aria-label={`Edit move ${index + 1}: ${candidate.name}`}
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#0c2b62] px-2.5 text-xs font-semibold text-[#f2c14e] outline-none hover:bg-[#12367a] focus-visible:ring-2 focus-visible:ring-[#f2c14e]"
+                >
+                  <Pencil aria-hidden="true" className="size-3.5" />
+                  Edit
+                </Link>
+              ) : null}
             </li>
           );
         })}

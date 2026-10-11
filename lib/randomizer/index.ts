@@ -120,6 +120,7 @@ export {
   replaceRolledItem,
   replaceRolledMove,
   replaceRolledPokemon,
+  resetDisallowedEvolution,
   rolledPokemonIds,
   selectRolledAbility,
   selectRolledItem,

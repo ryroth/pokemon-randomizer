@@ -27,20 +27,6 @@ async function seedTeam(page: Page) {
   }, box);
 }
 
-/** A valid 3D model file that has a scene but no animation clips, so it would stand in a T-pose. */
-function stillGlb(): Buffer {
-  const json = Buffer.from(JSON.stringify({ asset: { version: "2.0" }, scene: 0, scenes: [{ nodes: [] }] }));
-  const padded = Buffer.concat([json, Buffer.alloc((4 - (json.length % 4)) % 4, 0x20)]);
-  const header = Buffer.alloc(12);
-  header.writeUInt32LE(0x46546c67, 0);
-  header.writeUInt32LE(2, 4);
-  header.writeUInt32LE(12 + 8 + padded.length, 8);
-  const chunk = Buffer.alloc(8);
-  chunk.writeUInt32LE(padded.length, 0);
-  chunk.writeUInt32LE(0x4e4f534a, 4);
-  return Buffer.concat([header, chunk, padded]);
-}
-
 test.describe("loading screen", () => {
   // Without scripts the page stays on the server-rendered loading screen.
   test.use({ javaScriptEnabled: false, reducedMotion: "no-preference" });
@@ -164,25 +150,17 @@ test.describe("Pokédex entries from every generation", () => {
   });
 });
 
-test.describe("recap artwork fallback", () => {
-  test("a model with no idle animation falls back to the artwork", async ({ page }) => {
-    await page.route("**/Pokemon-3D-api/assets/**", (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "model/gltf-binary",
-        headers: { "access-control-allow-origin": "*" },
-        body: stillGlb(),
-      }),
-    );
+test.describe("recap artwork", () => {
+  test("shows still official artwork, never a 3D model or animation", async ({ page }) => {
     await seedTeam(page);
     await page.goto("/teams");
     await page.getByRole("button", { name: "View recap, slot 1" }).click();
 
-    // The viewer only starts loading once it scrolls into view.
-    await page.getByRole("region", { name: "3D idle animation of Swampert" }).scrollIntoViewIfNeeded();
     const artwork = page.getByRole("img", { name: "Artwork of Swampert" });
     await expect(artwork).toBeVisible({ timeout: 20_000 });
-    await expect(artwork).toHaveAttribute("src", /official-artwork/);
+    await expect(artwork).toHaveAttribute("src", /official-artwork|home/);
+    await expect(artwork).not.toHaveAttribute("src", /\.gif/);
+    await expect(page.locator("model-viewer")).toHaveCount(0);
   });
 });
 

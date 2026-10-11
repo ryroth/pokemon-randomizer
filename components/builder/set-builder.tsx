@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,7 +14,7 @@ import {
   applySuggestedEvs,
   clearDraftEvs,
   finalizeBuilderSet,
-  guessEvSpread,
+  suggestEvSpread,
   setDraftAbility,
   setDraftEv,
   setDraftGender,
@@ -36,20 +36,25 @@ import { TeraTypePicker } from "@/components/builder/tera-type-picker";
 import { TypeBadge } from "@/components/recap/type-badge";
 import { AbilityDropdown } from "@/components/builder/ability-dropdown";
 import { ItemPicker } from "@/components/builder/item-picker";
+import { ItemIcon } from "@/components/items/item-icon";
 import { NumberInput } from "@/components/builder/number-input";
 import { MovePicker } from "@/components/builder/move-picker";
 import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { builderAbilityPool, battlePokemonId } from "@/lib/randomizer";
+import { builderAbilityPool, battlePokemonId, openRandomizerTab } from "@/lib/randomizer";
 import { hiddenAbilityId } from "@/lib/builder/abilities";
+import { focusBuilderTarget } from "@/components/builder/focus-target";
 import {
   abilityLockedByRandomizer,
   itemLockedByRandomizer,
   moveSlotLockedByRandomizer,
+  pendingRandomizerSteps,
 } from "@/lib/builder/locks";
 import type { Ability, Item, Move, Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
-import { DEFAULT_HAPPINESS, DEFAULT_LEVEL, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, REQUIRED_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
+import type { RandomizerTab } from "@/lib/types/randomizer";
+import { defaultTeraType } from "@/lib/validation/set";
+import { DEFAULT_HAPPINESS, DEFAULT_LEVEL, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, MAX_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
 const controlClass =
@@ -72,6 +77,20 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const pokemonById = useMemo(() => new Map(pokemon.map((form) => [form.id, form])), [pokemon]);
   const battleId = battlePokemonId(session);
   const battlePokemon = battleId ? pokemonById.get(battleId) : undefined;
+  const hasBattlePokemon = Boolean(battlePokemon);
+
+  // Coming from a recap link such as /builder#ability: scroll to that part and focus it.
+  useEffect(() => {
+    if (!ready || !hasBattlePokemon) {
+      return;
+    }
+    const target = window.location.hash.slice(1);
+    if (!target) {
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => focusBuilderTarget(target));
+    return () => window.cancelAnimationFrame(frame);
+  }, [ready, hasBattlePokemon]);
 
   if (!ready) {
     return <RouteNotice title="Build the set" message="Loading your set…" live width="builder" />;
@@ -97,11 +116,18 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
     learnsetIds: learnsetMoveIdsByMethod(battlePokemon.id, learnMethods),
   });
   const itemPool = builderItemPool(session, items);
-  const validation = validateSet(session.draft, battlePokemon);
+  // A blank gender is rolled when the set is finished, so it never blocks the recap. The value
+  // here only lets validation treat it as filled in.
+  const validation = validateSet(session.draft, battlePokemon, { fallbackGender: "M" });
+  const pending = pendingRandomizerSteps(session);
+  const abilityPending = pending.includes("ability");
+  const movesPending = pending.includes("move");
+  const itemPending = pending.includes("item");
+  const readyForRecap = validation.ok && pending.length === 0;
   const issues = validation.ok ? [] : validation.errors;
   const evTotal = sumEvs(evsCountingBlanksAsZero(session.draft.evs));
   const filledMoveSlots = session.draft.moveIds.filter((id) => Boolean(id)).length;
-  const emptyMoveSlots = REQUIRED_MOVE_COUNT - filledMoveSlots;
+  const emptyMoveSlots = MAX_MOVE_COUNT - filledMoveSlots;
   const appliedFromRandomizer = session.config.randomizeMoves ? filledMoveSlots : 0;
   const chosenMoves = session.draft.moveIds.map((id) =>
     id ? moves.find((move) => move.id === id) : undefined,
@@ -112,7 +138,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const chosenAbility = abilities.find((ability) => ability.id === session.draft.abilityId);
   const heldItem = items.find((item) => item.id === session.draft.itemId);
   const chosenNature = natures.find((entry) => entry.id === session.draft.natureId);
-  const evSuggestion = guessEvSpread({
+  const evSuggestion = suggestEvSpread({
     showdownName: battlePokemon.showdownName,
     baseStats: battlePokemon.baseStats,
     types: battlePokemon.types,
@@ -135,8 +161,9 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         </Link>
         <h1 className="text-h1 font-semibold tracking-tight">Build {battlePokemon.displayName}</h1>
         <p className="max-w-3xl text-base leading-7 text-muted-foreground">
-          Finish the set by hand. EVs, Nature, Tera type, and shiny stay empty until you set them.
-          Level starts at {DEFAULT_LEVEL} and IVs at 31. Mixed-gender Pokémon need a gender choice too.
+          Finish the set by hand. EVs and Nature stay empty until you set them. Leave Tera type blank
+          to use {battlePokemon.displayName}&apos;s primary type, and Gender blank to have one picked at
+          random. Level starts at {DEFAULT_LEVEL} and IVs at 31. A set needs at least one move.
         </p>
       </header>
 
@@ -151,7 +178,26 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           }
         }}
       >
-        <section className="space-y-3">
+        {pending.length > 0 ? (
+          <div
+            role="status"
+            className="space-y-2 rounded-xl border border-border bg-card px-4 py-3 text-sm"
+          >
+            <p className="font-medium">Finish the randomizer first</p>
+            <p className="text-muted-foreground">
+              {pendingSentence(pending)} Parts that were randomized are never picked by hand here.
+            </p>
+            <Link
+              href="/randomizer"
+              className={cn(buttonVariants({ variant: "outline" }), "w-fit")}
+              onClick={() => setSession(openRandomizerTab(session, pending[0] ?? "pokemon"))}
+            >
+              {pendingLinkLabel(pending[0])}
+            </Link>
+          </div>
+        ) : null}
+
+        <section id="nickname" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none">
           <h2 className="text-lg font-medium">Nickname</h2>
           <label className="block space-y-1.5 text-sm font-medium">
             Nickname
@@ -168,28 +214,35 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           </p>
         </section>
 
-      <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4">
-        <PokemonPortrait pokemon={battlePokemon} shiny={session.draft.shiny} />
-        <div className="min-w-0 space-y-1">
-          <p className="font-medium">{battlePokemon.displayName}</p>
-          <p className="flex flex-wrap gap-1.5">
-            {battlePokemon.types.map((type) => (
-              <TypeBadge key={type} type={type} />
-            ))}
-          </p>
-        </div>
-      </div>
+        <ShinyField
+          shiny={session.draft.shiny}
+          onChange={(shiny) => setSession(setDraftShiny(session, shiny))}
+        />
 
-        <section className="space-y-3">
+        <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4">
+          <PokemonPortrait pokemon={battlePokemon} shiny={session.draft.shiny} />
+          <div className="min-w-0 space-y-1">
+            <p className="font-medium">{battlePokemon.displayName}</p>
+            <p className="flex flex-wrap gap-1.5">
+              {battlePokemon.types.map((type) => (
+                <TypeBadge key={type} type={type} />
+              ))}
+            </p>
+          </div>
+        </div>
+
+        <section id="ability" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none">
           <h2 className="text-lg font-medium">Ability</h2>
           <p className="text-sm text-muted-foreground">
             {abilityLocked
               ? "This ability was set by the ability randomizer."
-              : session.config.randomizeAbilities
-                ? "Choose one ability from the ones you generated."
-                : `Choose one of ${battlePokemon.displayName}'s usual abilities.`}
+              : abilityPending
+                ? "The ability randomizer has not given this Pokémon an ability yet."
+                : session.config.randomizeAbilities
+                  ? "Choose one ability from the ones you generated."
+                  : `Choose one of ${battlePokemon.displayName}'s usual abilities.`}
           </p>
-          {abilityLocked ? (
+          {abilityPending ? null : abilityLocked ? (
             <div className="overflow-hidden rounded-lg border border-border">
               <div className="flex flex-col gap-1 bg-primary/15 px-3 py-2 sm:flex-row sm:items-start sm:gap-3">
                 <span className="font-medium leading-6 sm:w-40 sm:shrink-0">{chosenAbility?.name}</span>
@@ -212,19 +265,21 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           )}
         </section>
 
-        <section className="space-y-3">
+        <section id="moves" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none">
           <h2 className="text-lg font-medium">Moves</h2>
           <p className="text-sm text-muted-foreground">
-            {appliedFromRandomizer > 0
-              ? emptyMoveSlots === 0
-                ? "These moves were set by the move randomizer."
-                : `${appliedFromRandomizer} ${appliedFromRandomizer === 1 ? "move" : "moves"} you applied ${appliedFromRandomizer === 1 ? "is" : "are"} locked. Choose the empty ${emptyMoveSlots === 1 ? "slot" : "slots"} from the list below.`
-              : moveList === "learnset"
-                ? `Choose four unique moves ${battlePokemon.displayName} can learn by level-up, egg, TM, or tutor.`
-                : "Choose four unique moves from the standard move list."}
+            {movesPending
+              ? "The move randomizer has not given this Pokémon its moves yet."
+              : appliedFromRandomizer > 0
+                ? emptyMoveSlots === 0
+                  ? "These moves were set by the move randomizer."
+                  : `${appliedFromRandomizer} ${appliedFromRandomizer === 1 ? "move" : "moves"} you applied ${appliedFromRandomizer === 1 ? "is" : "are"} locked. Choose the empty ${emptyMoveSlots === 1 ? "slot" : "slots"} from the list below, or leave ${emptyMoveSlots === 1 ? "it" : "them"} empty.`
+                : moveList === "learnset"
+                  ? `Choose one to four unique moves ${battlePokemon.displayName} can learn by level-up, egg, TM, or tutor.`
+                  : "Choose one to four unique moves from the standard move list."}
           </p>
-          {moveLocks.every(Boolean) ? null : (
-          <fieldset className="space-y-2">
+          {movesPending || moveLocks.every(Boolean) ? null : (
+            <fieldset className="space-y-2">
               <legend className="text-sm font-medium">Move list</legend>
               <div className="flex flex-wrap gap-4">
                 <label className="flex items-center gap-2 text-sm">
@@ -248,43 +303,48 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
               </div>
             </fieldset>
           )}
-          <MovePicker
-            moves={moves}
-            poolIds={movePool}
-            selectedIds={session.draft.moveIds}
-            lockedSlots={moveLocks}
-            pokemonTypes={battlePokemon.types}
-            learnFilter={
-              moveList === "learnset"
-                ? {
-                    methods: learnMethods,
-                    onChange: setLearnMethods,
-                    methodsFor: (moveId) => learnMethodsForMove(battlePokemon.id, moveId),
-                  }
-                : undefined
-            }
-            onSelect={(slot, moveId) => {
-              const current = session.draft.moveIds[slot];
-              const allowed =
-                current && !movePool.includes(current) ? [current, ...movePool] : movePool;
-              setSession(setDraftMove(session, slot, moveId, allowed));
-            }}
-          />
+          {movesPending ? null : (
+            <MovePicker
+              moves={moves}
+              poolIds={movePool}
+              selectedIds={session.draft.moveIds}
+              lockedSlots={moveLocks}
+              pokemonTypes={battlePokemon.types}
+              learnFilter={
+                moveList === "learnset"
+                  ? {
+                      methods: learnMethods,
+                      onChange: setLearnMethods,
+                      methodsFor: (moveId) => learnMethodsForMove(battlePokemon.id, moveId),
+                    }
+                  : undefined
+              }
+              onSelect={(slot, moveId) => {
+                const current = session.draft.moveIds[slot];
+                const allowed =
+                  current && !movePool.includes(current) ? [current, ...movePool] : movePool;
+                setSession(setDraftMove(session, slot, moveId, allowed));
+              }}
+            />
+          )}
         </section>
 
-        <section className="space-y-3">
+        <section id="item" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none">
           <h2 className="text-lg font-medium">Held item</h2>
           <p className="text-sm text-muted-foreground">
             {itemLocked
               ? "This held item was set by the item randomizer."
-              : session.config.randomizeItems
-                ? "Choose one generated item, or None."
-                : "Choose a holdable item, or None. The list uses the same categories as the item randomizer."}
+              : itemPending
+                ? "The item randomizer has not given this Pokémon an item yet."
+                : session.config.randomizeItems
+                  ? "Choose one generated item, or None."
+                  : "Choose a holdable item, or None. The list uses the same categories as the item randomizer."}
           </p>
-          {itemLocked ? (
+          {itemPending ? null : itemLocked ? (
             <div className="overflow-hidden rounded-lg border border-border">
               <div className="flex flex-col gap-1 bg-primary/15 px-3 py-2 sm:flex-row sm:items-start sm:gap-3">
-                <span className="font-medium leading-6 sm:w-40 sm:shrink-0">
+                <span className="flex items-center gap-2 font-medium leading-6 sm:w-40 sm:shrink-0">
+                  <ItemIcon iconUrl={heldItem?.iconUrl} none={session.draft.itemId === null} />
                   {session.draft.itemId === null ? "None" : (heldItem?.name ?? session.draft.itemId)}
                 </span>
                 <span className="text-sm">
@@ -325,21 +385,26 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         />
 
         <section className="space-y-3">
-          <h2 className="text-lg font-medium">Tera, gender, level, shiny, happiness</h2>
+          <h2 className="text-lg font-medium">Tera type, gender, level, happiness</h2>
 
-          <TeraTypePicker
-            value={session.draft.teraType}
-            onChange={(type) => setSession(setDraftTeraType(session, type))}
-          />
+          <div id="tera-type" tabIndex={-1} className="scroll-mt-24 outline-none">
+            <TeraTypePicker
+              value={session.draft.teraType}
+              defaultType={defaultTeraType(battlePokemon)}
+              onChange={(type) => setSession(setDraftTeraType(session, type))}
+            />
+          </div>
 
-          <GenderField
-            displayName={battlePokemon.displayName}
-            genderRule={battlePokemon.genderRule}
-            gender={session.draft.gender}
-            onChange={(gender) => setSession(setDraftGender(session, gender, battlePokemon.genderRule))}
-          />
+          <div id="gender" tabIndex={-1} className="scroll-mt-24 outline-none">
+            <GenderField
+              displayName={battlePokemon.displayName}
+              genderRule={battlePokemon.genderRule}
+              gender={session.draft.gender}
+              onChange={(gender) => setSession(setDraftGender(session, gender, battlePokemon.genderRule))}
+            />
+          </div>
 
-          <label className="block max-w-xs space-y-1.5 text-sm font-medium">
+          <label id="level" className="block max-w-xs scroll-mt-24 space-y-1.5 text-sm font-medium">
             Level
             <NumberInput
               min={MIN_LEVEL}
@@ -350,31 +415,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
             />
           </label>
 
-          <fieldset className="space-y-2">
-            <legend className="text-sm font-medium">Shiny</legend>
-            <div className="flex flex-wrap gap-4 text-sm">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="shiny"
-                  checked={session.draft.shiny === true}
-                  onChange={() => setSession(setDraftShiny(session, true))}
-                />
-                Yes
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="shiny"
-                  checked={session.draft.shiny === false}
-                  onChange={() => setSession(setDraftShiny(session, false))}
-                />
-                No
-              </label>
-            </div>
-          </fieldset>
-
-          <fieldset className="space-y-2">
+          <fieldset id="happiness" className="scroll-mt-24 space-y-2">
             <legend className="text-sm font-medium">Happiness</legend>
             <p className="text-sm text-muted-foreground">
               From {MIN_HAPPINESS} to {MAX_HAPPINESS}. Frustration is strongest at {MIN_HAPPINESS}.
@@ -415,6 +456,10 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
               ))}
             </ul>
           </div>
+        ) : pending.length > 0 ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            {pendingSentence(pending)}
+          </p>
         ) : (
           <p role="status" className="text-sm text-muted-foreground">
             This set is ready for the recap.
@@ -422,7 +467,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Button type="submit" size="lg" disabled={!validation.ok}>
+          <Button type="submit" size="lg" disabled={!readyForRecap}>
             Continue to recap
           </Button>
           <Link href="/randomizer" className={cn(buttonVariants({ size: "lg", variant: "outline" }), "w-fit")}>
@@ -477,7 +522,71 @@ function GenderField({
           />
           Female
         </label>
+        <label className="flex items-center gap-2">
+          <input
+            type="radio"
+            name="gender"
+            checked={gender === undefined}
+            onChange={() => onChange(undefined)}
+          />
+          Random
+        </label>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Random picks Male or Female when you continue to the recap.
+      </p>
+    </fieldset>
+  );
+}
+
+/** Shiny sits under the nickname so the picture beside it shows the change right away. */
+function ShinyField({
+  shiny,
+  onChange,
+}: {
+  shiny: boolean | undefined;
+  onChange: (shiny: boolean) => void;
+}) {
+  return (
+    <fieldset id="shiny" tabIndex={-1} className="scroll-mt-24 space-y-2 outline-none">
+      <legend className="text-sm font-medium">Shiny</legend>
+      <div className="flex flex-wrap gap-4 text-sm">
+        <label className="flex items-center gap-2">
+          <input type="radio" name="shiny" checked={shiny === true} onChange={() => onChange(true)} />
+          Yes
+        </label>
+        <label className="flex items-center gap-2">
+          <input type="radio" name="shiny" checked={shiny === false} onChange={() => onChange(false)} />
+          No
+        </label>
       </div>
     </fieldset>
   );
+}
+
+const PENDING_LABELS: Record<RandomizerTab, string> = {
+  pokemon: "Pokémon",
+  ability: "ability",
+  move: "moves",
+  item: "item",
+};
+
+function pendingSentence(pending: readonly RandomizerTab[]): string {
+  const names = pending.map((tab) => PENDING_LABELS[tab]);
+  const list =
+    names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}` : (names[0] ?? "");
+  return `The ${list} ${names.length > 1 ? "randomizers have" : "randomizer has"} not finished for this Pokémon.`;
+}
+
+function pendingLinkLabel(tab: RandomizerTab | undefined): string {
+  switch (tab) {
+    case "ability":
+      return "Back to the ability randomizer";
+    case "move":
+      return "Back to the move randomizer";
+    case "item":
+      return "Back to the item randomizer";
+    default:
+      return "Back to the randomizer";
+  }
 }

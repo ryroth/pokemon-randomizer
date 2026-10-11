@@ -212,7 +212,7 @@ describe("builder draft", () => {
     expect(session.draft.evs?.def).toBe(4);
   });
 
-  it("applies a guessed EV spread and its nature", () => {
+  it("applies a suggested EV spread and its nature", () => {
     const session = openBuilder({
       ...createInitialSession(),
       selectedPokemonId: "mudkip",
@@ -224,7 +224,7 @@ describe("builder draft", () => {
     expect(next.draft.natureId).toBe("timid");
   });
 
-  it("keeps the current nature when the guessed name is not in the catalog", () => {
+  it("keeps the current nature when the suggested name is not in the catalog", () => {
     const opened = openBuilder({
       ...createInitialSession(),
       selectedPokemonId: "mudkip",

@@ -57,7 +57,8 @@ function isPokemonSet(value: unknown): value is PokemonSet {
     (set.itemId === null || typeof set.itemId === "string") &&
     typeof set.abilityId === "string" &&
     Array.isArray(set.moveIds) &&
-    set.moveIds.length === 4 &&
+    set.moveIds.length >= 1 &&
+    set.moveIds.length <= 4 &&
     set.moveIds.every((id) => typeof id === "string") &&
     isStatSpread(set.evs) &&
     isStatSpread(set.ivs) &&

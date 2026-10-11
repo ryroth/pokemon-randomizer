@@ -134,6 +134,16 @@ describe("previewShowdownImport", () => {
     expect(only(SWAMPERT_PASTE)).toMatchObject({ ok: true, label: "Mud (Swampert)" });
   });
 
+  it("accepts a set with fewer than four moves, and rejects more than four", () => {
+    const base = ["Swampert (M)", "Ability: Damp", "Tera Type: Water", "Adamant Nature"];
+    expect(only([...base, "- Earthquake"].join("\n")).ok).toBe(true);
+    expect(only([...base, "- Earthquake", "- Surf"].join("\n")).ok).toBe(true);
+    const tooMany = only([...base, "- Earthquake", "- Surf", "- Waterfall", "- Protect", "- Ice Beam"].join("\n"));
+    expect(tooMany.ok).toBe(false);
+    if (!tooMany.ok) {
+      expect(tooMany.problems.join("\n")).toContain("at most 4 moves");
+    }
+  });
   it("looks up forms and punctuation the way Showdown does", () => {
     const result = only(
       ["Urshifu-Rapid-Strike (M) @ Choice Band", "Ability: Unseen Fist", "Tera Type: Water", "Jolly Nature", "- Surging Strikes", "- Close Combat", "- U-turn", "- Aqua Jet"].join("\n"),
@@ -146,7 +156,7 @@ describe("previewShowdownImport", () => {
   });
 
   it("lists everything the app will not fill in on its own", () => {
-    const result = only("Swampert\n- Earthquake");
+    const result = only("Swampert");
     expect(result.ok).toBe(false);
     if (!result.ok) {
       const text = result.problems.join("\n");
@@ -154,7 +164,7 @@ describe("previewShowdownImport", () => {
       expect(text).toContain("Nature");
       expect(text).toContain("Tera Type");
       expect(text).toContain("(M) or (F)");
-      expect(text).toContain("exactly 4 moves");
+      expect(text).toContain("at least one move");
     }
   });
 

@@ -7,13 +7,13 @@ import {
 import { createRng, InsufficientPoolError, pickUnique } from "@/lib/randomizer/randomUtils";
 
 describe("classifyFormType", () => {
-  it("keeps mega formes as mega", () => {
+  it("keeps mega forms as mega", () => {
     expect(classifyFormType({ slug: "venusaur-mega", formName: "mega", isMega: true })).toBe(
       "mega",
     );
   });
 
-  it("classifies regional formes", () => {
+  it("classifies regional forms", () => {
     expect(classifyFormType({ slug: "raichu-alola", formName: "alola" })).toBe("regional");
   });
 

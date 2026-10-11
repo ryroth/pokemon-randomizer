@@ -14,16 +14,16 @@ export interface EvSuggestion {
   minusStat: Exclude<StatId, "hp">;
 }
 
-export interface GuessMove {
+export interface SuggestMove {
   showdownName: string;
   category: MoveCategory;
 }
 
-export interface EvGuessInput {
+export interface EvSuggestionInput {
   showdownName: string;
   baseStats: StatSpread;
   types: readonly PokemonType[];
-  moves: readonly (GuessMove | undefined)[];
+  moves: readonly (SuggestMove | undefined)[];
   abilityName?: string;
   itemName?: string;
   level?: number;
@@ -190,7 +190,7 @@ const STAT_CHART: Record<string, readonly [RoleStat, StatId]> = {
   "Specially Defensive": ["spd", "hp"],
 };
 
-export function guessEvSpread(input: EvGuessInput): EvSuggestion | undefined {
+export function suggestEvSpread(input: EvSuggestionInput): EvSuggestion | undefined {
   const judged = judgeRole(input);
   if (!judged || judged.role === "?") {
     return undefined;
@@ -207,7 +207,7 @@ export function guessEvSpread(input: EvGuessInput): EvSuggestion | undefined {
   };
 }
 
-export function formatGuessedSpread(suggestion: EvSuggestion): string {
+export function formatSuggestedSpread(suggestion: EvSuggestion): string {
   const investedStats = STAT_IDS.filter((stat) => (suggestion.evs[stat] ?? 0) > 0).map(
     (stat) => `${suggestion.evs[stat]} ${SHOWDOWN_STAT_LABELS[stat]}`,
   );
@@ -219,7 +219,7 @@ export function formatGuessedSpread(suggestion: EvSuggestion): string {
   return spread ? `${suggestion.role}: ${spread}` : suggestion.role;
 }
 
-function judgeRole(input: EvGuessInput): { role: string; moveCount: MoveCount; hasMove: Set<string> } | undefined {
+function judgeRole(input: EvSuggestionInput): { role: string; moveCount: MoveCount; hasMove: Set<string> } | undefined {
   const moveIds = input.moves.map((move) => (move ? toId(move.showdownName) : ""));
   if (moveIds.every((id) => id.length === 0)) {
     return undefined;
@@ -575,7 +575,7 @@ function countStatusMove(moveId: string, moveCount: MoveCount): void {
 }
 
 function guessEvs(
-  input: EvGuessInput,
+  input: EvSuggestionInput,
   role: string,
   moveCount: MoveCount,
   hasMove: Set<string>,
@@ -692,7 +692,7 @@ function guessEvs(
   return { evs, plusStat, minusStat };
 }
 
-function evsForCap(input: EvGuessInput, stat: StatId, natureMultiplier: number): number {
+function evsForCap(input: EvSuggestionInput, stat: StatId, natureMultiplier: number): number {
   let ev = MAX_EV;
   const capped = showdownStat(input, stat, ev, natureMultiplier);
   while (ev > 0 && capped <= showdownStat(input, stat, ev - EV_STEP, natureMultiplier)) {
@@ -764,7 +764,7 @@ function ensureMaxEvs(evs: StatSpread, stat: StatId, min: number, evTotal: numbe
 }
 
 function ensureHpDivisibility(
-  input: EvGuessInput,
+  input: EvSuggestionInput,
   evs: StatSpread,
   hasMove: Set<string>,
   evTotal: number,
@@ -818,7 +818,7 @@ function ensureHpDivisibility(
   return evTotal;
 }
 
-function stealthRockWeakness(input: EvGuessInput): number {
+function stealthRockWeakness(input: EvSuggestionInput): number {
   const abilityId = toId(input.abilityName);
   if (abilityId === "magicguard" || abilityId === "mountaineer") {
     return 0;
@@ -841,7 +841,7 @@ function stealthRockWeakness(input: EvGuessInput): number {
  * A nature multiplier of 1.1 or 1 is the guess's own plus stat. Omitted, the set's current Nature applies.
  */
 function showdownStat(
-  input: EvGuessInput,
+  input: EvSuggestionInput,
   stat: StatId,
   ev: number,
   natureMultiplier?: number,

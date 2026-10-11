@@ -56,7 +56,7 @@ function makeForm(
 }
 
 describe("collectEvolutionTargetIds", () => {
-  it("walks later stages and skips Mega formes", () => {
+  it("walks later stages and skips Mega forms", () => {
     const charmander = makeForm("charmander", { evolutionStage: "basic", nationalDexNumber: 4 });
     const charmeleon = makeForm("charmeleon", { evolutionStage: "stage1", nationalDexNumber: 5 });
     const charizard = makeForm("charizard", { evolutionStage: "stage2", nationalDexNumber: 6 });
@@ -197,7 +197,7 @@ describe("evolution path conflicts", () => {
   ];
   const context = evolutionConflictContext(family);
 
-  it("blocks later stages and other formes on the same path", () => {
+  it("blocks later stages and other forms on the same path", () => {
     expect(evolutionFormsConflict(honedge, doublade, context)).toBe(true);
     expect(evolutionFormsConflict(honedge, aegislash, context)).toBe(true);
     expect(evolutionFormsConflict(aegislash, aegislashBlade, context)).toBe(true);

@@ -65,6 +65,8 @@ export interface Item {
   description: string;
   kind: ItemKind;
   category: ItemCategory;
+  /** A still picture of the item from `data/generated/item-icons.json`, or null when none exists. */
+  iconUrl?: string | null;
 }
 
 export interface Nature {

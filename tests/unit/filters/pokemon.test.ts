@@ -126,7 +126,7 @@ const pool = [
 ];
 
 describe("filterPokemonForms", () => {
-  it("uses default config: base, regional, and other formes, all specials allowed", () => {
+  it("uses default config: base, regional, and other forms, all specials allowed", () => {
     const result = filterPokemonForms(pool, DEFAULT_RANDOMIZER_CONFIG);
 
     expect(ids(result)).toEqual([

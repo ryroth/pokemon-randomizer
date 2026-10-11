@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { pokemonImage } from "@/lib/art/pokemonImage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TYPE_LABELS } from "@/lib/types/pokemon-type";
 import type { PokemonForm } from "@/lib/types/pokemon";
@@ -37,6 +38,11 @@ export function PokemonEvolutionPicker({
             {selected.displayName} can evolve. Choose the stage you want to use in battle. Ability,
             move, and item randomizers will use this Pokémon.
           </p>
+        ) : (selected.evolutionTargetIds ?? []).length > 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Your Evolution stages filter does not include a later stage for {selected.displayName}, so
+            you will use it as-is. Select more than one stage to choose an evolution.
+          </p>
         ) : (
           <p className="text-sm text-muted-foreground">
             {selected.displayName} does not evolve further. You will use it as-is when you build the
@@ -49,7 +55,7 @@ export function PokemonEvolutionPicker({
           {choices.map((form) => {
             const chosen = form.id === battlePokemonId;
             const isKeep = form.id === selected.id;
-            const imageSrc = form.sprites.artwork ?? form.sprites.sprite;
+            const imageSrc = pokemonImage(form, false);
 
             return (
               <li key={form.id}>

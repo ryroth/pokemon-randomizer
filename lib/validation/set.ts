@@ -1,5 +1,7 @@
 import type { PokemonForm } from "@/lib/types/pokemon";
+import type { TeraType } from "@/lib/types/pokemon-type";
 import type { PokemonSet, PokemonSetDraft } from "@/lib/types/session";
+import type { Gender } from "@/lib/types/taxonomy";
 import { STAT_IDS, STAT_LABELS, type StatSpread } from "@/lib/types/stats";
 import { validateAbility, validateItem, validateNature } from "@/lib/validation/identity";
 import {
@@ -20,9 +22,22 @@ import {
   type ValidationResult,
 } from "@/lib/validation/result";
 
+export interface ValidateSetOptions {
+  /**
+   * Used when a Pokémon with both genders has none chosen. Without it, that is an error. The
+   * builder passes a randomly rolled gender when the user leaves Gender blank.
+   */
+  fallbackGender?: Gender;
+}
+
+/**
+ * A blank Tera type becomes the Pokémon's primary type (a dual type uses its first type). A blank
+ * gender is only accepted when `options.fallbackGender` supplies one.
+ */
 export function validateSet(
   draft: PokemonSetDraft,
   pokemon: PokemonForm | undefined,
+  options: ValidateSetOptions = {},
 ): ValidationResult<PokemonSet> {
   const errors: ValidationIssue[] = [];
 
@@ -40,8 +55,11 @@ export function validateSet(
   const ability = validateAbility(draft.abilityId);
   const item = validateItem(draft.itemId);
   const moves = validateMoves(draft.moveIds);
-  const tera = validateTeraType(draft.teraType);
-  const gender = validateGender(draft.gender, pokemon?.genderRule ?? "mixed");
+  const tera = validateTeraType(draft.teraType ?? defaultTeraType(pokemon));
+  const gender = validateGender(
+    draft.gender ?? options.fallbackGender,
+    pokemon?.genderRule ?? "mixed",
+  );
   const level = validateLevel(draft.level);
   const shiny = validateShiny(draft.shiny);
   const happiness = validateHappiness(draft.happiness);
@@ -89,6 +107,11 @@ export function validateSet(
     nickname: nickname.value,
     happiness: happiness.value,
   });
+}
+
+/** The Tera type a Pokémon gets when none is chosen: its primary type. */
+export function defaultTeraType(pokemon: Pick<PokemonForm, "types"> | undefined): TeraType | undefined {
+  return pokemon?.types?.[0];
 }
 
 function validateSpreadField(

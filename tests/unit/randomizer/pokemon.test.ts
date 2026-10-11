@@ -182,7 +182,7 @@ describe("randomizePokemon", () => {
     expect(first.seed).toBe("repeat-seed");
   });
 
-  it("uses the filtered pool, so default rolls include regional formes and exclude Mega formes", () => {
+  it("uses the filtered pool, so default rolls include regional forms and exclude Mega forms", () => {
     const result = randomizePokemon(pool, config({ pokemonCount: 4 }), "default-forms");
     const ids = result.pokemon.map((form) => form.id);
 

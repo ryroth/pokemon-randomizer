@@ -25,7 +25,7 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
       <header className="hero-panel max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">Pokémon Recap</h1>
         <p className="text-base leading-7 text-muted-foreground">
-          Each Pokémon below is a finished set. Copy its text into Pokémon Showdown, or save it onto a team.
+          Each Pokémon below is a finished set. Select any part of it, such as a move, the ability, or the nickname, to change it in the builder. Copy its text into Pokémon Showdown, or save it onto a team.
         </p>
       </header>
 
@@ -43,7 +43,7 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
         <ol aria-label="Pokémon to copy to Showdown" className="flex flex-col gap-8">
           {recap.entries.map((entry) => (
             <li key={entry.pokemonId}>
-              <PokedexCard entry={entry} />
+              <PokedexCard entry={entry} editable />
             </li>
           ))}
         </ol>

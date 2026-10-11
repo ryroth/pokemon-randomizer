@@ -7,9 +7,12 @@ import { TERA_TYPES, TYPE_LABELS, type TeraType } from "@/lib/types/pokemon-type
  */
 export function TeraTypePicker({
   value,
+  defaultType,
   onChange,
 }: {
   value: TeraType | undefined;
+  /** The type used when none is chosen: the Pokémon's primary type. */
+  defaultType: TeraType | undefined;
   onChange: (type: TeraType | undefined) => void;
 }) {
   return (
@@ -24,7 +27,9 @@ export function TeraTypePicker({
             onChange(TERA_TYPES.find((type) => type === next));
           }}
         >
-          <option value="">Choose a Tera type</option>
+          <option value="">
+            {defaultType ? `Primary type (${TYPE_LABELS[defaultType]})` : "Primary type"}
+          </option>
           {TERA_TYPES.map((type) => (
             <option key={type} value={type}>
               {TYPE_LABELS[type]}
@@ -37,8 +42,12 @@ export function TeraTypePicker({
           <>
             Tera type: <TypeBadge type={value} />
           </>
+        ) : defaultType ? (
+          <>
+            Tera type: <TypeBadge type={defaultType} /> (primary type, used when you do not choose one)
+          </>
         ) : (
-          "No Tera type chosen yet."
+          "Tera type: the Pokémon's primary type."
         )}
       </p>
     </div>

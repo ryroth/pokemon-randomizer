@@ -219,12 +219,12 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
         </FilterDropdown>
 
         <FilterDropdown
-          label="Formes"
+          label="Forms"
           summary={describeFormTypeFilter(config)}
-          description="Base, regional, and other formes are on by default. Mega Evolutions, Primals, and Gigantamax stay off until you enable them."
+          description="Base, regional, and other forms are on by default. Mega Evolutions, Primals, and Gigantamax stay off until you enable them."
         >
           <FilterToolbar
-            legend="formes"
+            legend="forms"
             onSelectAll={() => onChange({ ...config, formTypes: [...FORM_TYPES] })}
             onClear={() => onChange({ ...config, formTypes: [] })}
           />

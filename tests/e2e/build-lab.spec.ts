@@ -113,8 +113,8 @@ test("a new Pokémon starts with no nickname, Tera type, or gender, and shiny at
 
   await expect(page.getByRole("textbox", { name: "Nickname" })).toHaveValue("");
   await expect(page.getByRole("combobox", { name: "Tera type" })).toHaveValue("");
-  await expect(page.getByText("No Tera type chosen yet.")).toBeVisible();
-  // A gender-locked or genderless Pokémon has no radios. A mixed one starts with neither chosen.
+  await expect(page.getByText("primary type, used when you do not choose one")).toBeVisible();
+  // A gender-locked or genderless Pokémon has no radios. A mixed one starts on Random.
   await expect(page.getByRole("radio", { name: "Male", exact: true, checked: true })).toHaveCount(0);
   await expect(page.getByRole("radio", { name: "Female", exact: true, checked: true })).toHaveCount(0);
   const nextShiny = page.getByRole("group", { name: "Shiny" });

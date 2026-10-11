@@ -29,7 +29,8 @@ export interface PokemonSet {
   pokemonId: string;
   itemId: string | null;
   abilityId: string;
-  moveIds: [string, string, string, string];
+  /** One to four unique moves. */
+  moveIds: string[];
   evs: StatSpread;
   ivs: StatSpread;
   natureId: string;
