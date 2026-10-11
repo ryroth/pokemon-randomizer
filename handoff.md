@@ -19,20 +19,20 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), then the **Pokémon world theme** (backdrops and logo titles), each merged by PR |
+| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), then the **tester feedback round** (PR #10), each merged by PR |
 | Current work | None. Later features only if the user asks |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | The merge of pull request #9 (Pokémon world theme). Run `git log -1` for the hash |
+| Latest on `master` | The merge of pull request #10 (tester feedback). Run `git log -1` for the hash |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme, [#10](https://github.com/ryroth/pokemon-randomizer/pull/10) Tester feedback (builder, recap links, still art, locks, evolution stages) |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–8, the Battle Laboratory overhaul, and the Pokémon world theme are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
+Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, and the tester feedback round (PR #10) are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
 
 Start the next feature from up-to-date `master` on a new branch.
 
-Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`. Last full run on the tester-feedback branch: tsc clean, ESLint 0 errors, Vitest 422, Playwright 92 (one a11y Showdown dialog test flaked once under load and passed alone), build passes. The keyboard tab-stop audits in `a11y.spec.ts` and a few Showdown tests can flake when many workers share one cold dev server (a different one each run); re-run the named test alone before treating it as a regression. Playwright covers the randomizer, builder-through-teams, dock, Showdown, accessibility, Round 2, and tester-feedback flows (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, `pokemon-art.json`, or `item-icons.json`. Learnsets and Hidden Abilities are separate generated files.
+Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`. Last full run on the tester-feedback branch (merged as #10): tsc clean, ESLint 0 errors, Vitest 422, Playwright 92 (one a11y Showdown dialog test flaked once under load and passed alone), build passes. The keyboard tab-stop audits in `a11y.spec.ts` and a few Showdown tests can flake when many workers share one cold dev server (a different one each run); re-run the named test alone before treating it as a regression. Playwright covers the randomizer, builder-through-teams, dock, Showdown, accessibility, Round 2, and tester-feedback flows (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, `pokemon-art.json`, or `item-icons.json`. Learnsets and Hidden Abilities are separate generated files.
 
 ---
 
@@ -407,7 +407,7 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 > Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8 and the Battle Laboratory overhaul (PR #8) are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
 
-## Tester feedback round (this branch)
+## Tester feedback round (merged in PR #10)
 
 - **Builder order:** Nickname, Shiny, portrait, Ability, Moves, Held item, Stats, then Tera type / Gender / Level / Happiness. Each section has an id (`nickname`, `shiny`, `ability`, `moves`, `move-N`, `item`, `stats`, `nature`, `tera-type`, `gender`, `level`, `happiness`).
 - **Recap to Builder links:** see the `/recap` paragraph above.
