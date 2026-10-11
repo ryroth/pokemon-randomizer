@@ -1,29 +1,35 @@
 import { fail, ok, type ValidationResult } from "@/lib/validation/result";
 import type { ValidationIssue } from "@/lib/validation/result";
 
-export const REQUIRED_MOVE_COUNT = 4;
+/** A Pokémon has four move slots. */
+export const MAX_MOVE_COUNT = 4;
+/**
+ * A set needs at least one move. Fewer than four is fine: Protect with Last Resort, or a lone
+ * Splash, are real sets.
+ */
+export const MIN_MOVE_COUNT = 1;
 
 export function validateMoves(
   moveIds: Array<string | undefined> | undefined,
-): ValidationResult<[string, string, string, string]> {
+): ValidationResult<string[]> {
   const selected = (moveIds ?? []).filter((id): id is string => Boolean(id));
 
-  if (selected.length < REQUIRED_MOVE_COUNT) {
+  if (selected.length < MIN_MOVE_COUNT) {
     return fail([
       {
         code: "moves.too-few",
         field: "moveIds",
-        message: `Choose ${REQUIRED_MOVE_COUNT} moves. You currently have ${selected.length}.`,
+        message: "Choose at least one move.",
       },
     ]);
   }
 
-  if (selected.length > REQUIRED_MOVE_COUNT) {
+  if (selected.length > MAX_MOVE_COUNT) {
     return fail([
       {
         code: "moves.too-many",
         field: "moveIds",
-        message: `A Pokémon can only have ${REQUIRED_MOVE_COUNT} moves.`,
+        message: `A Pokémon can only have ${MAX_MOVE_COUNT} moves.`,
       },
     ]);
   }
@@ -46,5 +52,5 @@ export function validateMoves(
     return fail(errors);
   }
 
-  return ok(selected as [string, string, string, string]);
+  return ok(selected);
 }

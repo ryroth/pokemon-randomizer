@@ -13,7 +13,7 @@ import { baseStatTotal, ballForPokemon } from "@/lib/randomizer/ball";
 import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/randomizer/applyExtras";
 import { NONE_ITEM_ID, NONE_ITEM_SELECT_VALUE } from "@/lib/randomizer/items";
 import { filledMoveCount } from "@/lib/randomizer/session";
-import { cardImage } from "@/lib/recap/entries";
+import { pokemonImage } from "@/lib/art/pokemonImage";
 import type { Ability, Item, Move } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import { FORM_TYPE_LABELS } from "@/lib/types/taxonomy";
@@ -163,7 +163,7 @@ export function PokemonResults({
           const revealToken = revealTokens?.get(form.id);
           const playKey = revealToken === undefined ? undefined : `${revealToken}:${form.id}`;
           const shiny = shinyIds?.includes(form.id) ?? false;
-          const imageSrc = cardImage(form, shiny);
+          const imageSrc = pokemonImage(form, shiny);
           const appliedAbilityId = appliedAbilityIds?.[form.id];
           const appliedAbility = abilityChoicesByPokemon?.[form.id]?.find(
             (ability) => ability.id === appliedAbilityId,

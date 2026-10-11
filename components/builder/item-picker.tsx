@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, CircleSlash } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { CommandPalette, type PaletteSection } from "@/components/builder/command-palette";
+import { ItemIcon } from "@/components/items/item-icon";
 import { noneMatchesItemQuery, searchItemSections } from "@/lib/builder/itemSearch";
 import { moveNameMatchSpan } from "@/lib/builder/moveSearch";
 import { ITEM_CATEGORY_LABELS, type Item } from "@/lib/types/catalog-entities";
@@ -56,7 +57,7 @@ export function ItemPicker({
             selected: selectedId === null,
             content: (
               <div className="flex items-start gap-2">
-                <ItemIcon slug={null} />
+                <ItemIcon iconUrl={null} none />
                 <span className="w-36 shrink-0 font-medium leading-6">None</span>
                 <span className="text-muted-foreground">The Pokémon holds nothing.</span>
               </div>
@@ -75,7 +76,7 @@ export function ItemPicker({
           selected: item.id === selectedId,
           content: (
             <div className="flex items-start gap-2">
-              <ItemIcon slug={item.pokeApiSlug} />
+              <ItemIcon iconUrl={item.iconUrl} />
               <HighlightedName name={item.name} query={query} />
               <span className="text-muted-foreground">{item.description}</span>
             </div>
@@ -94,7 +95,7 @@ export function ItemPicker({
         className="flex h-10 w-full items-center gap-2 rounded-lg border border-input bg-background px-2.5 text-left text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         onClick={() => setOpen(true)}
       >
-        <ItemIcon slug={chosen?.pokeApiSlug ?? null} />
+        <ItemIcon iconUrl={chosen?.iconUrl} none={!chosen} />
         <span className="min-w-0 flex-1 truncate font-medium">
           {selectedId === null ? "None" : (chosen?.name ?? <span className="text-muted-foreground">Choose an item</span>)}
         </span>
@@ -122,39 +123,6 @@ export function ItemPicker({
         }}
       />
     </div>
-  );
-}
-
-/**
- * Official item artwork, or a quiet "nothing" mark when there is no item to show. The white
- * square the artwork sits on is only drawn when there is artwork, so an empty slot never looks
- * like a missing image.
- */
-function ItemIcon({ slug }: { slug: string | null }) {
-  const [failedSlug, setFailedSlug] = useState<string | null>(null);
-  if (!slug || failedSlug === slug) {
-    return (
-      <span
-        className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-dashed border-border text-muted-foreground"
-        aria-hidden="true"
-      >
-        <CircleSlash className="size-3.5" />
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-sm bg-white" aria-hidden="true">
-      {/* Official item artwork. The catalog stores the slug, not a sprite URL. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${slug}.png`}
-        alt=""
-        width={24}
-        height={24}
-        className="size-6 object-contain"
-        onError={() => setFailedSlug(slug)}
-      />
-    </span>
   );
 }
 

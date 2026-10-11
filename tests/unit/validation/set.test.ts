@@ -3,7 +3,7 @@ import { validateIvs } from "@/lib/validation/iv";
 import { validateMoves } from "@/lib/validation/moves";
 import { validateNature } from "@/lib/validation/identity";
 import { validateLevel, validateNickname, validateShiny, validateTeraType } from "@/lib/validation/details";
-import { validateSet } from "@/lib/validation/set";
+import { defaultTeraType, validateSet } from "@/lib/validation/set";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import { EMPTY_EVS, PERFECT_IVS } from "@/lib/types/stats";
 
@@ -50,8 +50,14 @@ describe("set field validators", () => {
     expect(result.ok).toBe(false);
   });
 
-  it("rejects fewer than four moves", () => {
-    const result = validateMoves(["stealthrock", "earthquake"]);
+  it("accepts one to four moves", () => {
+    expect(validateMoves(["protect"]).ok).toBe(true);
+    expect(validateMoves(["protect", "lastresort"]).ok).toBe(true);
+    expect(validateMoves(["a", "b", "c", "d"]).ok).toBe(true);
+  });
+
+  it("rejects an empty move list", () => {
+    const result = validateMoves([]);
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.errors[0]?.code).toBe("moves.too-few");
@@ -77,8 +83,7 @@ describe("set field validators", () => {
     }
   });
 
-  it("requires tera, level, and shiny", () => {
-    expect(validateTeraType(undefined).ok).toBe(false);
+  it("requires level and shiny", () => {
     expect(validateLevel(undefined).ok).toBe(false);
     expect(validateShiny(undefined).ok).toBe(false);
     expect(validateTeraType("water").ok).toBe(true);
@@ -155,5 +160,38 @@ describe("validateSet", () => {
     if (result.ok) {
       expect(result.value.evs).toEqual({ hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 });
     }
+  });
+
+  const blankDraft = {
+    pokemonId: "swampert",
+    itemId: null,
+    abilityId: "torrent",
+    moveIds: ["protect", "lastresort"],
+    evs: EMPTY_EVS,
+    ivs: PERFECT_IVS,
+    natureId: "adamant",
+    level: 50,
+    shiny: false,
+    happiness: 255,
+  };
+
+  it("accepts two moves and a blank Tera type, using the primary type", () => {
+    const result = validateSet(blankDraft, swampert, { fallbackGender: "F" });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.value.moveIds).toEqual(["protect", "lastresort"]);
+      expect(result.value.teraType).toBe("water");
+      expect(result.value.gender).toBe("F");
+    }
+  });
+
+  it("needs a gender or a fallback for a species with both genders", () => {
+    expect(validateSet(blankDraft, swampert).ok).toBe(false);
+    expect(validateSet(blankDraft, { ...swampert, genderRule: "genderless" }).ok).toBe(true);
+  });
+
+  it("names the primary type as the Tera default", () => {
+    expect(defaultTeraType(swampert)).toBe("water");
+    expect(defaultTeraType(undefined)).toBeUndefined();
   });
 });

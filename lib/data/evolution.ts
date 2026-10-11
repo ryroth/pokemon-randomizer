@@ -46,13 +46,25 @@ export function collectEvolutionTargetIds(
   return sortEvolutionTargets(collected).map((form) => form.id);
 }
 
+/**
+ * Later stages the user may evolve a selected Pokémon into. With `allowedStages` (the Evolution
+ * stages filter), only targets in a selected stage are offered, so a roll for Basic Pokémon only
+ * never offers an evolution. Omit `allowedStages` to list every later stage.
+ */
 export function evolutionChoices(
   selected: PokemonForm,
   formById: ReadonlyMap<string, PokemonForm>,
+  allowedStages?: readonly EvolutionStage[],
 ): PokemonForm[] {
   return (selected.evolutionTargetIds ?? []).flatMap((id) => {
     const form = formById.get(id);
-    return form ? [form] : [];
+    if (!form) {
+      return [];
+    }
+    if (allowedStages && !allowedStages.includes(form.evolutionStage)) {
+      return [];
+    }
+    return [form];
   });
 }
 

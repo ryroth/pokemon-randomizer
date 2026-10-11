@@ -38,7 +38,7 @@ Ability, moves, item, EVs, IVs, Nature, Tera, gender, level, shiny, and live val
 
 ## Phase 7 — Recap, Showdown export, and saved teams
 
-A Pokédex-style card for the finalized Pokémon, with the regular 3D idle model, shiny colors painted on when the materials match, Copy to Showdown, and Next Randomizer. Finished sets can be saved to local teams of 6, reordered, removed, cleared after confirmation, and copied as one Showdown team. Complete on `master` (PR #6). The randomizer is still one Pokémon at a time. There is no database.
+A Pokédex-style card for the finalized Pokémon, with still official artwork (regular or shiny), a link from each part back to the Builder, Copy to Showdown, and Next Randomizer. Finished sets can be saved to local teams of 6, reordered, removed, cleared after confirmation, and copied as one Showdown team. Complete on `master` (PR #6). The randomizer is still one Pokémon at a time. There is no database.
 
 ## Phase 8 — Polish
 
@@ -46,7 +46,7 @@ Accessibility, responsive layout, loading and error pages, and visual consistenc
 
 - The header names the current page and fits a 390px screen: the brand sits above a two-column nav with 44px targets.
 - Randomizer, builder, recap, and teams share one page frame. Each has a loading notice and an error page with Try again. Unknown URLs show a not-found page.
-- Type chips, the Pokédex title bar, and a lowered Nature stat stay readable. Reduced motion shortens CSS animation. The 3D idle already pauses when motion is reduced.
+- Type chips, the Pokédex title bar, and a lowered Nature stat stay readable. Reduced motion shortens CSS animation. 
 - Narrow screens wrap the builder portrait and locked ability or item rows. Wide stat and move tables can be scrolled from the keyboard.
 
 ## Later, not now

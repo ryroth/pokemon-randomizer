@@ -1,6 +1,6 @@
 import {
   evBudgetPercent,
-  formatGuessedSpread,
+  formatSuggestedSpread,
   IV_PRESETS,
   matchingIvPreset,
   type EvSuggestion,
@@ -67,15 +67,15 @@ export function StatSpreadSheet({
   });
   const remaining = MAX_EV_TOTAL - evTotal;
   return (
-    <section className="space-y-3" aria-labelledby="battle-stats-heading">
+    <section id="stats" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none" aria-labelledby="battle-stats-heading">
       <h2 id="battle-stats-heading" className="text-lg font-medium">
         Stats
       </h2>
       {suggestion ? (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
           <p>
-            <span className="font-medium">Guessed spread: </span>
-            {formatGuessedSpread(suggestion)}
+            <span className="font-medium">Suggested spread: </span>
+            {formatSuggestedSpread(suggestion)}
           </p>
           <button
             type="button"
@@ -86,7 +86,7 @@ export function StatSpreadSheet({
           </button>
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">Choose four moves to see a guessed spread.</p>
+        <p className="text-sm text-muted-foreground">Choose four moves to see a suggested spread.</p>
       )}
       <div
         className="overflow-x-auto"
@@ -262,7 +262,7 @@ export function StatSpreadSheet({
           Clear all EVs
         </button>
       </div>
-      <label className="block max-w-sm space-y-1.5 text-sm font-medium">
+      <label id="nature" className="block max-w-sm scroll-mt-24 space-y-1.5 text-sm font-medium">
         Nature
         <select
           className="h-9 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { latestSpriteCandidates } from "@/lib/teams/sprites";
+import { pokemonImageCandidates } from "@/lib/art/pokemonImage";
 import type { PokemonSprites } from "@/lib/types/pokemon";
 
 export function TeamSlotSprite({
@@ -14,7 +14,7 @@ export function TeamSlotSprite({
   shiny: boolean;
   name: string;
 }) {
-  const candidates = latestSpriteCandidates(sprites, shiny);
+  const candidates = pokemonImageCandidates(sprites, shiny);
   const [index, setIndex] = useState(0);
   const src = candidates[index];
 
@@ -25,7 +25,7 @@ export function TeamSlotSprite({
   return (
     <Image
       src={src}
-      alt={shiny ? `Shiny sprite of ${name}` : ""}
+      alt={shiny ? `Shiny picture of ${name}` : ""}
       width={48}
       height={48}
       className="size-12 shrink-0 object-contain"

@@ -47,7 +47,7 @@ export function describeTypeFilter(config: RandomizerConfig): string {
 
 export function describeFormTypeFilter(config: RandomizerConfig): string {
   if (config.formTypes.length === 0) {
-    return "No formes";
+    return "No forms";
   }
 
   return config.formTypes.map((formType) => FORM_TYPE_LABELS[formType]).join(", ");

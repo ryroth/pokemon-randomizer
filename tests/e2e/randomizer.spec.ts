@@ -71,6 +71,48 @@ test("randomizer pages through previous generations and explains an empty pool",
 test("selected Pokémon can be evolved to a later battle stage", async ({ page }) => {
   await page.goto("/randomizer");
 
+  await page.getByRole("spinbutton", { name: "Pokémon count" }).fill("1");
+
+  await openFilter(page, "Generations");
+  await page.getByRole("button", { name: "Clear generations" }).click();
+  await page.getByRole("checkbox", { name: "Gen 1" }).click();
+
+  await openFilter(page, "Types");
+  await page.getByRole("button", { name: "Clear types" }).click();
+  await page.getByRole("radio", { name: "Match every selected type" }).click();
+  await page.getByRole("checkbox", { name: "Grass" }).click();
+  await page.getByRole("checkbox", { name: "Poison" }).click();
+
+  // More than one stage is selected, so evolutions are offered for a Pokémon that has later stages.
+  await openFilter(page, "Evolution stages");
+  await page.getByRole("button", { name: "Clear evolution stages" }).click();
+  await page.getByRole("checkbox", { name: "Basic" }).click();
+  await page.getByRole("checkbox", { name: "Stage 1" }).click();
+  await page.getByRole("checkbox", { name: "Stage 2" }).click();
+
+  // A final-stage roll has nothing to evolve into, so roll again until one can.
+  const results = page.getByRole("list", { name: "Current generation" });
+  const evolutionChoices = page.getByRole("list", { name: "Evolution choices" });
+  for (let attempt = 0; attempt < 25; attempt += 1) {
+    await page.getByRole("button", { name: "Generate Pokémon" }).click();
+    await expect(results.getByRole("listitem")).toHaveCount(1);
+    await results.getByRole("button").first().click();
+    await expect(page.getByRole("heading", { name: "Evolution", level: 2 })).toBeVisible();
+    if ((await evolutionChoices.count()) > 0) {
+      break;
+    }
+  }
+
+  await expect(page.getByText("can evolve")).toBeVisible();
+  await expect(evolutionChoices.getByRole("button").first()).toBeVisible();
+  expect(await evolutionChoices.getByRole("button").count()).toBeGreaterThan(1);
+
+  await evolutionChoices.getByRole("button").last().click();
+  await expect(page.getByText("Using this evolution")).toBeVisible();
+  await expect(page.getByRole("link", { name: /^Continue with / })).toBeEnabled();
+});
+test("only offers evolutions when more than one evolution stage is selected", async ({ page }) => {
+  await page.goto("/randomizer");
   await page.getByRole("spinbutton", { name: "Pokémon count" }).fill("3");
 
   await openFilter(page, "Generations");
@@ -90,20 +132,13 @@ test("selected Pokémon can be evolved to a later battle stage", async ({ page }
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
   await expect(results.getByRole("listitem")).toHaveCount(3);
-
   await results.getByRole("button").first().click();
+
   await expect(page.getByRole("heading", { name: "Evolution", level: 2 })).toBeVisible();
-  await expect(page.getByText("can evolve")).toBeVisible();
-
-  const evolutionChoices = page.getByRole("list", { name: "Evolution choices" });
-  await expect(evolutionChoices.getByRole("button").first()).toBeVisible();
-  expect(await evolutionChoices.getByRole("button").count()).toBeGreaterThan(1);
-
-  await evolutionChoices.getByRole("button").last().click();
-  await expect(page.getByText("Using this evolution")).toBeVisible();
-  await expect(page.getByRole("link", { name: /^Continue with / })).toBeEnabled();
+  await expect(page.getByRole("list", { name: "Evolution choices" })).toHaveCount(0);
+  await expect(page.getByText("can evolve")).toHaveCount(0);
+  await expect(page.getByText("Select more than one stage to choose an evolution.")).toBeVisible();
 });
-
 test("back returns to the previous randomizer tab", async ({ page }) => {
   await page.goto("/randomizer");
   await expect(page.getByRole("button", { name: /^Back to / })).toHaveCount(0);

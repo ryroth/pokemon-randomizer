@@ -1,5 +1,5 @@
 import { speciesGenus } from "@/lib/data/genera";
-import { formatDexNumber, idleModelPlan, type IdleModelPlan, type PokemonModelIndex } from "@/lib/recap/model";
+import { pokemonImage } from "@/lib/art/pokemonImage";
 import { exportShowdownSet } from "@/lib/showdown/exportSet";
 import { calculateBattleStats, type CalculatedStat } from "@/lib/stats/battleStat";
 import type { MoveCategory } from "@/lib/types/catalog-entities";
@@ -47,6 +47,7 @@ export interface RecapItem {
   id: string;
   showdownName: string;
   description: string;
+  iconUrl?: string | null;
 }
 
 export interface RecapNature {
@@ -86,20 +87,17 @@ export interface RecapEntry {
   dexNumber: string;
   types: PokemonType[];
   dexText: string | null;
-  /**
-   * The 3D model to animate, or null when there is none to show. A shiny Pokémon only gets one
-   * when a shiny model exists, so it never appears in regular colors.
-   */
-  idleModel: IdleModelPlan | null;
-  /** The picture used when there is no 3D model: shiny sprite, then shiny artwork, for a shiny Pokémon. */
+  /** The still picture: official artwork in the matching regular or shiny colors. */
   imageUrl: string | null;
   abilityName: string;
   abilityDescription: string;
   itemName: string | null;
   itemDescription: string | null;
+  itemIconUrl: string | null;
   natureName: string;
   teraType: TeraType;
-  moves: [RecapMoveView, RecapMoveView, RecapMoveView, RecapMoveView];
+  /** One to four moves, in slot order. */
+  moves: RecapMoveView[];
   stats: CalculatedStat[];
   gender: Gender | null;
   level: number;
@@ -123,13 +121,12 @@ const INVALID_SET_MESSAGE = "This finished set does not match the current catalo
 export function buildRecap(
   session: RandomizerSession,
   catalog: RecapCatalog,
-  index?: PokemonModelIndex,
 ): RecapView {
   if (!session.finalizedSet) {
     return { status: "empty" };
   }
 
-  const entry = buildRecapEntry(session.finalizedSet, catalog, index);
+  const entry = buildRecapEntry(session.finalizedSet, catalog);
   if (!entry) {
     return { status: "invalid", message: INVALID_SET_MESSAGE };
   }
@@ -139,7 +136,6 @@ export function buildRecap(
 export function buildRecapEntry(
   set: PokemonSet,
   catalog: RecapCatalog,
-  index?: PokemonModelIndex,
 ): RecapEntry | null {
   const pokemon = catalog.pokemon.find((form) => form.id === set.pokemonId);
   const ability = catalog.abilities.find((candidate) => candidate.id === set.abilityId);
@@ -169,24 +165,15 @@ export function buildRecapEntry(
     dexNumber: formatDexNumber(pokemon.nationalDexNumber),
     types: pokemon.types,
     dexText,
-    idleModel: idleModelPlan(
-      { id: pokemon.id, nationalDexNumber: pokemon.nationalDexNumber, form: pokemon.form },
-      set.shiny,
-      index,
-    ),
-    imageUrl: fallbackImage(pokemon, set.shiny),
+    imageUrl: pokemonImage(pokemon, set.shiny),
     abilityName: ability.showdownName,
     abilityDescription: ability.description,
     itemName: item?.showdownName ?? null,
     itemDescription: item?.description ?? null,
+    itemIconUrl: item?.iconUrl ?? null,
     natureName: nature.showdownName,
     teraType: set.teraType,
-    moves: [
-      toMoveView(moveViews[0]),
-      toMoveView(moveViews[1]),
-      toMoveView(moveViews[2]),
-      toMoveView(moveViews[3]),
-    ],
+    moves: moveViews.map(toMoveView),
     stats: calculateBattleStats({
       base: pokemon.baseStats,
       ivs: set.ivs,
@@ -205,12 +192,7 @@ export function buildRecapEntry(
       ability: ability.showdownName,
       item: item?.showdownName ?? null,
       nature: nature.showdownName,
-      moves: [
-        moveViews[0].showdownName,
-        moveViews[1].showdownName,
-        moveViews[2].showdownName,
-        moveViews[3].showdownName,
-      ],
+      moves: moveViews.map((move) => move.showdownName),
     }),
   };
 }
@@ -230,32 +212,21 @@ function toMoveView(move: RecapMove): RecapMoveView {
 function resolveMoves(
   moveIds: PokemonSet["moveIds"],
   moves: readonly RecapMove[],
-): [RecapMove, RecapMove, RecapMove, RecapMove] | null {
-  const resolved = moveIds.map((moveId) => moves.find((candidate) => candidate.id === moveId));
-  if (resolved[0] && resolved[1] && resolved[2] && resolved[3]) {
-    return [resolved[0], resolved[1], resolved[2], resolved[3]];
+): RecapMove[] | null {
+  if (moveIds.length === 0) {
+    return null;
   }
-  return null;
+  const resolved: RecapMove[] = [];
+  for (const moveId of moveIds) {
+    const move = moves.find((candidate) => candidate.id === moveId);
+    if (!move) {
+      return null;
+    }
+    resolved.push(move);
+  }
+  return resolved;
 }
 
-/**
- * The picture shown when there is no usable 3D model. A shiny Pokémon uses the shiny sprite, then
- * the shiny artwork, and only uses a regular-colored picture when neither shiny picture exists.
- * A regular Pokémon uses the official artwork, then the small sprite.
- */
-export function fallbackImage(pokemon: Pick<RecapPokemon, "sprites">, shiny: boolean): string | null {
-  const { sprite, spriteShiny, artwork, artworkShiny } = pokemon.sprites;
-  if (shiny) {
-    return spriteShiny ?? artworkShiny ?? artwork ?? sprite;
-  }
-  return artwork ?? sprite;
-}
-
-/** The large picture for a result card, where no 3D model is shown: artwork first, in the matching colors. */
-export function cardImage(pokemon: Pick<RecapPokemon, "sprites">, shiny: boolean): string | null {
-  const { sprite, spriteShiny, artwork, artworkShiny } = pokemon.sprites;
-  if (shiny) {
-    return artworkShiny ?? spriteShiny ?? artwork ?? sprite;
-  }
-  return artwork ?? sprite;
+export function formatDexNumber(nationalDexNumber: number): string {
+  return String(nationalDexNumber).padStart(4, "0");
 }

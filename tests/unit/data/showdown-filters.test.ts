@@ -9,7 +9,7 @@ import {
 } from "../../../scripts/import/showdown";
 
 describe("Showdown catalog filters", () => {
-  it("keeps mega, regional, and gigantamax formes and drops CAP", () => {
+  it("keeps mega, regional, and gigantamax forms and drops CAP", () => {
     expect(isCatalogSpecies(Dex.species.get("Venusaur-Mega"))).toBe(true);
     expect(isCatalogSpecies(Dex.species.get("Raichu-Alola"))).toBe(true);
     expect(isCatalogSpecies(Dex.species.get("Charizard-Gmax"))).toBe(true);

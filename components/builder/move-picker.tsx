@@ -16,7 +16,7 @@ import {
 } from "@/lib/data/moveDisplay";
 import { MOVE_CATEGORY_LABELS, type Move, type MoveCategory } from "@/lib/types/catalog-entities";
 import { TYPE_LABELS, type PokemonType } from "@/lib/types/pokemon-type";
-import { REQUIRED_MOVE_COUNT } from "@/lib/validation/moves";
+import { MAX_MOVE_COUNT } from "@/lib/validation/moves";
 import { cn } from "@/lib/utils";
 
 type ColumnAlign = "start" | "center" | "end";
@@ -118,11 +118,16 @@ export function MovePicker({
   return (
     <div className="space-y-3">
       <ul className="grid gap-2 sm:grid-cols-2">
-        {Array.from({ length: REQUIRED_MOVE_COUNT }, (_, slot) => {
+        {Array.from({ length: MAX_MOVE_COUNT }, (_, slot) => {
           const move = movesById.get(selectedIds[slot] ?? "");
           const locked = Boolean(lockedSlots?.[slot]);
           return (
-            <li key={slot} className="space-y-1.5 rounded-lg border border-border bg-card p-2.5">
+            <li
+              key={slot}
+              id={`move-${slot + 1}`}
+              tabIndex={-1}
+              className="scroll-mt-24 space-y-1.5 rounded-lg border border-border bg-card p-2.5 outline-none"
+            >
               <div className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
                 <span>Move {slot + 1}</span>
                 {locked ? <span>Set by the randomizer</span> : null}

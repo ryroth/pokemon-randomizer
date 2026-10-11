@@ -1,0 +1,230 @@
+{
+  "arceusbug": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-bug.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-bug.png"
+  },
+  "arceusdark": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-dark.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-dark.png"
+  },
+  "arceusdragon": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-dragon.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-dragon.png"
+  },
+  "arceuselectric": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-electric.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-electric.png"
+  },
+  "arceusfairy": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-fairy.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-fairy.png"
+  },
+  "arceusfighting": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-fighting.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-fighting.png"
+  },
+  "arceusfire": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-fire.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-fire.png"
+  },
+  "arceusflying": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-flying.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-flying.png"
+  },
+  "arceusghost": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-ghost.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-ghost.png"
+  },
+  "arceusgrass": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-grass.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-grass.png"
+  },
+  "arceusground": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-ground.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-ground.png"
+  },
+  "arceusice": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-ice.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-ice.png"
+  },
+  "arceuspoison": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-poison.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-poison.png"
+  },
+  "arceuspsychic": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-psychic.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-psychic.png"
+  },
+  "arceusrock": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-rock.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-rock.png"
+  },
+  "arceussteel": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-steel.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-steel.png"
+  },
+  "arceuswater": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/493-water.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/493-water.png"
+  },
+  "cherrimsunshine": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/421-sunshine.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/421-sunshine.png"
+  },
+  "dudunsparcethreesegment": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10255.png"
+  },
+  "genesectburn": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/649-burn.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/649-burn.png"
+  },
+  "genesectchill": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/649-chill.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/649-chill.png"
+  },
+  "genesectdouse": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/649-douse.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/649-douse.png"
+  },
+  "genesectshock": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/649-shock.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/649-shock.png"
+  },
+  "maushold": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10257.png"
+  },
+  "meowsticf": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10025.png"
+  },
+  "mimikyubusted": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/10143.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10143.png"
+  },
+  "ogerponcornerstonetera": {
+    "artwork": "https://play.pokemonshowdown.com/sprites/home/ogerpon-cornerstonetera.png",
+    "artworkShiny": "https://play.pokemonshowdown.com/sprites/home-shiny/ogerpon-cornerstonetera.png"
+  },
+  "ogerponhearthflametera": {
+    "artwork": "https://play.pokemonshowdown.com/sprites/home/ogerpon-hearthflametera.png",
+    "artworkShiny": "https://play.pokemonshowdown.com/sprites/home-shiny/ogerpon-hearthflametera.png"
+  },
+  "ogerpontealtera": {
+    "artwork": "https://play.pokemonshowdown.com/sprites/home/ogerpon-tealtera.png",
+    "artworkShiny": "https://play.pokemonshowdown.com/sprites/home-shiny/ogerpon-tealtera.png"
+  },
+  "ogerponwellspringtera": {
+    "artwork": "https://play.pokemonshowdown.com/sprites/home/ogerpon-wellspringtera.png",
+    "artworkShiny": "https://play.pokemonshowdown.com/sprites/home-shiny/ogerpon-wellspringtera.png"
+  },
+  "pichuspikyeared": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/172-spiky-eared.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/172-spiky-eared.png"
+  },
+  "pikachucosplay": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/25.png"
+  },
+  "pikachupartner": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10148.png"
+  },
+  "pikachuworld": {
+    "artworkShiny": "https://play.pokemonshowdown.com/sprites/home-shiny/pikachu-world.png"
+  },
+  "poltchageistartisan": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1012-artisan.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/1012-artisan.png"
+  },
+  "polteageistantique": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/855-antique.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/855-antique.png"
+  },
+  "silvallybug": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-bug.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-bug.png"
+  },
+  "silvallydark": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-dark.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-dark.png"
+  },
+  "silvallydragon": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-dragon.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-dragon.png"
+  },
+  "silvallyelectric": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-electric.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-electric.png"
+  },
+  "silvallyfairy": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-fairy.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-fairy.png"
+  },
+  "silvallyfighting": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-fighting.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-fighting.png"
+  },
+  "silvallyfire": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-fire.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-fire.png"
+  },
+  "silvallyflying": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-flying.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-flying.png"
+  },
+  "silvallyghost": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-ghost.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-ghost.png"
+  },
+  "silvallygrass": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-grass.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-grass.png"
+  },
+  "silvallyground": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-ground.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-ground.png"
+  },
+  "silvallyice": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-ice.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-ice.png"
+  },
+  "silvallypoison": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-poison.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-poison.png"
+  },
+  "silvallypsychic": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-psychic.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-psychic.png"
+  },
+  "silvallyrock": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-rock.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-rock.png"
+  },
+  "silvallysteel": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-steel.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-steel.png"
+  },
+  "silvallywater": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/773-water.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/773-water.png"
+  },
+  "sinistchamasterpiece": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1013-masterpiece.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/1013-masterpiece.png"
+  },
+  "sinisteaantique": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/854-antique.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/854-antique.png"
+  },
+  "terapagosstellar": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10277.png"
+  },
+  "vivillonfancy": {
+    "artwork": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/666-fancy.png",
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/666-fancy.png"
+  },
+  "vivillonpokeball": {
+    "artwork": "https://play.pokemonshowdown.com/sprites/home/vivillon-pokeball.png",
+    "artworkShiny": "https://play.pokemonshowdown.com/sprites/home-shiny/vivillon-pokeball.png"
+  },
+  "zarudedada": {
+    "artworkShiny": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10192.png"
+  }
+}

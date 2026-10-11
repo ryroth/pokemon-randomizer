@@ -177,7 +177,24 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
       "While it is young, it uses the nutrients that are stored in the seed on its back in order to grow.",
     );
   });
-});
+
+  it("has still artwork for every form, with shiny artwork in shiny colors", () => {
+    const withoutArtwork = catalog.pokemon.filter((pokemon) => !pokemon.sprites.artwork).map((pokemon) => pokemon.id);
+    const withoutShiny = catalog.pokemon.filter((pokemon) => !pokemon.sprites.artworkShiny).map((pokemon) => pokemon.id);
+    expect(withoutArtwork).toEqual([]);
+    expect(withoutShiny).toEqual([]);
+    for (const pokemon of catalog.pokemon) {
+      expect(pokemon.sprites.artwork).not.toMatch(/\.gif($|\?)/i);
+      expect(pokemon.sprites.artworkShiny).not.toMatch(/\.gif($|\?)/i);
+    }
+    expect(byId("basculegion").sprites.artworkShiny).not.toBe(byId("basculegion").sprites.artwork);
+  });
+
+  it("gives almost every held item an icon", () => {
+    const withIcon = catalog.items.filter((item) => item.iconUrl);
+    expect(withIcon.length / catalog.items.length).toBeGreaterThan(0.95);
+    expect(catalog.items.find((item) => item.id === "leftovers")?.iconUrl).toMatch(/^https:\/\//);
+  });});
 
 describe("generated catalog presence", () => {
   it("reminds contributors to run the importer", () => {

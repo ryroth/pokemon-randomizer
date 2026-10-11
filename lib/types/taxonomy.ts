@@ -13,9 +13,9 @@ export const FORM_TYPE_LABELS: Record<FormType, string> = {
   base: "Base forms",
   regional: "Regional forms",
   mega: "Mega Evolutions",
-  primal: "Primal formes",
+  primal: "Primal forms",
   gmax: "Gigantamax",
-  other: "Other formes",
+  other: "Other forms",
 };
 
 export const EVOLUTION_STAGES = ["basic", "stage1", "stage2"] as const;

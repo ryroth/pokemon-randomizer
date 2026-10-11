@@ -1,4 +1,6 @@
 import { ivPresetById } from "@/lib/builder/ivPresets";
+import { rollGender } from "@/lib/randomizer/gender";
+import { createSeed } from "@/lib/randomizer/randomUtils";
 import { battlePokemonId } from "@/lib/randomizer/session";
 import {
   abilityLockedByRandomizer,
@@ -19,11 +21,11 @@ import {
   MIN_HAPPINESS,
 } from "@/lib/validation/details";
 import { evsCountingBlanksAsZero, maxEvForStat, validateEvs } from "@/lib/validation/ev";
-import { REQUIRED_MOVE_COUNT } from "@/lib/validation/moves";
+import { MAX_MOVE_COUNT } from "@/lib/validation/moves";
 import { validateSet } from "@/lib/validation/set";
 
 function padMoves(slots: readonly (string | undefined)[] | undefined): Array<string | undefined> {
-  return Array.from({ length: REQUIRED_MOVE_COUNT }, (_, index) => slots?.[index]);
+  return Array.from({ length: MAX_MOVE_COUNT }, (_, index) => slots?.[index]);
 }
 
 function replaceDraft(
@@ -60,7 +62,8 @@ export function openBuilder(session: RandomizerSession): RandomizerSession {
 
 /**
  * IVs start at 31, happiness at 255, level at 50, and shiny at No. Existing choices are kept.
- * Tera type and gender have no default: the builder shows them unselected.
+ * Tera type and gender stay blank on the draft. A blank Tera type becomes the primary type and a
+ * blank gender is rolled when the set is finished (`finalizeBuilderSet`).
  */
 export function applyBuilderDefaults(session: RandomizerSession): RandomizerSession {
   const ivs = ivsDefaultingTo31(session.draft.ivs);
@@ -121,7 +124,7 @@ export function setDraftMove(
   moveId: string | undefined,
   pool: readonly string[],
 ): RandomizerSession {
-  if (slot < 0 || slot >= REQUIRED_MOVE_COUNT) {
+  if (slot < 0 || slot >= MAX_MOVE_COUNT) {
     return session;
   }
   if (moveSlotLockedByRandomizer(session, slot)) {
@@ -318,15 +321,29 @@ export function setDraftShiny(
   return replaceDraft(session, { shiny });
 }
 
+/**
+ * Moves the draft to the recap. A blank Tera type becomes the Pokémon's primary type, and a blank
+ * gender on a Pokémon with both genders is rolled at random (`seed` makes that repeatable).
+ */
 export function finalizeBuilderSet(
   session: RandomizerSession,
   pokemon: PokemonForm | undefined,
+  seed: string = createSeed(),
 ): RandomizerSession {
-  const result = validateSet(session.draft, pokemon);
+  const needsGender = pokemon?.genderRule === "mixed" && session.draft.gender === undefined;
+  const result = validateSet(session.draft, pokemon, {
+    fallbackGender: needsGender ? rollGender(seed) : undefined,
+  });
   if (!result.ok) {
     return { ...session, finalizedSet: undefined };
   }
-  return { ...session, step: "recap", finalizedSet: result.value };
+  // A rolled gender is kept on the draft, so going back to the builder and continuing again does
+  // not roll a different one.
+  const draft =
+    needsGender && result.value.gender
+      ? { ...session.draft, gender: result.value.gender }
+      : session.draft;
+  return { ...session, step: "recap", draft, finalizedSet: result.value };
 }
 
 export function isCompleteSpread(spread: Partial<StatSpread> | undefined): spread is StatSpread {

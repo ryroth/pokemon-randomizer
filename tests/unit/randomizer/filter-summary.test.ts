@@ -17,7 +17,7 @@ describe("Pokémon filter dropdown summaries", () => {
   it("describes the default filters", () => {
     expect(describeGenerationFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All generations");
     expect(describeTypeFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All types");
-    expect(describeFormTypeFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("Base forms, Regional forms, Other formes");
+    expect(describeFormTypeFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("Base forms, Regional forms, Other forms");
     expect(describeEvolutionStageFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All stages");
     expect(describeSpecialFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All allowed");
     expect(describeMoveCategoryFilter(DEFAULT_RANDOMIZER_CONFIG)).toBe("All categories");
@@ -63,7 +63,7 @@ describe("Pokémon filter dropdown summaries", () => {
 
     expect(describeGenerationFilter(config)).toBe("No generations");
     expect(describeTypeFilter(config)).toBe("No types");
-    expect(describeFormTypeFilter(config)).toBe("No formes");
+    expect(describeFormTypeFilter(config)).toBe("No forms");
     expect(describeEvolutionStageFilter(config)).toBe("No evolution stages");
     expect(describeMoveCategoryFilter(config)).toBe("No categories");
     expect(describeMoveTypeFilter(config)).toBe("No types");

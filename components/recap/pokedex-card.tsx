@@ -1,39 +1,25 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import Link from "next/link";
+import { Pencil } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { DexEntryCycler } from "@/components/dex/dex-entry-cycler";
+import { ItemIcon } from "@/components/items/item-icon";
 import { ModelArtwork } from "@/components/recap/model-artwork";
 import { MovePanel } from "@/components/recap/move-panel";
-import type { IdleMotion } from "@/components/recap/pokemon-idle-model";
 import { StatRadar } from "@/components/recap/stat-radar";
 import { TypeBadge } from "@/components/recap/type-badge";
 import { Button } from "@/components/ui/button";
 import type { RecapEntry } from "@/lib/recap/entries";
 
-const PokemonIdleModel = dynamic(
-  () => import("@/components/recap/pokemon-idle-model").then((mod) => mod.PokemonIdleModel),
-  {
-    ssr: false,
-    loading: () => (
-      <p role="status" className="text-sm text-white/80">
-        Loading the 3D model…
-      </p>
-    ),
-  },
-);
-
-export function PokedexCard({ entry }: { entry: RecapEntry }) {
-  // A shiny Pokémon only gets the 3D model when a shiny model exists. Otherwise it shows the
-  // shiny sprite, then the shiny artwork, never regular colors.
-  const animatedUrl = entry.idleModel?.src ?? null;
-  const shinySrc = entry.idleModel?.shinySrc ?? null;
-  const [artworkOnly, setArtworkOnly] = useState(animatedUrl === null);
-  const [motion, setMotion] = useState<IdleMotion | "loading">(animatedUrl ? "loading" : "still");
+/**
+ * `editable` turns each part of the Pokémon into a link that opens that part in the builder.
+ * Saved team recaps leave it off because they are read-only.
+ */
+export function PokedexCard({ entry, editable = false }: { entry: RecapEntry; editable?: boolean }) {
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
-  const stageLabel = artworkOnly
-    ? `${entry.shiny ? "Shiny picture" : "Artwork"} of ${entry.speciesName}`
-    : `${entry.shiny ? "Shiny 3D idle animation" : "3D idle animation"} of ${entry.speciesName}`;
+  const stageLabel = `${entry.shiny ? "Shiny artwork" : "Artwork"} of ${entry.speciesName}`;
   const displayName = entry.nickname ?? entry.speciesName;
 
   async function copySet() {
@@ -60,18 +46,7 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
               <div className="relative flex h-80 items-center justify-center overflow-hidden rounded-lg bg-[#163f86] sm:h-96">
                 <PokeBallWatermark />
                 <div className="relative z-10 flex h-full w-full items-center justify-center pb-16">
-                  {animatedUrl && !artworkOnly ? (
-                    <PokemonIdleModel
-                      key={`${animatedUrl}:${entry.shiny ? "shiny" : "plain"}`}
-                      src={animatedUrl}
-                      shinySrc={shinySrc}
-                      name={entry.speciesName}
-                      onUnavailable={() => setArtworkOnly(true)}
-                      onMotion={setMotion}
-                    />
-                  ) : (
-                    <ModelArtwork src={entry.imageUrl} name={entry.speciesName} shiny={entry.shiny} />
-                  )}
+                  <ModelArtwork src={entry.imageUrl} name={entry.speciesName} shiny={entry.shiny} />
                 </div>
                 <div className="absolute inset-x-3 bottom-3 z-20 flex items-center justify-between gap-3 rounded-lg bg-[#0c2f6e]/95 px-3 py-2">
                   <div className="flex min-w-0 items-center gap-2">
@@ -87,21 +62,16 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
                   </div>
                 </div>
               </div>
-              {artworkOnly || motion === "loading" ? null : (
-                <p className="text-center text-xs text-[#d6e6ff]">
-                  {motion === "playing"
-                    ? "Drag to look around. The Pokémon keeps playing its idle animation."
-                    : motion === "paused"
-                      ? "Drag to look around. The idle animation is paused."
-                      : "Drag to look around."}
-                </p>
-              )}
             </section>
 
             <div className="space-y-4 rounded-lg bg-[#163f86] p-4">
               <dl className="grid grid-cols-1 gap-y-2.5 text-sm sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:items-center">
                 <dt className="text-[#b7d4ff]">Name</dt>
-                <dd className="font-semibold">{displayName}</dd>
+                <dd className="font-semibold">
+                  <EditLink editable={editable} target="nickname" label="nickname">
+                    {displayName}
+                  </EditLink>
+                </dd>
                 <dt className="text-[#b7d4ff]">Type</dt>
                 <dd>
                   <ul aria-label="Types" className="flex flex-wrap gap-1.5">
@@ -114,29 +84,56 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
                 </dd>
                 <dt className="text-[#b7d4ff]">Tera type</dt>
                 <dd>
-                  <TypeBadge type={entry.teraType} />
+                  <EditLink editable={editable} target="tera-type" label="Tera type">
+                    <TypeBadge type={entry.teraType} />
+                  </EditLink>
                 </dd>
                 <dt className="text-[#b7d4ff]">No.</dt>
                 <dd className="font-mono font-semibold">{entry.dexNumber}</dd>
                 <dt className="text-[#b7d4ff]">Nature</dt>
-                <dd className="font-semibold">{entry.natureName}</dd>
+                <dd className="font-semibold">
+                  <EditLink editable={editable} target="nature" label="nature">
+                    {entry.natureName}
+                  </EditLink>
+                </dd>
                 <dt className="text-[#b7d4ff]">Level</dt>
-                <dd className="font-mono font-semibold tabular-nums">{entry.level}</dd>
+                <dd className="font-mono font-semibold tabular-nums">
+                  <EditLink editable={editable} target="level" label="level">
+                    {entry.level}
+                  </EditLink>
+                </dd>
                 <dt className="text-[#b7d4ff]">Shiny</dt>
-                <dd className="font-semibold">{entry.shiny ? "Yes" : "No"}</dd>
+                <dd className="font-semibold">
+                  <EditLink editable={editable} target="shiny" label="shiny">
+                    {entry.shiny ? "Yes" : "No"}
+                  </EditLink>
+                </dd>
                 <dt className="text-[#b7d4ff]">Happiness</dt>
-                <dd className="font-mono font-semibold tabular-nums">{entry.happiness}</dd>
+                <dd className="font-mono font-semibold tabular-nums">
+                  <EditLink editable={editable} target="happiness" label="happiness">
+                    {entry.happiness}
+                  </EditLink>
+                </dd>
                 {entry.gender ? (
                   <>
                     <dt className="text-[#b7d4ff]">Gender</dt>
-                    <dd className="font-semibold">{entry.gender === "M" ? "Male" : "Female"}</dd>
+                    <dd className="font-semibold">
+                      <EditLink editable={editable} target="gender" label="gender">
+                        {entry.gender === "M" ? "Male" : "Female"}
+                      </EditLink>
+                    </dd>
                   </>
                 ) : null}
               </dl>
 
               <div className="space-y-1 border-t border-white/15 pt-3">
                 <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Held item</h3>
-                <p className="text-lg font-semibold">{entry.itemName ?? "None"}</p>
+                <p className="flex items-center gap-2 text-lg font-semibold">
+                  <ItemIcon iconUrl={entry.itemIconUrl} none={!entry.itemName} className="size-8" />
+                  <EditLink editable={editable} target="item" label="held item">
+                    {entry.itemName ?? "None"}
+                  </EditLink>
+                </p>
                 {entry.itemDescription ? (
                   <p className="text-sm leading-6 text-[#d6e6ff]">{entry.itemDescription}</p>
                 ) : null}
@@ -164,16 +161,25 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
           <div className="grid gap-3 lg:grid-cols-2">
             <div className="rounded-lg bg-[#163f86] p-3 sm:p-4">
               <h3 className="mb-2 text-sm font-semibold">Current moves</h3>
-              <MovePanel moves={entry.moves} />
+              <MovePanel moves={entry.moves} editable={editable} />
             </div>
             <div className="space-y-4 rounded-lg bg-[#163f86] p-3 sm:p-4">
               <div>
-                <h3 className="mb-2 text-sm font-semibold">Stats at level {entry.level}</h3>
+                <h3 className="mb-2 flex flex-wrap items-center gap-x-3 text-sm font-semibold">
+                  Stats at level {entry.level}
+                  <EditLink editable={editable} target="stats" label="EVs, IVs, and nature">
+                    Edit stats
+                  </EditLink>
+                </h3>
                 <StatRadar stats={entry.stats} evs={entry.evs} />
               </div>
               <div className="space-y-1 border-t border-white/15 pt-3">
                 <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Ability</h3>
-                <p className="text-lg font-semibold">{entry.abilityName}</p>
+                <p className="text-lg font-semibold">
+                  <EditLink editable={editable} target="ability" label="ability">
+                    {entry.abilityName}
+                  </EditLink>
+                </p>
                 {entry.abilityDescription ? (
                   <p className="text-sm leading-6 text-[#d6e6ff]">{entry.abilityDescription}</p>
                 ) : null}
@@ -210,6 +216,33 @@ export function PokedexCard({ entry }: { entry: RecapEntry }) {
         </section>
       </div>
     </article>
+  );
+}
+
+/** Wraps one part of the Pokémon in a link to its place in the builder, when the recap is editable. */
+function EditLink({
+  editable,
+  target,
+  label,
+  children,
+}: {
+  editable: boolean;
+  target: string;
+  label: string;
+  children: ReactNode;
+}) {
+  if (!editable) {
+    return <>{children}</>;
+  }
+  return (
+    <Link
+      href={`/builder#${target}`}
+      aria-label={`Edit ${label}`}
+      className="inline-flex items-center gap-1.5 rounded-md underline decoration-dotted underline-offset-4 outline-none hover:text-[#f2c14e] focus-visible:ring-2 focus-visible:ring-[#f2c14e]"
+    >
+      {children}
+      <Pencil aria-hidden="true" className="size-3.5 shrink-0 text-[#f2c14e]" />
+    </Link>
   );
 }
 

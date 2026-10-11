@@ -1,36 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { loadGeneratedCatalog } from "@/lib/data/loadCatalog";
-import { preferredIdleAnimation } from "@/lib/recap/animation";
 import { buildRecap, type RecapCatalog } from "@/lib/recap/entries";
 import { calculateBattleStats } from "@/lib/stats/battleStat";
-import {
-  idleModelPlan,
-  loadPokemonModelIndex,
-  pokemonIdleModelUrl,
-  pokemonShinyModelUrl,
-  type PokemonModelIndex,
-} from "@/lib/recap/model";
 import { createInitialSession } from "@/lib/randomizer/session";
 import type { PokemonSet, RandomizerSession } from "@/lib/types/session";
-
-const index: PokemonModelIndex = {
-  repository: "Pokemon-3D-api/assets",
-  commit: "abc123",
-  paths: [
-    "regular/1.glb",
-    "regular/260.glb",
-    "regular/469.glb",
-    "shiny/1.glb",
-    "alolan/26.glb",
-    "mega/3.glb",
-    "megaShiny/3.glb",
-    "x/6.glb",
-    "gmax/6.glb",
-    "primal/382.glb",
-    "origin/487.glb",
-    "multiform/RotomHeat.glb",
-  ],
-};
 
 const swampertSet: PokemonSet = {
   pokemonId: "swampert",
@@ -50,108 +22,6 @@ const swampertSet: PokemonSet = {
 function sessionWith(set: PokemonSet | undefined): RandomizerSession {
   return { ...createInitialSession(), finalizedSet: set };
 }
-
-describe("preferredIdleAnimation", () => {
-  it("prefers the game idle clip over later battle animations", () => {
-    expect(
-      preferredIdleAnimation([
-        "model_skeleton|001fight_b",
-        "model_skeleton|001aidle",
-        "model_skeleton|001walk",
-      ]),
-    ).toBe("model_skeleton|001aidle");
-  });
-
-  it("accepts an Idle label and falls back to the first clip", () => {
-    expect(preferredIdleAnimation(["Walk", "Idle"])).toBe("Idle");
-    expect(preferredIdleAnimation(["Walk"])).toBe("Walk");
-    expect(preferredIdleAnimation([])).toBeNull();
-  });
-});
-
-describe("pokemonIdleModelUrl", () => {
-  it("maps base, shiny, regional, mega, gmax, primal, and origin formes", () => {
-    expect(pokemonIdleModelUrl({ id: "bulbasaur", nationalDexNumber: 1, form: "base" }, false, index)).toBe(
-      "https://raw.githubusercontent.com/Pokemon-3D-api/assets/abc123/models/opt/regular/1.glb",
-    );
-    expect(pokemonIdleModelUrl({ id: "bulbasaur", nationalDexNumber: 1, form: "base" }, true, index)).toContain(
-      "/shiny/1.glb",
-    );
-    expect(pokemonIdleModelUrl({ id: "raichualola", nationalDexNumber: 26, form: "Alola" }, false, index)).toContain(
-      "/alolan/26.glb",
-    );
-    expect(pokemonIdleModelUrl({ id: "venusaurmega", nationalDexNumber: 3, form: "Mega" }, true, index)).toContain(
-      "/megaShiny/3.glb",
-    );
-    expect(pokemonIdleModelUrl({ id: "charizardmegax", nationalDexNumber: 6, form: "Mega-X" }, false, index)).toContain(
-      "/x/6.glb",
-    );
-    expect(pokemonIdleModelUrl({ id: "charizardgmax", nationalDexNumber: 6, form: "Gmax" }, false, index)).toContain(
-      "/gmax/6.glb",
-    );
-    expect(pokemonIdleModelUrl({ id: "kyogreprimal", nationalDexNumber: 382, form: "Primal" }, false, index)).toContain(
-      "/primal/382.glb",
-    );
-    expect(
-      pokemonIdleModelUrl({ id: "giratinaorigin", nationalDexNumber: 487, form: "Origin" }, false, index),
-    ).toContain("/origin/487.glb");
-    expect(pokemonIdleModelUrl({ id: "rotomheat", nationalDexNumber: 479, form: "Heat" }, false, index)).toContain(
-      "/multiform/RotomHeat.glb",
-    );
-  });
-
-  it("keeps Yanmega on the regular model because its forme is base", () => {
-    const url = pokemonIdleModelUrl({ id: "yanmega", nationalDexNumber: 469, form: "base" }, false, index);
-    expect(url).toContain("/regular/469.glb");
-  });
-
-  it("uses the regular model when a shiny file was not snapshotted so the idle animation still plays", () => {
-    const shinyOnlyMissing: PokemonModelIndex = { ...index, paths: ["regular/1.glb"] };
-    expect(pokemonIdleModelUrl({ id: "bulbasaur", nationalDexNumber: 1, form: "base" }, true, shinyOnlyMissing)).toContain(
-      "/regular/1.glb",
-    );
-  });
-
-  it("uses the only published model when a forme has no separate shiny file", () => {
-    expect(pokemonIdleModelUrl({ id: "raichualola", nationalDexNumber: 26, form: "Alola" }, true, index)).toContain(
-      "/alolan/26.glb",
-    );
-  });
-
-  it("returns null when that forme has no published model", () => {
-    expect(
-      pokemonIdleModelUrl({ id: "taurospaldeacombat", nationalDexNumber: 128, form: "Paldea-Combat" }, false, index),
-    ).toBeNull();
-  });
-});
-
-describe("shiny 3D models", () => {
-  const bulbasaur = { id: "bulbasaur", nationalDexNumber: 1, form: "base" };
-
-  it("only returns a shiny model when a separate shiny file was published", () => {
-    expect(pokemonShinyModelUrl(bulbasaur, index)).toContain("/shiny/1.glb");
-    expect(pokemonShinyModelUrl(bulbasaur, { ...index, paths: ["regular/1.glb"] })).toBeNull();
-    expect(pokemonShinyModelUrl({ id: "raichualola", nationalDexNumber: 26, form: "Alola" }, index)).toBeNull();
-    expect(pokemonShinyModelUrl({ id: "taurospaldeacombat", nationalDexNumber: 128, form: "Paldea-Combat" }, index)).toBeNull();
-  });
-
-  it("plans the regular model for a regular Pokémon and regular plus shiny textures for a shiny one", () => {
-    expect(idleModelPlan(bulbasaur, false, index)).toEqual({
-      src: expect.stringContaining("/regular/1.glb"),
-      shinySrc: null,
-    });
-    expect(idleModelPlan(bulbasaur, true, index)).toEqual({
-      src: expect.stringContaining("/regular/1.glb"),
-      shinySrc: expect.stringContaining("/shiny/1.glb"),
-    });
-  });
-
-  it("has no plan for a shiny Pokémon without a shiny model, so the shiny picture is used", () => {
-    expect(idleModelPlan(bulbasaur, true, { ...index, paths: ["regular/1.glb"] })).toBeNull();
-    expect(idleModelPlan(bulbasaur, true, { ...index, paths: ["shiny/1.glb"] })).toBeNull();
-    expect(idleModelPlan(bulbasaur, false, { ...index, paths: [] })).toBeNull();
-  });
-});
 
 describe("buildRecap", () => {
   const catalog: RecapCatalog = {
@@ -217,11 +87,11 @@ describe("buildRecap", () => {
   };
 
   it("stays empty until a set is finalized", () => {
-    expect(buildRecap(createInitialSession(), catalog, index)).toEqual({ status: "empty" });
+    expect(buildRecap(createInitialSession(), catalog)).toEqual({ status: "empty" });
   });
 
   it("builds one export card whose Showdown text matches the exporter", () => {
-    const recap = buildRecap(sessionWith({ ...swampertSet, nickname: "Mud", happiness: 0 }), catalog, index);
+    const recap = buildRecap(sessionWith({ ...swampertSet, nickname: "Mud", happiness: 0 }), catalog);
     expect(recap.status).toBe("ready");
     if (recap.status !== "ready") {
       return;
@@ -245,8 +115,6 @@ describe("buildRecap", () => {
         minusStat: "spa",
       }).stats,
     );
-    expect(entry?.idleModel?.src).toContain("/regular/260.glb");
-    expect(entry?.idleModel?.shinySrc).toBeNull();
     expect(entry?.imageUrl).toBe("art.png");
     expect(entry?.showdownText).toBe(
       [
@@ -265,12 +133,11 @@ describe("buildRecap", () => {
     );
   });
 
-  function shinyEntry(overrides: Partial<RecapCatalog["pokemon"][number]>, modelIndex: PokemonModelIndex = index) {
-    const recap = buildRecap(
-      sessionWith({ ...swampertSet, pokemonId: overrides.id ?? "swampert", shiny: true }),
-      { ...catalog, pokemon: [{ ...catalog.pokemon[0]!, id: "swampert", ...overrides }] },
-      modelIndex,
-    );
+  function shinyEntry(sprites: RecapCatalog["pokemon"][number]["sprites"]) {
+    const recap = buildRecap(sessionWith({ ...swampertSet, shiny: true }), {
+      ...catalog,
+      pokemon: [{ ...catalog.pokemon[0]!, sprites }],
+    });
     expect(recap.status).toBe("ready");
     if (recap.status !== "ready") {
       throw new Error("Expected a recap");
@@ -278,63 +145,40 @@ describe("buildRecap", () => {
     return recap.entries[0]!;
   }
 
-  it("uses the shiny 3D model when the set is shiny and a shiny model exists", () => {
-    const entry = shinyEntry({ nationalDexNumber: 1 });
-    // The viewer animates the regular file, which has the idle clip, and paints the shiny file's textures on it.
-    expect(entry.idleModel?.src).toContain("/regular/1.glb");
-    expect(entry.idleModel?.shinySrc).toContain("/shiny/1.glb");
-  });
-
-  it("never shows a shiny Pokémon in a regular-colored 3D model", () => {
-    // Swampert (#260) has a regular model but no shiny model in this index.
-    const noShinyFile = shinyEntry({ nationalDexNumber: 260 });
-    expect(noShinyFile.idleModel).toBeNull();
-    // Alolan Raichu has one model for both colors, so there is nothing shiny to show in 3D.
-    const sharedFile = shinyEntry({ id: "raichualola", form: "Alola", nationalDexNumber: 26 });
-    expect(sharedFile.idleModel).toBeNull();
-  });
-
-  it("falls back to the shiny sprite, then the shiny artwork, when there is no shiny 3D model", () => {
+  it("shows the shiny artwork for a shiny Pokémon and the regular artwork otherwise", () => {
     const sprites = { sprite: "sprite.png", spriteShiny: "sprite-shiny.png", artwork: "art.png", artworkShiny: "art-shiny.png" };
-    expect(shinyEntry({ nationalDexNumber: 260, sprites }).imageUrl).toBe("sprite-shiny.png");
-    expect(
-      shinyEntry({ nationalDexNumber: 260, sprites: { ...sprites, spriteShiny: null } }).imageUrl,
-    ).toBe("art-shiny.png");
+    expect(shinyEntry(sprites).imageUrl).toBe("art-shiny.png");
+    const regular = buildRecap(sessionWith(swampertSet), { ...catalog, pokemon: [{ ...catalog.pokemon[0]!, sprites }] });
+    expect(regular.status === "ready" && regular.entries[0]?.imageUrl).toBe("art.png");
   });
 
+  it("never shows a shiny Pokémon in regular colors when shiny artwork is missing", () => {
+    const sprites = { sprite: "sprite.png", spriteShiny: "sprite-shiny.png", artwork: "art.png", artworkShiny: null };
+    expect(shinyEntry(sprites).imageUrl).toBe("sprite-shiny.png");
+  });
+
+  it("builds a recap for a set with fewer than four moves", () => {
+    const recap = buildRecap(sessionWith({ ...swampertSet, moveIds: ["stealthrock"] }), catalog);
+    expect(recap.status).toBe("ready");
+    if (recap.status !== "ready") {
+      return;
+    }
+    expect(recap.entries[0]?.moves).toHaveLength(1);
+    expect(recap.entries[0]?.showdownText).toContain("- Stealth Rock");
+    expect(recap.entries[0]?.showdownText).not.toContain("- Flip Turn");
+  });
+
+  it("carries the held item icon", () => {
+    const recap = buildRecap(sessionWith(swampertSet), {
+      ...catalog,
+      items: [{ id: "leftovers", showdownName: "Leftovers", description: "Restores HP.", iconUrl: "leftovers.png" }],
+    });
+    expect(recap.status === "ready" && recap.entries[0]?.itemIconUrl).toBe("leftovers.png");
+  });
   it("explains when the finished Pokémon is not in the catalog", () => {
-    expect(buildRecap(sessionWith({ ...swampertSet, pokemonId: "missingno" }), catalog, index)).toEqual({
+    expect(buildRecap(sessionWith({ ...swampertSet, pokemonId: "missingno" }), catalog)).toEqual({
       status: "invalid",
       message: "This finished set does not match the current catalog.",
     });
-  });
-});
-
-describe("generated model index", () => {
-  const catalog = loadGeneratedCatalog();
-  const generated = loadPokemonModelIndex();
-
-  function urlFor(id: string, shiny = false) {
-    const form = catalog.pokemon.find((pokemon) => pokemon.id === id);
-    expect(form).toBeTruthy();
-    return pokemonIdleModelUrl(
-      { id: form!.id, nationalDexNumber: form!.nationalDexNumber, form: form!.form },
-      shiny,
-      generated,
-    );
-  }
-
-  it("resolves published models for the formes the recap needs to show", () => {
-    expect(urlFor("bulbasaur")).toContain("/regular/1.glb");
-    expect(urlFor("bulbasaur", true)).toContain("/shiny/1.glb");
-    expect(urlFor("raichualola")).toContain("/alolan/26.glb");
-    expect(urlFor("venusaurmega")).toContain("/mega/3.glb");
-    expect(urlFor("charizardmegax")).toContain("/x/6.glb");
-    expect(urlFor("charizardgmax")).toContain("/gmax/6.glb");
-    expect(urlFor("kyogreprimal")).toContain("/primal/382.glb");
-    expect(urlFor("giratinaorigin")).toContain("/origin/487.glb");
-    expect(urlFor("yanmega")).toContain("/regular/469.glb");
-    expect(urlFor("rotomheat")).toContain("/multiform/RotomHeat.glb");
-    expect(urlFor("taurospaldeacombat")).toBeNull();
   });
 });

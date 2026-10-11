@@ -151,6 +151,25 @@ describe("saved teams", () => {
     expect(teamShowdownText([], catalog)).toEqual({ ok: false, message: "This team has no Pokémon to copy." });
   });
 
+  it("keeps saved sets that have fewer than four moves and drops ones with none or too many", () => {
+    const protectOnly: PokemonSet = { ...swampert, moveIds: ["protect"] };
+    const saved = saveSetToNewTeam(createEmptyTeamBox(), protectOnly);
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) {
+      return;
+    }
+    const restored = parseStoredTeams(JSON.stringify(saved.box));
+    expect(restored.teams[0]?.sets[0]?.moveIds).toEqual(["protect"]);
+
+    const empty = JSON.parse(JSON.stringify(saved.box)) as TeamBox;
+    empty.teams[0]!.sets[0]!.moveIds = [];
+    expect(parseStoredTeams(JSON.stringify(empty)).teams[0]?.sets ?? []).toHaveLength(0);
+
+    const tooMany = JSON.parse(JSON.stringify(saved.box)) as TeamBox;
+    tooMany.teams[0]!.sets[0]!.moveIds = ["a", "b", "c", "d", "e"];
+    expect(parseStoredTeams(JSON.stringify(tooMany)).teams[0]?.sets ?? []).toHaveLength(0);
+  });
+
   it("removes one slot and keeps the other team intact", () => {
     const created = saveSetToNewTeam(createEmptyTeamBox(), swampert);
     expect(created.ok).toBe(true);

@@ -10,6 +10,7 @@ import type { PokemonSet } from "@/lib/types/session";
 import { PERFECT_IVS, STAT_IDS, type StatSpread } from "@/lib/types/stats";
 import type { GenderRule } from "@/lib/types/taxonomy";
 import { DEFAULT_HAPPINESS, MAX_LEVEL } from "@/lib/validation/details";
+import { MAX_MOVE_COUNT, MIN_MOVE_COUNT } from "@/lib/validation/moves";
 import { validateSet } from "@/lib/validation/set";
 import type { PokemonForm } from "@/lib/types/pokemon";
 
@@ -40,7 +41,7 @@ export const MAX_IMPORT_SETS = 6;
 
 /**
  * Turns pasted Showdown text into finished sets. A set is only accepted when every part the app
- * never fills in for you is in the paste: Ability, Nature, Tera Type, four moves, and a gender
+ * never fills in for you is in the paste: Ability, Nature, Tera Type, one to four moves, and a gender
  * for species that have both. Anything unknown or missing is reported in plain language so the
  * paste can be fixed and read again.
  */
@@ -175,8 +176,10 @@ function resolveParsedSet(parsed: ParsedSet, catalog: ImportCatalog, lookups: Lo
       moveIds.push(moveId);
     }
   }
-  if (parsed.moves.length !== 4) {
-    problems.push(`A set needs exactly 4 moves, and this one has ${parsed.moves.length}.`);
+  if (parsed.moves.length < MIN_MOVE_COUNT) {
+    problems.push("Add at least one move line, such as \"- Protect\".");
+  } else if (parsed.moves.length > MAX_MOVE_COUNT) {
+    problems.push(`A set can have at most ${MAX_MOVE_COUNT} moves, and this one has ${parsed.moves.length}.`);
   }
 
   if (problems.length > 0 || !form || !abilityId || !natureId || !teraType) {

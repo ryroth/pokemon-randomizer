@@ -173,6 +173,26 @@ export function chooseEvolvedPokemon(
   );
 }
 
+/**
+ * After the Evolution stages filter changes, an evolution the user already chose may sit in a stage
+ * that is no longer selected. That choice goes back to the Pokémon that was rolled.
+ */
+export function resetDisallowedEvolution(
+  session: RandomizerSession,
+  formById: ReadonlyMap<string, PokemonForm>,
+): RandomizerSession {
+  const { selectedPokemonId, evolvedPokemonId } = session;
+  if (!selectedPokemonId || !evolvedPokemonId || evolvedPokemonId === selectedPokemonId) {
+    return session;
+  }
+  const evolved = formById.get(evolvedPokemonId);
+  const selected = formById.get(selectedPokemonId);
+  if (!evolved || !selected || session.config.evolutionStages.includes(evolved.evolutionStage)) {
+    return session;
+  }
+  return chooseEvolvedPokemon(session, selected, selected.id);
+}
+
 export function clearPokemonRolls(session: RandomizerSession): RandomizerSession {
   const keepAbilityPool = assignsAbilitiesBeforePokemon(session);
   const keepMovePool = assignsMovesBeforePokemon(session);
@@ -389,11 +409,18 @@ export function syncRandomizerTab(session: RandomizerSession): RandomizerSession
   };
 }
 
+/**
+ * Applies a config change. When the change puts a different randomizer first (reordering the
+ * steps, or turning one on or off), the session moves to that first step so the user starts there
+ * without an extra click.
+ */
 export function applySessionConfig(
   session: RandomizerSession,
   config: RandomizerConfig,
 ): RandomizerSession {
-  return syncRandomizerTab(
+  const firstBefore = firstOpenRandomizerTab(session.config);
+  const firstAfter = firstOpenRandomizerTab(config);
+  const next = syncRandomizerTab(
     withSelectionMatchingAppliedMoves(
       trimAppliedMoveSlots({
         ...session,
@@ -401,6 +428,7 @@ export function applySessionConfig(
       }),
     ),
   );
+  return firstBefore === firstAfter ? next : { ...next, tab: firstAfter };
 }
 
 export function showPreviousPokemonRoll(session: RandomizerSession): RandomizerSession {

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const steps = [
   {
     title: "Configure",
-    body: "Pick generations, types, formes, and optional ability, move, and item randomizers.",
+    body: "Pick generations, types, forms, and optional ability, move, and item randomizers.",
   },
   {
     title: "Generate",
