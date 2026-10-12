@@ -11,13 +11,16 @@ import { MovePanel } from "@/components/recap/move-panel";
 import { StatRadar } from "@/components/recap/stat-radar";
 import { TypeBadge } from "@/components/recap/type-badge";
 import { Button } from "@/components/ui/button";
+import type { RecapEditAccess } from "@/lib/builder/locks";
 import type { RecapEntry } from "@/lib/recap/entries";
 
 /**
- * `editable` turns each part of the Pokémon into a link that opens that part in the builder.
- * Saved team recaps leave it off because they are read-only.
+ * `edit` turns each part of the Pokémon into a link that opens that part in the builder. It also says
+ * which parts a randomizer chose: those stay locked, so they get no link. Saved team recaps leave
+ * `edit` off because they are read-only.
  */
-export function PokedexCard({ entry, editable = false }: { entry: RecapEntry; editable?: boolean }) {
+export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEditAccess }) {
+  const editable = edit !== undefined;
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const stageLabel = `${entry.shiny ? "Shiny artwork" : "Artwork"} of ${entry.speciesName}`;
   const displayName = entry.nickname ?? entry.speciesName;
@@ -130,7 +133,7 @@ export function PokedexCard({ entry, editable = false }: { entry: RecapEntry; ed
                 <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Held item</h3>
                 <p className="flex items-center gap-2 text-lg font-semibold">
                   <ItemIcon iconUrl={entry.itemIconUrl} none={!entry.itemName} className="size-8" />
-                  <EditLink editable={editable} target="item" label="held item">
+                  <EditLink editable={editable && edit.item} target="item" label="held item">
                     {entry.itemName ?? "None"}
                   </EditLink>
                 </p>
@@ -161,7 +164,7 @@ export function PokedexCard({ entry, editable = false }: { entry: RecapEntry; ed
           <div className="grid gap-3 lg:grid-cols-2">
             <div className="rounded-lg bg-[#163f86] p-3 sm:p-4">
               <h3 className="mb-2 text-sm font-semibold">Current moves</h3>
-              <MovePanel moves={entry.moves} editable={editable} />
+              <MovePanel moves={entry.moves} editSlots={edit?.moves} />
             </div>
             <div className="space-y-4 rounded-lg bg-[#163f86] p-3 sm:p-4">
               <div>
@@ -176,7 +179,7 @@ export function PokedexCard({ entry, editable = false }: { entry: RecapEntry; ed
               <div className="space-y-1 border-t border-white/15 pt-3">
                 <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Ability</h3>
                 <p className="text-lg font-semibold">
-                  <EditLink editable={editable} target="ability" label="ability">
+                  <EditLink editable={editable && edit.ability} target="ability" label="ability">
                     {entry.abilityName}
                   </EditLink>
                 </p>

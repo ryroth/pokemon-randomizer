@@ -107,6 +107,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   // Cards that were just rolled come out of a ball. Each reveal plays once.
   const [revealTokens, setRevealTokens] = useState<ReadonlyMap<string, number>>(new Map());
   const revealCounter = useRef(0);
+  // Set when a change to the randomizer order or switches moves the open tab. The user is already
+  // looking at the page they are working on, so none of the scroll-on-tab-change effects may run.
+  const keepScrollRef = useRef(false);
   const resultsRef = useRef<HTMLDivElement>(null);
   const evolutionRef = useRef<HTMLDivElement>(null);
   const latestSeed = session.pokemonRolls[0]?.seed;
@@ -293,11 +296,14 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const itemTabOpen = session.tab === "item" && canOpenRandomizerTab(session, "item");
 
   useEffect(() => {
+    if (keepScrollRef.current) {
+      return;
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [session.tab]);
 
   useEffect(() => {
-    if (session.tab !== "pokemon" || !latestSeed) {
+    if (keepScrollRef.current || session.tab !== "pokemon" || !latestSeed) {
       return;
     }
 
@@ -305,12 +311,17 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   }, [latestSeed, session.tab]);
 
   useEffect(() => {
-    if (session.tab !== "pokemon" || !session.selectedPokemonId) {
+    if (keepScrollRef.current || session.tab !== "pokemon" || !session.selectedPokemonId) {
       return;
     }
 
     evolutionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [session.selectedPokemonId, session.tab]);
+
+  // Runs after the scroll effects above, so they see the flag for the render that changed the tab.
+  useEffect(() => {
+    keepScrollRef.current = false;
+  }, [session.tab]);
 
   /** A new roll reveals every card. A reroll adds only the replacement and leaves the others alone. */
   function startReveal(ids: readonly string[], keepOthers = false) {
@@ -463,7 +474,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   function handleConfigChange(config: typeof session.config) {
     setErrorMessage(null);
     clearExtraErrors();
-    setSession(applySessionConfig(session, config));
+    const next = applySessionConfig(session, config);
+    keepScrollRef.current = next.tab !== session.tab;
+    setSession(next);
   }
 
   const heading = itemTabOpen

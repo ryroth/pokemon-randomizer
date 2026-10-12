@@ -126,15 +126,14 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
   const readyForRecap = validation.ok && pending.length === 0;
   const issues = validation.ok ? [] : validation.errors;
   const evTotal = sumEvs(evsCountingBlanksAsZero(session.draft.evs));
-  const filledMoveSlots = session.draft.moveIds.filter((id) => Boolean(id)).length;
-  const emptyMoveSlots = MAX_MOVE_COUNT - filledMoveSlots;
-  const appliedFromRandomizer = session.config.randomizeMoves ? filledMoveSlots : 0;
+  const moveLocks = session.draft.moveIds.map((_, slot) => moveSlotLockedByRandomizer(session, slot));
+  const appliedFromRandomizer = moveLocks.filter(Boolean).length;
+  const emptyMoveSlots = MAX_MOVE_COUNT - appliedFromRandomizer;
   const chosenMoves = session.draft.moveIds.map((id) =>
     id ? moves.find((move) => move.id === id) : undefined,
   );
   const abilityLocked = abilityLockedByRandomizer(session);
   const itemLocked = itemLockedByRandomizer(session);
-  const moveLocks = session.draft.moveIds.map((_, slot) => moveSlotLockedByRandomizer(session, slot));
   const chosenAbility = abilities.find((ability) => ability.id === session.draft.abilityId);
   const heldItem = items.find((item) => item.id === session.draft.itemId);
   const chosenNature = natures.find((entry) => entry.id === session.draft.natureId);

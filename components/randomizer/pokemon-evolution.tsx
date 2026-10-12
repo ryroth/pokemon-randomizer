@@ -40,8 +40,8 @@ export function PokemonEvolutionPicker({
           </p>
         ) : (selected.evolutionTargetIds ?? []).length > 0 ? (
           <p className="text-sm text-muted-foreground">
-            Your Evolution stages filter does not include a later stage for {selected.displayName}, so
-            you will use it as-is. Select more than one stage to choose an evolution.
+            Evolutions can only be chosen when Basic, Stage 1, and Stage 2 are all selected in the Evolution
+            stages filter, so {selected.displayName} will be used as-is.
           </p>
         ) : (
           <p className="text-sm text-muted-foreground">

@@ -111,7 +111,7 @@ test("selected Pokémon can be evolved to a later battle stage", async ({ page }
   await expect(page.getByText("Using this evolution")).toBeVisible();
   await expect(page.getByRole("link", { name: /^Continue with / })).toBeEnabled();
 });
-test("only offers evolutions when more than one evolution stage is selected", async ({ page }) => {
+test("only offers evolutions when all three evolution stages are selected", async ({ page }) => {
   await page.goto("/randomizer");
   await page.getByRole("spinbutton", { name: "Pokémon count" }).fill("3");
 
@@ -137,7 +137,7 @@ test("only offers evolutions when more than one evolution stage is selected", as
   await expect(page.getByRole("heading", { name: "Evolution", level: 2 })).toBeVisible();
   await expect(page.getByRole("list", { name: "Evolution choices" })).toHaveCount(0);
   await expect(page.getByText("can evolve")).toHaveCount(0);
-  await expect(page.getByText("Select more than one stage to choose an evolution.")).toBeVisible();
+  await expect(page.getByText(/Evolutions can only be chosen when Basic, Stage 1, and Stage 2 are all selected/)).toBeVisible();
 });
 test("back returns to the previous randomizer tab", async ({ page }) => {
   await page.goto("/randomizer");

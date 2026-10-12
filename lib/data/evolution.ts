@@ -1,5 +1,5 @@
 import type { PokemonForm } from "@/lib/types/pokemon";
-import type { EvolutionStage, FormType } from "@/lib/types/taxonomy";
+import { EVOLUTION_STAGES, type EvolutionStage, type FormType } from "@/lib/types/taxonomy";
 
 const BATTLE_EVOLUTION_EXCLUDED_FORM_TYPES: ReadonlySet<FormType> = new Set([
   "mega",
@@ -47,24 +47,30 @@ export function collectEvolutionTargetIds(
 }
 
 /**
+ * The user may only choose a different evolution when all three Evolution stages (Basic, Stage 1,
+ * and Stage 2) are selected. With fewer, the rolled form is used as it is, so a Basic Pokémon is
+ * never evolved just because Stage 2 happens to be selected too.
+ */
+export function evolutionChoiceAllowed(allowedStages: readonly EvolutionStage[]): boolean {
+  return EVOLUTION_STAGES.every((stage) => allowedStages.includes(stage));
+}
+
+/**
  * Later stages the user may evolve a selected Pokémon into. With `allowedStages` (the Evolution
- * stages filter), only targets in a selected stage are offered, so a roll for Basic Pokémon only
- * never offers an evolution. Omit `allowedStages` to list every later stage.
+ * stages filter), nothing is offered unless all three stages are selected
+ * (`evolutionChoiceAllowed`). Omit `allowedStages` to list every later stage.
  */
 export function evolutionChoices(
   selected: PokemonForm,
   formById: ReadonlyMap<string, PokemonForm>,
   allowedStages?: readonly EvolutionStage[],
 ): PokemonForm[] {
+  if (allowedStages && !evolutionChoiceAllowed(allowedStages)) {
+    return [];
+  }
   return (selected.evolutionTargetIds ?? []).flatMap((id) => {
     const form = formById.get(id);
-    if (!form) {
-      return [];
-    }
-    if (allowedStages && !allowedStages.includes(form.evolutionStage)) {
-      return [];
-    }
-    return [form];
+    return form ? [form] : [];
   });
 }
 

@@ -1,4 +1,4 @@
-import { isValidBattlePokemonId } from "@/lib/data/evolution";
+import { evolutionChoiceAllowed, isValidBattlePokemonId } from "@/lib/data/evolution";
 import type { AbilityRandomizerResult } from "@/lib/randomizer/abilities";
 import {
   MOVES_ASSIGNED_PER_POKEMON,
@@ -187,7 +187,7 @@ export function resetDisallowedEvolution(
   }
   const evolved = formById.get(evolvedPokemonId);
   const selected = formById.get(selectedPokemonId);
-  if (!evolved || !selected || session.config.evolutionStages.includes(evolved.evolutionStage)) {
+  if (!evolved || !selected || evolutionChoiceAllowed(session.config.evolutionStages)) {
     return session;
   }
   return chooseEvolvedPokemon(session, selected, selected.id);

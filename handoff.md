@@ -413,7 +413,16 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 - **Recap to Builder links:** see the `/recap` paragraph above.
 - **Moves:** one to four. `validateMoves`, `MIN_MOVE_COUNT`, `MAX_MOVE_COUNT`, `PokemonSet.moveIds: string[]`, team storage, and Showdown import/export all follow.
 - **Locks:** `lib/builder/locks.ts`. Applied moves, abilities, and items are locked in the Builder. `pendingRandomizerSteps` lists enabled steps that have not given this Pokémon its part. While any is pending the Builder shows "Finish the randomizer first" with a link, hides the pickers for those parts, and disables Continue to recap.
-- **Evolution:** `evolutionChoices(selected, formById, allowedStages)` only offers selected stages. With only one stage selected nothing is offered and the Evolution panel says to select more than one. `resetDisallowedEvolution` runs when the Evolution stages filter changes.
+- **Evolution:** `evolutionChoices(selected, formById, allowedStages)` only offers selected stages. Evolutions are offered only when Basic, Stage 1, and Stage 2 are all selected (evolutionChoiceAllowed). Otherwise nothing is offered and the Evolution panel says so. `resetDisallowedEvolution` runs when the Evolution stages filter changes.
 - **Order change:** `applySessionConfig` moves `tab` to `firstOpenRandomizerTab` when the first step changes.
 - **Wording:** "forms" everywhere (the importer's singular `forme` keys are unchanged), "suggested spread" instead of "guessed spread".
 - **Tests added:** `tests/unit/builder/blank-fields.test.ts`, `tests/unit/randomizer/order-and-evolution.test.ts`, `tests/unit/art/pokemonImage.test.ts`, more cases in the recap, validation, import, teams, and catalog-integrity tests, and `tests/e2e/tester-feedback.spec.ts`.
+
+### Follow-up round (merged, PR #11)
+
+- **Scroll:** reordering randomizers no longer scrolls to the top. pokemon-randomizer.tsx sets keepScrollRef for config-driven tab changes and the scroll effects skip once.
+- **Evolution:** needs all three stages selected (Basic + Stage 2 alone does not unlock it).
+- **Move locks:** moveSlotLockedByRandomizer compares each draft slot with the applied move for the selected Pokémon, so hand-picked moves stay editable after a Recap round trip.
+- **Recap:** ecapEditAccess(session) gives PokedexCard which parts are editable. Randomizer-set ability, item, and moves show no Edit link (moves say Set by randomizer). Move Edit links use the real Builder slot number.
+- **Tests:** new cases in 	ests/unit/randomizer/order-and-evolution.test.ts, 	ests/unit/builder/blank-fields.test.ts, and 	ests/e2e/tester-feedback.spec.ts.
+
