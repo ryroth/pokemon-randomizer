@@ -10,6 +10,10 @@
 
 export const ICON_SIZE = 64;
 const ICON_MARGIN = 5;
+/** When no eyes are found, the close-up is this share of the Pokémon's longest side. */
+const HEAD_GUESS_SIZE = 0.55;
+/** A head close-up is never larger than this share of the Pokémon's longest side. */
+const HEAD_MAX_SIZE = 0.6;
 const INNER = ICON_SIZE - ICON_MARGIN * 2;
 
 /** Opacity from 0 to 1 for every pixel of an `ICON_SIZE` square, row by row. */
@@ -302,7 +306,7 @@ export function analyseFace(image: RgbaImage, mode: "whole" | "head"): FaceAnaly
         }
       }
     }
-    const size = Math.min(boundsMax, Math.max(boundsMax * 0.28, gap * 3.4));
+    const size = Math.min(boundsMax * HEAD_MAX_SIZE, Math.max(boundsMax * 0.28, gap * 3.4));
     return {
       crop: mode === "whole" ? wholeCrop : { cx: middle.x, cy: middle.y + size * 0.08, size },
       erase,
@@ -345,7 +349,12 @@ export function analyseFace(image: RgbaImage, mode: "whole" | "head"): FaceAnaly
       }
     }
   }
-  return { crop: wholeCrop, erase, face: head, found: "none" };
+  return {
+    crop: mode === "whole" ? wholeCrop : { cx: head.x, cy: head.y, size: boundsMax * HEAD_GUESS_SIZE },
+    erase,
+    face: head,
+    found: "none",
+  };
 }
 /**
  * Paints out the marked pixels by spreading the colors around them inwards, so the eyes and mouth
@@ -517,8 +526,7 @@ export function buildFaceIcon(image: RgbaImage, mode: "whole" | "head"): FaceIco
     x: (analysis.face.x - left) / step + ICON_MARGIN,
     y: (analysis.face.y - top) / step + ICON_MARGIN,
   };
-  // A whole Pokémon is much bigger than its head, so Ditto's face is drawn smaller on it.
-  const face = fitFace(body, mapped, analysis.found === "pair" || mode === "whole" ? 1 : 0.5);
+  const face = fitFace(body, mapped, 1);
   return { rgba, body, face, faceColor: faceColorFor(rgba, face) };
 }
 

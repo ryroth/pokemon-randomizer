@@ -85,10 +85,12 @@ describe("finding the face", () => {
     expect(analysis.crop.size).toBeGreaterThan(75);
   });
 
-  it("keeps the whole Pokémon and guesses where the head is when no eyes can be found", () => {
-    const analysis = analyseFace(head({ features: false }), "head");
+  it("guesses where the head is and cuts a close-up there when no eyes can be found", () => {
+    const image = head({ features: false });
+    const whole = analyseFace(image, "whole");
+    const analysis = analyseFace(image, "head");
     expect(analysis.found).toBe("none");
-    expect(analysis.crop.size).toBeGreaterThan(75);
+    expect(analysis.crop.size).toBeLessThan(whole.crop.size);
     expect(analysis.face.y).toBeLessThan(64);
     expect(analysis.erase.some((flag) => flag === 1)).toBe(true);
   });
@@ -187,8 +189,10 @@ describe("face icon", () => {
     expect(bright.faceColor[0]).toBeLessThan(80);
   });
 
-  it("draws a smaller face on a whole Pokémon, where the head is only a small part", () => {
-    expect(buildFaceIcon(head({ features: false }), "head").face.scale).toBeLessThanOrEqual(0.5);
+  it("never keeps the whole Pokémon in a head icon, even when no eyes are found", () => {
+    const image = head({ features: false });
+    expect(analyseFace(image, "head").crop.size).toBeLessThan(analyseFace(image, "whole").crop.size);
+    expect(buildFaceIcon(image, "head").face.scale).toBeGreaterThan(0);
   });
 
   it("keeps the whole silhouette for Ditto", () => {
