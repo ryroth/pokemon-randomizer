@@ -18,7 +18,8 @@
     "import:dex-entries": "tsx scripts/import/dex-entries.ts",
     "import:type-chart": "tsx scripts/import/type-chart.ts",
     "import:world-art": "tsx scripts/import/world-art.ts",
-    "import:art": "tsx scripts/import/art.ts"
+    "import:art": "tsx scripts/import/art.ts",
+    "import:ditto-icon": "tsx scripts/import/ditto-icon.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

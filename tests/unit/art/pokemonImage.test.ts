@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pokemonImage, pokemonImageCandidates } from "@/lib/art/pokemonImage";
+import { faceIconImageCandidates, pokemonImage, pokemonImageCandidates } from "@/lib/art/pokemonImage";
 
 const sprites = {
   sprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/245.png",
@@ -51,6 +51,12 @@ describe("pokemonImageCandidates", () => {
         false,
       ),
     ).toEqual([sprites.artwork, "https://example.test/sprite.png"]);
+  });
+});
+
+describe("faceIconImageCandidates", () => {
+  it("puts HOME first for Ditto, not official artwork", () => {
+    expect(faceIconImageCandidates(sprites, false)).toEqual([home, sprites.artwork]);
   });
 });
 
