@@ -423,10 +423,20 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 - **Scroll:** reordering randomizers no longer scrolls to the top. pokemon-randomizer.tsx sets keepScrollRef for config-driven tab changes and the scroll effects skip once.
 - **Evolution:** needs all three stages selected (Basic + Stage 2 alone does not unlock it).
 - **Move locks:** moveSlotLockedByRandomizer compares each draft slot with the applied move for the selected Pokémon, so hand-picked moves stay editable after a Recap round trip.
-- **Recap:** ecapEditAccess(session) gives PokedexCard which parts are editable. Randomizer-set ability, item, and moves show no Edit link (moves say Set by randomizer). Move Edit links use the real Builder slot number.
+- **Recap:** 
+ecapEditAccess(session) gives PokedexCard which parts are editable. Randomizer-set ability, item, and moves show no Edit link (moves say Set by randomizer). Move Edit links use the real Builder slot number.
 - **Tests:** new cases in 	ests/unit/randomizer/order-and-evolution.test.ts, 	ests/unit/builder/blank-fields.test.ts, and 	ests/e2e/tester-feedback.spec.ts.
 
 ### Move pool follows the current games (merged, PR #12)
 
 - `isCatalogMove` (`scripts/import/showdown.ts`) drops moves Showdown marks `Past` (not usable in battle in the current generation, e.g. Spider Web, Hidden Power, Return, Hail). The catalog went from about 850 to 697 moves. After changing this filter run `npm run import:data` then `npm run import:learnsets`.
 - Moves Showdown marks `Unobtainable` (Power Shift, Cut, the Torque moves, and so on) are still in the catalog. Say so if they should go too.
+
+### Ditto tab icon
+
+- `app/icon.png` is the still icon: Ditto's official Pokémon HOME picture as a face icon (outline, Ditto's dot eyes and flat mouth). Regenerate with `npm run import:ditto-icon` (uses `sharp`, needs the network and `data/generated/catalog.json`).
+- When the user selects a Pokémon on `/randomizer` (not when they generate), `DittoFavicon` (`components/randomizer/ditto-favicon.tsx`, `selectionKey` is the selected id) loads Ditto's and that Pokémon's HOME picture (artwork as fallback, via `faceIconImageCandidates` in `lib/art/pokemonImage.ts`) through `/_next/image` (same origin, so the canvas can read it), builds a face icon from each, and swaps the `<link rel=icon>` href every 80 ms. Ditto cross-fades and melts into the selected Pokémon and back, then the original href is restored. A selection already present on page load does not animate. `prepareMorph` still accepts several targets, but the page passes one.
+- `lib/art/faceIcon.ts` (pure, 64x64): `analyseFace` finds the face by looking for small dark blobs (eyes, mouth) and picks the best matching pair in the upper part of the picture. A pair gives a rounded head close-up; otherwise the whole Pokémon is kept and the head is guessed (top band, smaller face). `paintOut` fills the eyes and mouth with surrounding colors, `buildFaceIcon` crops, adds the outline, and chooses a dark or light face color, `drawFace` draws Ditto's face. `lib/art/dittoMorph.ts` has the timeline and the blending. Nothing about a Pokémon is invented.
+- Known weak spots: Pokémon whose eyes are not dark (white or colored eyes), dark Pokémon, and pictures where marks look like eyes can get a wrong close-up or a leftover feature. They are never wrong in a harmful way: the face is always drawn on the body.
+- Tests: `tests/unit/art/faceIcon.test.ts`, `tests/unit/art/dittoMorph.test.ts`, `tests/e2e/ditto-favicon.spec.ts`. Playwright config sets `reducedMotion: reduce`, which turns the animation off, so animation tests call `page.emulateMedia({ reducedMotion: "no-preference" })`.
+- Ideas not built: better eye detection for light or colored eyes, blink, animate on single re-rolls.

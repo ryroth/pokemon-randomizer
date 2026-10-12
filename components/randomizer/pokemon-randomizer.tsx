@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Shuffle } from "lucide-react";
 import { AbilityConfigForm } from "@/components/randomizer/ability-config";
 import { AbilityResults } from "@/components/randomizer/ability-results";
+import { DittoFavicon } from "@/components/randomizer/ditto-favicon";
 import { ItemConfigForm } from "@/components/randomizer/item-config";
 import { ItemResults } from "@/components/randomizer/item-results";
 import { MoveConfigForm } from "@/components/randomizer/move-config";
@@ -26,7 +27,7 @@ import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { openBuilder } from "@/lib/builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { pokemonImage } from "@/lib/art/pokemonImage";
+import { faceIconImageCandidates, pokemonImage } from "@/lib/art/pokemonImage";
 import { evolutionChoices } from "@/lib/data/evolution";
 import {
   applyAbilityRoll,
@@ -143,9 +144,23 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
     const form = pokemonById.get(id);
     return form ? [form] : [];
   });
+  const dittoImages = useMemo(() => {
+    const ditto = pokemonById.get("ditto");
+    return ditto ? faceIconImageCandidates(ditto.sprites, false) : [];
+  }, [pokemonById]);
   const selectedPokemon = session.selectedPokemonId
     ? pokemonById.get(session.selectedPokemonId)
     : undefined;
+  const selectedPokemonImages = useMemo(
+    () =>
+      selectedPokemon
+        ? faceIconImageCandidates(
+            selectedPokemon.sprites,
+            viewedRoll?.shinyPokemonIds?.includes(selectedPokemon.id) ?? false,
+          )
+        : [],
+    [selectedPokemon, viewedRoll],
+  );
   const selectedEvolutionChoices = selectedPokemon
     ? evolutionChoices(selectedPokemon, pokemonById, session.config.evolutionStages)
     : [];
@@ -514,6 +529,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
 
   return (
     <PageFrame className="gap-10">
+      <DittoFavicon
+        selectionKey={selectedPokemon?.id}
+        dittoImages={dittoImages}
+        pokemonImages={selectedPokemonImages}
+      />
       <header className="hero-panel max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
         <p className="max-w-3xl text-base leading-7 text-muted-foreground">{intro}</p>

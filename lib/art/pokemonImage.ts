@@ -17,6 +17,15 @@ export function pokemonImageCandidates(sprites: PokemonSprites, shiny: boolean):
   return ordered.filter((url): url is string => typeof url === "string" && url.length > 0);
 }
 
+/**
+ * Pictures to cut a face icon from, best first: the Pokémon HOME render (clean, evenly lit, no outline), then
+ * the official artwork. Still pictures only, like everywhere else in the app.
+ */
+export function faceIconImageCandidates(sprites: PokemonSprites, shiny: boolean): string[] {
+  const idSource = shiny ? (sprites.spriteShiny ?? sprites.sprite) : sprites.sprite;
+  const ordered = [homeSpriteUrl(idSource, shiny), shiny ? sprites.artworkShiny : sprites.artwork];
+  return ordered.filter((url): url is string => typeof url === "string" && url.length > 0);
+}
 /** True for the small pixel-art game sprites, the only pictures that need crisp scaling. */
 export function isPixelSprite(url: string): boolean {
   return SPRITE_ID.test(url);
