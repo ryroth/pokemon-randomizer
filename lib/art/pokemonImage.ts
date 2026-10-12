@@ -18,8 +18,8 @@ export function pokemonImageCandidates(sprites: PokemonSprites, shiny: boolean):
 }
 
 /**
- * Pictures to cut a face icon from, best first: the Pokémon HOME render (clean, evenly lit, no outline), then
- * the official artwork. Still pictures only, like everywhere else in the app.
+ * Pictures of Ditto for the still tab icon, best first: the Pokémon HOME render, then official artwork.
+ * Still pictures only, like everywhere else in the app. Selected Pokémon use `pokemonImageCandidates` instead.
  */
 export function faceIconImageCandidates(sprites: PokemonSprites, shiny: boolean): string[] {
   const idSource = shiny ? (sprites.spriteShiny ?? sprites.sprite) : sprites.sprite;

@@ -6,6 +6,7 @@ import {
   buildFaceIcon,
   drawFace,
   fitFace,
+  fitStillPicture,
   paintOut,
   type Mask,
   type RgbaImage,
@@ -137,7 +138,7 @@ describe("painting out the Pokémon's own face", () => {
 });
 
 describe("face icon", () => {
-  it("is a rounded close-up with an outline, and none of the Pokémon's own face left", () => {
+  it("is a rounded close-up with an outline, and the Pokémon's own face still there", () => {
     const icon = buildFaceIcon(head(), "head");
     expect(icon.rgba).toHaveLength(ICON_SIZE * ICON_SIZE * 4);
     expect(pixelAt(icon.rgba, 32, 32, ICON_SIZE).a).toBe(255);
@@ -159,7 +160,29 @@ describe("face icon", () => {
       }
     }
     expect(outline).toBeGreaterThan(40);
-    expect(darkInside).toBe(0);
+    expect(darkInside).toBeGreaterThan(0);
+  });
+
+  it("can paint the Pokémon's own face out when asked, for the still Ditto icon", () => {
+    const kept = buildFaceIcon(head(), "head");
+    const erased = buildFaceIcon(head(), "head", { eraseFace: true });
+    let darkKept = 0;
+    let darkErased = 0;
+    for (let y = 0; y < ICON_SIZE; y += 1) {
+      for (let x = 0; x < ICON_SIZE; x += 1) {
+        if (kept.body[y * ICON_SIZE + x] < 0.99) {
+          continue;
+        }
+        if (pixelAt(kept.rgba, x, y, ICON_SIZE).r < 80) {
+          darkKept += 1;
+        }
+        if (pixelAt(erased.rgba, x, y, ICON_SIZE).r < 80) {
+          darkErased += 1;
+        }
+      }
+    }
+    expect(darkKept).toBeGreaterThan(0);
+    expect(darkErased).toBe(0);
   });
 
   it("puts the face on the picture, with room for both eyes and the mouth", () => {
@@ -200,6 +223,44 @@ describe("face icon", () => {
     const bounds = alphaBounds(icon.rgba, ICON_SIZE, ICON_SIZE);
     expect(bounds && bounds.width).toBeGreaterThan(50);
     expect(bounds && bounds.height).toBeGreaterThan(50);
+  });
+});
+
+describe("fitting still artwork", () => {
+  it("keeps the whole picture, including parts a head crop would drop", () => {
+    const data = new Uint8ClampedArray(SIZE * SIZE * 4);
+    for (let y = 0; y < SIZE; y += 1) {
+      for (let x = 0; x < SIZE; x += 1) {
+        const index = (y * SIZE + x) * 4;
+        if (Math.hypot(x - 64, y - 28) <= 16) {
+          data.set([240, 200, 60, 255], index);
+        } else if (Math.hypot(x - 64, y - 96) <= 18) {
+          data.set([40, 120, 220, 255], index);
+        }
+      }
+    }
+    const image = { data, width: SIZE, height: SIZE };
+    const artwork = fitStillPicture(image);
+    const closeUp = buildFaceIcon(image, "head");
+    const bottomArtwork = pixelAt(artwork.rgba, 32, 52, ICON_SIZE);
+    const bottomCloseUp = pixelAt(closeUp.rgba, 32, 52, ICON_SIZE);
+    expect(bottomArtwork.b).toBeGreaterThan(150);
+    expect(bottomArtwork.a).toBeGreaterThan(200);
+    expect(bottomCloseUp.b).toBeLessThan(100);
+  });
+
+  it("does not add the badge outline", () => {
+    const icon = fitStillPicture(head({ features: false, radius: 60 }));
+    let outline = 0;
+    for (let y = 0; y < ICON_SIZE; y += 1) {
+      for (let x = 0; x < ICON_SIZE; x += 1) {
+        const pixel = pixelAt(icon.rgba, x, y, ICON_SIZE);
+        if (icon.body[y * ICON_SIZE + x] === 0 && pixel.a > 200 && pixel.r < 80) {
+          outline += 1;
+        }
+      }
+    }
+    expect(outline).toBe(0);
   });
 });
 

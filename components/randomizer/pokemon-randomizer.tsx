@@ -27,7 +27,7 @@ import { useRandomizerSession } from "@/components/session/session-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { openBuilder } from "@/lib/builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { faceIconImageCandidates, pokemonImage } from "@/lib/art/pokemonImage";
+import { faceIconImageCandidates, pokemonImage, pokemonImageCandidates } from "@/lib/art/pokemonImage";
 import { evolutionChoices } from "@/lib/data/evolution";
 import {
   applyAbilityRoll,
@@ -154,7 +154,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const selectedPokemonImages = useMemo(
     () =>
       selectedPokemon
-        ? faceIconImageCandidates(
+        ? pokemonImageCandidates(
             selectedPokemon.sprites,
             viewedRoll?.shinyPokemonIds?.includes(selectedPokemon.id) ?? false,
           )

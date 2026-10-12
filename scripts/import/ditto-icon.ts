@@ -37,7 +37,11 @@ async function main() {
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const icon = buildFaceIcon({ data: new Uint8ClampedArray(data), width: info.width, height: info.height }, "whole");
+  const icon = buildFaceIcon(
+    { data: new Uint8ClampedArray(data), width: info.width, height: info.height },
+    "whole",
+    { eraseFace: true },
+  );
   const pixels = new Uint8ClampedArray(icon.rgba);
   drawFace(pixels, icon.face, icon.faceColor);
 

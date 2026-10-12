@@ -36,16 +36,6 @@ function centre(pixels: Uint8ClampedArray, y = 32) {
   return { r: pixels[index], g: pixels[index + 1], b: pixels[index + 2], a: pixels[index + 3] };
 }
 
-function darkCount(pixels: Uint8ClampedArray): number {
-  let dark = 0;
-  for (let index = 0; index < pixels.length; index += 4) {
-    if (pixels[index + 3] > 200 && pixels[index] < 90 && pixels[index + 1] < 90) {
-      dark += 1;
-    }
-  }
-  return dark;
-}
-
 const ditto = buildFaceIcon(head([190, 170, 235]), "whole");
 const yellow = buildFaceIcon(head([240, 200, 60], 30), "head");
 const green = buildFaceIcon(head([60, 180, 90], 36), "head");
@@ -83,12 +73,12 @@ describe("show timeline", () => {
 describe("frames", () => {
   const plan = prepareMorph(ditto, [yellow, green]);
 
-  it("starts as Ditto wearing Ditto's face", () => {
+  it("starts as Ditto", () => {
     const { pixels, done } = morphFrame(plan, 0);
     expect(done).toBe(false);
     expect(pixels).toHaveLength(ICON_SIZE * ICON_SIZE * 4);
     expect(centre(pixels).r).toBeLessThan(255);
-    expect(darkCount(pixels)).toBeGreaterThan(30);
+    expect(centre(pixels).b).toBeGreaterThan(200);
   });
 
   it("shows the Pokémon's own colors while it rests on that Pokémon", () => {
@@ -107,12 +97,9 @@ describe("frames", () => {
     expect(middle.b).toBeLessThan(235);
   });
 
-  it("keeps Ditto's face on every frame of the show", () => {
-    const end = morphDuration(2);
-    for (let elapsed = 0; elapsed <= end; elapsed += 70) {
-      const { pixels } = morphFrame(plan, elapsed);
-      expect(darkCount(pixels), `frame at ${elapsed}ms`).toBeGreaterThan(20);
-    }
+  it("does not draw Ditto's face over the Pokémon", () => {
+    const { pixels } = morphFrame(plan, IDLE_MS + MORPH_MS + HOLD_MS / 2);
+    expect(Array.from(pixels)).toEqual(Array.from(yellow.rgba));
   });
 
   it("finishes back on Ditto", () => {

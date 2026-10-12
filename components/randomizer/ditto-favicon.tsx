@@ -7,7 +7,7 @@ import {
   morphFrame,
   prepareMorph,
 } from "@/lib/art/dittoMorph";
-import { buildFaceIcon, type FaceIcon } from "@/lib/art/faceIcon";
+import { buildFaceIcon, fitStillPicture, type FaceIcon } from "@/lib/art/faceIcon";
 
 const FRAME_MS = 80;
 const WORK_SIZE = 128;
@@ -23,8 +23,8 @@ interface DittoFaviconProps {
 }
 
 /**
- * The tab icon is Ditto. When the user selects a Pokémon it turns into that Pokémon's face icon, wearing
- * Ditto's face in place of its eyes and mouth, then goes back to Ditto. It renders nothing.
+ * The tab icon is Ditto. When the user selects a Pokémon it turns into that Pokémon's official artwork,
+ * then goes back to Ditto. It renders nothing.
  * Reduced motion keeps the still icon.
  */
 export function DittoFavicon({ selectionKey, dittoImages, pokemonImages }: DittoFaviconProps) {
@@ -58,8 +58,8 @@ export function DittoFavicon({ selectionKey, dittoImages, pokemonImages }: Ditto
     void (async () => {
       const { dittoImages: dittoUrls, pokemonImages: pokemonUrls } = inputs.current;
       const [ditto, selected] = await Promise.all([
-        loadFaceIcon(dittoUrls, "whole"),
-        loadFaceIcon(pokemonUrls, "head"),
+        loadIcon(dittoUrls, "ditto"),
+        loadIcon(pokemonUrls, "artwork"),
       ]);
       if (cancelled || selected === null) {
         return;
@@ -140,8 +140,8 @@ function setOrRemove(link: HTMLLinkElement, name: string, value: string | null) 
   }
 }
 
-/** Loads the first picture that works and cuts a face icon from it. Null when none of them load. */
-async function loadFaceIcon(sources: readonly string[], mode: "whole" | "head"): Promise<FaceIcon | null> {
+/** Loads the first picture that works. Ditto is the face icon; a Pokémon is its whole artwork. Null when none load. */
+async function loadIcon(sources: readonly string[], kind: "ditto" | "artwork"): Promise<FaceIcon | null> {
   for (const source of sources) {
     // Going through the app's own image route keeps the picture on this origin, so the canvas can read it.
     const url = `/_next/image?url=${encodeURIComponent(source)}&w=${LOAD_WIDTH}&q=75`;
@@ -162,7 +162,8 @@ async function loadFaceIcon(sources: readonly string[], mode: "whole" | "head"):
     context.imageSmoothingQuality = "high";
     context.drawImage(image, (WORK_SIZE - width) / 2, (WORK_SIZE - height) / 2, width, height);
     const { data } = context.getImageData(0, 0, WORK_SIZE, WORK_SIZE);
-    return buildFaceIcon({ data, width: WORK_SIZE, height: WORK_SIZE }, mode);
+    const pixels = { data, width: WORK_SIZE, height: WORK_SIZE };
+    return kind === "ditto" ? buildFaceIcon(pixels, "whole") : fitStillPicture(pixels);
   }
   return null;
 }

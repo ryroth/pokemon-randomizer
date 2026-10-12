@@ -1,13 +1,12 @@
 /**
- * Frames for the tab icon that starts as Ditto and turns into the face icon of each Pokémon of a roll, always
- * wearing Ditto's face. The pictures come from `faceIcon.ts`. This file times the show and blends the pictures.
+ * Frames for the tab icon that starts as Ditto and turns into the selected Pokémon's official artwork, then
+ * back to Ditto. This file times the show and blends the pictures.
  */
 
 import {
   ICON_SIZE,
   buildFaceIcon,
   drawFace,
-  type Face,
   type FaceIcon,
   type Mask,
   type Rgb,
@@ -88,7 +87,10 @@ export function fallbackDittoIcon(): FaceIcon {
       rgba[index + 3] = inside ? 255 : 0;
     }
   }
-  return buildFaceIcon({ data: rgba, width: size, height: size }, "whole");
+  const icon = buildFaceIcon({ data: rgba, width: size, height: size }, "whole");
+  const pixels = new Uint8ClampedArray(icon.rgba);
+  drawFace(pixels, icon.face, icon.faceColor);
+  return { ...icon, rgba: pixels };
 }
 
 export interface MorphPlan {
@@ -111,24 +113,10 @@ export function morphFrame(
   const to = plan.icons[state.to + 1];
 
   if (from === to) {
-    const pixels = new Uint8ClampedArray(from.rgba);
-    drawFace(pixels, from.face, from.faceColor);
-    return { pixels, done: state.done };
+    return { pixels: new Uint8ClampedArray(from.rgba), done: state.done };
   }
 
-  const pixels = blendIcons(from, to, state.t);
-  const face: Face = {
-    x: lerp(from.face.x, to.face.x, state.t),
-    y: lerp(from.face.y, to.face.y, state.t),
-    scale: lerp(from.face.scale, to.face.scale, state.t),
-  };
-  const color: Rgb = [
-    lerp(from.faceColor[0], to.faceColor[0], state.t),
-    lerp(from.faceColor[1], to.faceColor[1], state.t),
-    lerp(from.faceColor[2], to.faceColor[2], state.t),
-  ];
-  drawFace(pixels, face, color);
-  return { pixels, done: state.done };
+  return { pixels: blendIcons(from, to, state.t), done: state.done };
 }
 
 /**
@@ -187,10 +175,6 @@ function blurPlane(plane: Mask): Mask {
     }
   }
   return out;
-}
-
-function lerp(from: number, to: number, t: number): number {
-  return from + (to - from) * t;
 }
 
 function smoothstep(edge0: number, edge1: number, value: number): number {

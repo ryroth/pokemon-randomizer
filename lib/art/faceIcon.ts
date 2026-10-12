@@ -1,10 +1,10 @@
 /**
  * Turns a Pokémon's official render into a small "face icon": a rounded close-up of the head with a dark
- * outline, where the Pokémon's own eyes and mouth are painted out and Ditto's dot eyes and flat mouth
- * are drawn in their place, the way a transformed Ditto looks in the anime.
+ * outline. The Pokémon keeps its own eyes and mouth. Pass `{ eraseFace: true }` and then `drawFace` only for
+ * the still Ditto tab icon, which redraws Ditto's face on Ditto himself.
  *
  * Everything here is plain math on pixel arrays so it can be tested without a browser. The only inputs are
- * the official picture's pixels. Nothing about a Pokémon is invented: the face is found by looking for the
+ * the official picture's pixels. Nothing about a Pokémon is invented: the head is found by looking for the
  * small dark shapes (eyes, mouth) in the picture itself.
  */
 
@@ -463,10 +463,14 @@ export function paintOut(image: RgbaImage, erase: Uint8Array, grow = 2): Uint8Cl
   return out;
 }
 
-/** Builds the icon for a picture: a close-up with the Pokémon's own face painted out and an outline around it. */
-export function buildFaceIcon(image: RgbaImage, mode: "whole" | "head"): FaceIcon {
+/** Builds the icon for a picture: a close-up of the head with an outline around it. The Pokémon's own face stays. */
+export function buildFaceIcon(
+  image: RgbaImage,
+  mode: "whole" | "head",
+  options?: { eraseFace?: boolean },
+): FaceIcon {
   const analysis = analyseFace(image, mode);
-  const clean = paintOut(image, analysis.erase);
+  const clean = options?.eraseFace ? paintOut(image, analysis.erase) : image.data;
   const { crop } = analysis;
   const left = crop.cx - crop.size / 2;
   const top = crop.cy - crop.size / 2;
@@ -527,6 +531,58 @@ export function buildFaceIcon(image: RgbaImage, mode: "whole" | "head"): FaceIco
     y: (analysis.face.y - top) / step + ICON_MARGIN,
   };
   const face = fitFace(body, mapped, 1);
+  return { rgba, body, face, faceColor: faceColorFor(rgba, face) };
+}
+
+/**
+ * Fits a still picture into the tab icon: the whole opaque drawing, contain-fitted, no head crop and no
+ * outline. Used when Ditto turns into the selected Pokémon's official artwork.
+ */
+export function fitStillPicture(image: RgbaImage): FaceIcon {
+  const bounds = alphaBounds(image.data, image.width, image.height) ?? {
+    x: 0,
+    y: 0,
+    width: image.width,
+    height: image.height,
+  };
+  const scale = ICON_SIZE / Math.max(bounds.width, bounds.height);
+  const destWidth = bounds.width * scale;
+  const destHeight = bounds.height * scale;
+  const originX = (ICON_SIZE - destWidth) / 2;
+  const originY = (ICON_SIZE - destHeight) / 2;
+
+  const rgba = new Uint8ClampedArray(ICON_SIZE * ICON_SIZE * 4);
+  const body = new Float32Array(ICON_SIZE * ICON_SIZE);
+  const samples = 3;
+  for (let y = 0; y < ICON_SIZE; y += 1) {
+    for (let x = 0; x < ICON_SIZE; x += 1) {
+      let alphaSum = 0;
+      const sum = [0, 0, 0];
+      for (let sy = 0; sy < samples; sy += 1) {
+        for (let sx = 0; sx < samples; sx += 1) {
+          const px = bounds.x + (x + (sx + 0.5) / samples - originX) / scale;
+          const py = bounds.y + (y + (sy + 0.5) / samples - originY) / scale;
+          const [r, g, b, a] = sampleBilinearSized(image.data, image.width, image.height, px, py);
+          alphaSum += a;
+          sum[0] += r * a;
+          sum[1] += g * a;
+          sum[2] += b * a;
+        }
+      }
+      const alpha = alphaSum / (samples * samples);
+      const index = y * ICON_SIZE + x;
+      body[index] = alpha;
+      if (alphaSum <= 0) {
+        continue;
+      }
+      rgba[index * 4] = sum[0] / alphaSum;
+      rgba[index * 4 + 1] = sum[1] / alphaSum;
+      rgba[index * 4 + 2] = sum[2] / alphaSum;
+      rgba[index * 4 + 3] = Math.round(alpha * 255);
+    }
+  }
+
+  const face = { ...DITTO_FACE };
   return { rgba, body, face, faceColor: faceColorFor(rgba, face) };
 }
 
