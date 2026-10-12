@@ -432,7 +432,7 @@ ecapEditAccess(session) gives PokedexCard which parts are editable. Randomizer-s
 - `isCatalogMove` (`scripts/import/showdown.ts`) drops moves Showdown marks `Past` (not usable in battle in the current generation, e.g. Spider Web, Hidden Power, Return, Hail). The catalog went from about 850 to 697 moves. After changing this filter run `npm run import:data` then `npm run import:learnsets`.
 - Moves Showdown marks `Unobtainable` (Power Shift, Cut, the Torque moves, and so on) are still in the catalog. Say so if they should go too.
 
-### Ditto tab icon
+### Ditto tab icon (merged, PR #13)
 
 - `app/icon.png` is the still icon: Ditto's official Pokémon HOME picture as a face icon (outline, Ditto's dot eyes and flat mouth). Regenerate with `npm run import:ditto-icon` (uses `sharp`, needs the network and `data/generated/catalog.json`).
 - When the user selects a Pokémon on `/randomizer` (not when they generate), `DittoFavicon` (`components/randomizer/ditto-favicon.tsx`, `selectionKey` is the selected id) loads Ditto's HOME picture (`faceIconImageCandidates`) and that Pokémon's official artwork (`pokemonImageCandidates`) through `/_next/image` (same origin, so the canvas can read it). Ditto is the face icon; the Pokémon is `fitStillPicture` (whole artwork, contain-fitted, no head crop). It swaps the `<link rel=icon>` href every 80 ms, melts Ditto into the artwork and back, then restores the original href. A selection already present on page load does not animate.
