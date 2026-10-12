@@ -116,7 +116,7 @@ Do not silently reverse these.
 | Type filter | Default OR; AND is already implemented in `lib/filters` |
 | Specials default | All allowed (user unchecks to exclude) |
 | Ability random ON | All standard abilities (`abilityPoolMode: "all"`). Legal-only is a future pool mode |
-| Move random ON | All standard catalog moves (`movePoolMode: "all"`). Z/Max/CAP already excluded at import. Learnset-only is a future pool mode |
+| Move random ON | All standard catalog moves (`movePoolMode: "all"`). Z/Max/CAP and Showdown `Past` moves (removed from the games, e.g. Spider Web) already excluded at import. Learnset-only is a future pool mode |
 | Item random ON | Showdown holdables + explicit None, then selected teambuilder categories (Popular / Items / Pokémon-Specific / Usually Useless / Useless; all on by default) |
 | Count | 1–12 Pokémon, default 6. Ability 1–12, default 3. Moves 4–12, default 8. Move-before `movesPerPokemon` 1–4, default 4. Items 1–12, default 3 |
 | Insufficient pools | Typed error + user-facing explanation; never a silent short list |
@@ -426,3 +426,7 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 - **Recap:** ecapEditAccess(session) gives PokedexCard which parts are editable. Randomizer-set ability, item, and moves show no Edit link (moves say Set by randomizer). Move Edit links use the real Builder slot number.
 - **Tests:** new cases in 	ests/unit/randomizer/order-and-evolution.test.ts, 	ests/unit/builder/blank-fields.test.ts, and 	ests/e2e/tester-feedback.spec.ts.
 
+### Move pool follows the current games (merged, PR #12)
+
+- `isCatalogMove` (`scripts/import/showdown.ts`) drops moves Showdown marks `Past` (not usable in battle in the current generation, e.g. Spider Web, Hidden Power, Return, Hail). The catalog went from about 850 to 697 moves. After changing this filter run `npm run import:data` then `npm run import:learnsets`.
+- Moves Showdown marks `Unobtainable` (Power Shift, Cut, the Torque moves, and so on) are still in the catalog. Say so if they should go too.

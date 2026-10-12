@@ -21,7 +21,7 @@ describe.skipIf(!catalogAvailable)("catalog move randomizer", () => {
     expect(ids).toHaveLength(DEFAULT_RANDOMIZER_CONFIG.moveCount);
     expect(new Set(ids).size).toBe(DEFAULT_RANDOMIZER_CONFIG.moveCount);
     expect(result.poolSize).toBe(catalog.moves.length);
-    expect(catalog.moves.length).toBeGreaterThan(800);
+    expect(catalog.moves.length).toBeGreaterThan(600);
     expect(ids.includes("maxguard")).toBe(false);
     expect(catalog.moves.some((move) => move.id === "maxguard")).toBe(false);
     expect(catalog.moves.some((move) => move.id === "clangoroussoulblaze")).toBe(false);

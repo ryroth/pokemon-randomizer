@@ -40,7 +40,7 @@ describe("learnsetMoveIdsByMethod", () => {
     const egg = learnsetMoveIdsByMethod("venusaur", ["egg"]);
     expect(levelUp).toContain("vinewhip");
     expect(tm).toContain("solarbeam");
-    expect(egg).toContain("skullbash");
+    expect(egg).toContain("curse");
     expect(levelUp.length).toBeLessThan(learnsetMoveIds("venusaur").length);
     expect(tm).not.toContain("vinewhip");
   });
