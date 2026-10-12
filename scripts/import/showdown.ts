@@ -37,11 +37,16 @@ export function isCatalogAbility(ability: Ability): boolean {
   return !isExcludedNonstandard(ability.isNonstandard);
 }
 
+/**
+ * Showdown marks a move "Past" when it cannot be used in the current generation's games
+ * (for example Spider Web, which was removed in Generation VIII). Those moves are not selectable in battle,
+ * so they stay out of the catalog.
+ */
 export function isCatalogMove(move: Move): boolean {
   if (!move.exists || move.num <= 0 || move.isZ || move.isMax) {
     return false;
   }
-  return !isExcludedNonstandard(move.isNonstandard);
+  return !isExcludedNonstandard(move.isNonstandard) && move.isNonstandard !== "Past";
 }
 
 export function isCatalogItem(item: Item): boolean {
