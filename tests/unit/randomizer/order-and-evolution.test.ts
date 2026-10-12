@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evolutionChoices } from "@/lib/data/evolution";
+import { evolutionChoiceAllowed, evolutionChoices } from "@/lib/data/evolution";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import { firstOpenRandomizerTab } from "@/lib/randomizer/flow";
 import {
@@ -56,8 +56,12 @@ describe("evolution choices follow the Evolution stages filter", () => {
     expect(evolutionChoices(charmander, formById, ["basic"])).toEqual([]);
   });
 
-  it("offers only the stages that are selected", () => {
-    expect(evolutionChoices(charmander, formById, ["basic", "stage1"]).map((form) => form.id)).toEqual(["charmeleon"]);
+  it("offers nothing unless Basic, Stage 1, and Stage 2 are all selected", () => {
+    expect(evolutionChoices(charmander, formById, ["basic", "stage1"])).toEqual([]);
+    expect(evolutionChoices(charmander, formById, ["basic", "stage2"])).toEqual([]);
+    expect(evolutionChoices(charmander, formById, ["stage1", "stage2"])).toEqual([]);
+    expect(evolutionChoiceAllowed(["basic", "stage2"])).toBe(false);
+    expect(evolutionChoiceAllowed(["basic", "stage1", "stage2"])).toBe(true);
     expect(evolutionChoices(charmander, formById, ["basic", "stage1", "stage2"]).map((form) => form.id)).toEqual([
       "charmeleon",
       "charizard",
@@ -81,11 +85,11 @@ describe("evolution choices follow the Evolution stages filter", () => {
     const stillAllowed = resetDisallowedEvolution(evolved, formById);
     expect(stillAllowed.evolvedPokemonId).toBe("charizard");
 
-    const onlyBasic = {
+    const basicAndFinal = {
       ...evolved,
-      config: { ...evolved.config, evolutionStages: ["basic" as const] },
+      config: { ...evolved.config, evolutionStages: ["basic" as const, "stage2" as const] },
     };
-    const reset = resetDisallowedEvolution(onlyBasic, formById);
+    const reset = resetDisallowedEvolution(basicAndFinal, formById);
     expect(reset.evolvedPokemonId).toBe("charmander");
     expect(reset.draft.pokemonId).toBe("charmander");
   });

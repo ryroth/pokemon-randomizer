@@ -1,5 +1,6 @@
 import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/randomizer/applyExtras";
 import { enabledRandomizerSteps, isExtraBeforePokemon } from "@/lib/randomizer/flow";
+import { appliedMoveIdsForPokemon } from "@/lib/randomizer/session";
 import type { RandomizerTab } from "@/lib/types/randomizer";
 import type { RandomizerSession } from "@/lib/types/session";
 
@@ -8,9 +9,45 @@ export function abilityLockedByRandomizer(session: RandomizerSession): boolean {
   return session.config.randomizeAbilities && Boolean(session.draft.abilityId);
 }
 
-/** A move slot filled by the move randomizer cannot be replaced. */
+/**
+ * A move slot filled by the move randomizer cannot be replaced. When the randomizer ran before
+ * Pokémon, only the moves it applied are locked: the user may have added other moves by hand in
+ * the remaining slots, and those stay editable. When it ran after Pokémon it filled every slot.
+ */
 export function moveSlotLockedByRandomizer(session: RandomizerSession, slot: number): boolean {
-  return session.config.randomizeMoves && Boolean(session.draft.moveIds[slot]);
+  const current = session.draft.moveIds[slot];
+  if (!session.config.randomizeMoves || !current) {
+    return false;
+  }
+  if (!isExtraBeforePokemon(session.config, "move")) {
+    return true;
+  }
+  return appliedMoveIdsForPokemon(session, session.selectedPokemonId)[slot] === current;
+}
+
+/**
+ * Which parts of the finished set the Recap may send the user back to edit. Anything a randomizer
+ * chose stays locked there too, so the Recap offers no link for it. `moves` lines up with the set's
+ * moves in order: the Builder slot to open, or null when the randomizer set that move.
+ */
+export interface RecapEditAccess {
+  ability: boolean;
+  item: boolean;
+  moves: Array<number | null>;
+}
+
+export function recapEditAccess(session: RandomizerSession): RecapEditAccess {
+  const moves: Array<number | null> = [];
+  session.draft.moveIds.forEach((id, slot) => {
+    if (id) {
+      moves.push(moveSlotLockedByRandomizer(session, slot) ? null : slot);
+    }
+  });
+  return {
+    ability: !abilityLockedByRandomizer(session),
+    item: !itemLockedByRandomizer(session),
+    moves,
+  };
 }
 
 /** The item randomizer already chose this Pokémon's held item, including None. */

@@ -8,7 +8,7 @@ import {
   setDraftMove,
   setDraftShiny,
 } from "@/lib/builder";
-import { pendingRandomizerSteps } from "@/lib/builder/locks";
+import { moveSlotLockedByRandomizer, pendingRandomizerSteps, recapEditAccess } from "@/lib/builder/locks";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import { rollGender } from "@/lib/randomizer/gender";
 import { createInitialSession } from "@/lib/randomizer/session";
@@ -155,5 +155,76 @@ describe("pendingRandomizerSteps", () => {
     expect(pending).toContain("move");
     expect(pending).not.toContain("ability");
     expect(pending).not.toContain("item");
+  });
+});
+
+describe("move locks and Recap edit access", () => {
+  const moveFirst = {
+    ...DEFAULT_RANDOMIZER_CONFIG,
+    randomizeMoves: true,
+    movesPerPokemon: 1,
+    randomizerOrder: ["move", "pokemon", "ability", "item"] as typeof DEFAULT_RANDOMIZER_CONFIG.randomizerOrder,
+  };
+
+  function sessionWithAppliedAndHandPicked(): RandomizerSession {
+    const base = createInitialSession(moveFirst);
+    return {
+      ...base,
+      selectedPokemonId: "mudkip",
+      evolvedPokemonId: "mudkip",
+      pokemonRolls: [
+        {
+          seed: "seed",
+          pokemonIds: ["mudkip"],
+          appliedMoveIds: [["behemothblade", undefined, undefined, undefined]],
+        },
+      ],
+      draft: {
+        ...base.draft,
+        pokemonId: "mudkip",
+        abilityId: "torrent",
+        itemId: null,
+        moveIds: ["behemothblade", "burnup", undefined, "eruption"],
+      },
+    };
+  }
+
+  it("locks only the move the randomizer applied, not the ones added by hand", () => {
+    const session = sessionWithAppliedAndHandPicked();
+    expect(moveSlotLockedByRandomizer(session, 0)).toBe(true);
+    expect(moveSlotLockedByRandomizer(session, 1)).toBe(false);
+    expect(moveSlotLockedByRandomizer(session, 2)).toBe(false);
+    expect(moveSlotLockedByRandomizer(session, 3)).toBe(false);
+  });
+
+  it("lets the Recap edit hand-picked moves, and maps each to its Builder slot", () => {
+    const access = recapEditAccess(sessionWithAppliedAndHandPicked());
+    // Three moves in the set: slot 1 locked, then slots 2 and 4 open.
+    expect(access.moves).toEqual([null, 1, 3]);
+    expect(access.ability).toBe(true);
+    expect(access.item).toBe(true);
+  });
+
+  it("locks every filled move when the move randomizer ran after Pokémon", () => {
+    const base = createInitialSession({ ...DEFAULT_RANDOMIZER_CONFIG, randomizeMoves: true });
+    const session: RandomizerSession = {
+      ...base,
+      draft: { ...base.draft, moveIds: ["a", "b", "c", "d"] },
+    };
+    expect(recapEditAccess(session).moves).toEqual([null, null, null, null]);
+  });
+
+  it("locks the ability and item the randomizers chose, in the Recap too", () => {
+    const base = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeAbilities: true,
+      randomizeItems: true,
+    });
+    const session: RandomizerSession = {
+      ...base,
+      draft: { ...base.draft, abilityId: "torrent", itemId: "leftovers" },
+    };
+    expect(recapEditAccess(session)).toMatchObject({ ability: false, item: false });
+    expect(recapEditAccess(createInitialSession())).toMatchObject({ ability: true, item: true });
   });
 });

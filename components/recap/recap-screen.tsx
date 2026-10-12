@@ -8,6 +8,7 @@ import { SaveToTeam } from "@/components/recap/save-to-team";
 import { NextRandomizerButton } from "@/components/session/next-randomizer-button";
 import { useRandomizerSession } from "@/components/session/session-provider";
 import { buttonVariants } from "@/components/ui/button";
+import { recapEditAccess } from "@/lib/builder/locks";
 import { buildRecap, type RecapCatalog } from "@/lib/recap/entries";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +44,7 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
         <ol aria-label="Pokémon to copy to Showdown" className="flex flex-col gap-8">
           {recap.entries.map((entry) => (
             <li key={entry.pokemonId}>
-              <PokedexCard entry={entry} editable />
+              <PokedexCard entry={entry} edit={recapEditAccess(session)} />
             </li>
           ))}
         </ol>

@@ -9,10 +9,17 @@ import { MOVE_CATEGORY_LABELS, type MoveCategory } from "@/lib/types/catalog-ent
 import type { RecapMoveView } from "@/lib/recap/entries";
 
 /**
- * `editable` adds an Edit link on each move that opens that move slot in the builder. Saved team
- * recaps are read-only and leave it off.
+ * `editSlots` lines up with `moves`. A number adds an Edit link that opens that move slot in the
+ * builder. null marks a move the randomizer set, which cannot be edited. Saved team recaps are
+ * read-only and leave `editSlots` off.
  */
-export function MovePanel({ moves, editable = false }: { moves: readonly RecapMoveView[]; editable?: boolean }) {
+export function MovePanel({
+  moves,
+  editSlots,
+}: {
+  moves: readonly RecapMoveView[];
+  editSlots?: ReadonlyArray<number | null>;
+}) {
   const [selected, setSelected] = useState(0);
   const move = moves[selected] ?? moves[0];
   if (!move) {
@@ -40,10 +47,14 @@ export function MovePanel({ moves, editable = false }: { moves: readonly RecapMo
                   PP {formatMoveTablePp(candidate.pp)}
                 </span>
               </button>
-              {editable ? (
+              {editSlots?.[index] === null ? (
+                <span className="inline-flex shrink-0 items-center rounded-lg bg-[#0c2b62] px-2.5 text-xs font-semibold text-[#b7d4ff]">
+                  Set by randomizer
+                </span>
+              ) : editSlots?.[index] !== undefined ? (
                 <Link
-                  href={`/builder#move-${index + 1}`}
-                  aria-label={`Edit move ${index + 1}: ${candidate.name}`}
+                  href={`/builder#move-${editSlots[index] + 1}`}
+                  aria-label={`Edit move ${editSlots[index] + 1}: ${candidate.name}`}
                   className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#0c2b62] px-2.5 text-xs font-semibold text-[#f2c14e] outline-none hover:bg-[#12367a] focus-visible:ring-2 focus-visible:ring-[#f2c14e]"
                 >
                   <Pencil aria-hidden="true" className="size-3.5" />
