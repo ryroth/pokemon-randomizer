@@ -19,16 +19,16 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), then **tester feedback part 2** (PR #PENDING) |
+| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), then **tester feedback part 2** (PR #14) |
 | Current work | None. Later features only if the user asks |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | The merge of pull request #PENDING (tester feedback part 2). Run `git log -1` for the hash |
+| Latest on `master` | The merge of pull request #14 (tester feedback part 2). Run `git log -1` for the hash |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
-| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme, [#10](https://github.com/ryroth/pokemon-randomizer/pull/10) Tester feedback (builder, recap links, still art, locks, evolution stages), [#11](https://github.com/ryroth/pokemon-randomizer/pull/11) scroll, evolution stages, and lock scope, [#12](https://github.com/ryroth/pokemon-randomizer/pull/12) drop moves removed from the games, [#13](https://github.com/ryroth/pokemon-randomizer/pull/13) Ditto tab icon, [#PENDING](https://github.com/ryroth/pokemon-randomizer/pull/PENDING) Tester feedback part 2 |
+| Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme, [#10](https://github.com/ryroth/pokemon-randomizer/pull/10) Tester feedback (builder, recap links, still art, locks, evolution stages), [#11](https://github.com/ryroth/pokemon-randomizer/pull/11) scroll, evolution stages, and lock scope, [#12](https://github.com/ryroth/pokemon-randomizer/pull/12) drop moves removed from the games, [#13](https://github.com/ryroth/pokemon-randomizer/pull/13) Ditto tab icon, [#14](https://github.com/ryroth/pokemon-randomizer/pull/14) Tester feedback part 2 |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the tester feedback round (PR #10) through the Ditto tab icon (PR #13), and tester feedback part 2 (PR #PENDING) are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
+Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the tester feedback round (PR #10) through the Ditto tab icon (PR #13), and tester feedback part 2 (PR #14) are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
 
 Start the next feature from up-to-date `master` on a new branch.
 
@@ -439,7 +439,7 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 - Tests: `tests/unit/art/faceIcon.test.ts`, `tests/unit/art/dittoMorph.test.ts`, `tests/e2e/ditto-favicon.spec.ts`. Playwright config sets `reducedMotion: reduce`, which turns the animation off, so animation tests call `page.emulateMedia({ reducedMotion: "no-preference" })`.
 - Ideas not built: blink, animate on single re-rolls.
 
-### Tester feedback, part 2 (merged, PR #PENDING)
+### Tester feedback, part 2 (merged, PR #14)
 
 - **Filter count:** The line uses `matchingPokemonFormCount` (every matching form). With the default filters that is the base, regional, and other forms, including Meganium and Yanmega. `matchingPokemonPoolSize` (about 590) is only how many of those forms can share one roll, and the UI mentions it when the requested count is larger than that ceiling. `nameImpliesMega` does not treat Meganium or Yanmega as Mega. `loadGeneratedCatalog` repairs a catalog that stored them as mega. Do not rewrite `catalog.json` for that.
 - **Off randomizers:** An off step ordered before Pokémon shows no dropdown and does not block the Builder. Turning a randomizer off mid-session hides its dropdown and keeps the generated pool. Turning it back on shows that pool. Before-Pokémon ability, move, and item controls also render on the Pokémon page. Their tabs stay. Generate again in the same session does not wipe filters.
