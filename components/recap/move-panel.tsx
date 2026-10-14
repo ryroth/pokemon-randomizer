@@ -10,15 +10,16 @@ import type { RecapMoveView } from "@/lib/recap/entries";
 
 /**
  * `editSlots` lines up with `moves`. A number adds an Edit link that opens that move slot in the
- * builder. null marks a move the randomizer set, which cannot be edited. Saved team recaps are
- * read-only and leave `editSlots` off.
+ * builder. null marks a move the randomizer set, which cannot be edited.
  */
 export function MovePanel({
   moves,
   editSlots,
+  onEdit,
 }: {
   moves: readonly RecapMoveView[];
   editSlots?: ReadonlyArray<number | null>;
+  onEdit?: (target: string) => void;
 }) {
   const [selected, setSelected] = useState(0);
   const move = moves[selected] ?? moves[0];
@@ -31,6 +32,7 @@ export function MovePanel({
       <ol aria-label="Moves" className="space-y-1.5">
         {moves.map((candidate, index) => {
           const pressed = index === selected;
+          const editSlot = editSlots?.[index];
           return (
             <li key={`${candidate.name}-${index}`} className="flex items-stretch gap-1.5">
               <button
@@ -47,19 +49,12 @@ export function MovePanel({
                   PP {formatMoveTablePp(candidate.pp)}
                 </span>
               </button>
-              {editSlots?.[index] === null ? (
+              {editSlot === null ? (
                 <span className="inline-flex shrink-0 items-center rounded-lg bg-[#0c2b62] px-2.5 text-xs font-semibold text-[#b7d4ff]">
                   Set by randomizer
                 </span>
-              ) : editSlots?.[index] !== undefined ? (
-                <Link
-                  href={`/builder#move-${editSlots[index] + 1}`}
-                  aria-label={`Edit move ${editSlots[index] + 1}: ${candidate.name}`}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#0c2b62] px-2.5 text-xs font-semibold text-[#f2c14e] outline-none hover:bg-[#12367a] focus-visible:ring-2 focus-visible:ring-[#f2c14e]"
-                >
-                  <Pencil aria-hidden="true" className="size-3.5" />
-                  Edit
-                </Link>
+              ) : typeof editSlot === "number" ? (
+                <MoveEditControl slot={editSlot} name={candidate.name} onEdit={onEdit} />
               ) : null}
             </li>
           );
@@ -87,6 +82,38 @@ export function MovePanel({
         </dl>
       </div>
     </div>
+  );
+}
+
+function MoveEditControl({
+  slot,
+  name,
+  onEdit,
+}: {
+  slot: number;
+  name: string;
+  onEdit?: (target: string) => void;
+}) {
+  const className =
+    "inline-flex shrink-0 items-center gap-1 rounded-lg bg-[#0c2b62] px-2.5 text-xs font-semibold text-[#f2c14e] outline-none hover:bg-[#12367a] focus-visible:ring-2 focus-visible:ring-[#f2c14e]";
+  const label = `Edit move ${slot + 1}: ${name}`;
+  const content = (
+    <>
+      <Pencil aria-hidden="true" className="size-3.5" />
+      Edit
+    </>
+  );
+  if (onEdit) {
+    return (
+      <button type="button" aria-label={label} className={className} onClick={() => onEdit(`move-${slot + 1}`)}>
+        {content}
+      </button>
+    );
+  }
+  return (
+    <Link href={`/builder#move-${slot + 1}`} aria-label={label} className={className}>
+      {content}
+    </Link>
   );
 }
 

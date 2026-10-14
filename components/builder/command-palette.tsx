@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Search } from "lucide-react";
+import { phoneSheetFrame, PHONE_SHEET_QUERY } from "@/components/builder/phone-sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -40,30 +41,105 @@ interface CommandPaletteProps {
 }
 
 /**
+ * Pins the phone sheet to the visible viewport. A bottom-anchored dialog collapses its list to
+ * the search row, and iOS then scrolls that row above the keyboard, so the choices never appear.
+ */
+function placePhoneSheet(dialog: HTMLDialogElement) {
+  if (!window.matchMedia(PHONE_SHEET_QUERY).matches) {
+    dialog.style.top = "";
+    dialog.style.bottom = "";
+    dialog.style.height = "";
+    dialog.style.maxHeight = "";
+    return;
+  }
+  const viewport = window.visualViewport;
+  const frame = phoneSheetFrame({
+    height: viewport?.height ?? window.innerHeight,
+    offsetTop: viewport?.offsetTop ?? 0,
+  });
+  dialog.style.top = `${frame.top}px`;
+  dialog.style.bottom = "auto";
+  dialog.style.height = `${frame.height}px`;
+  dialog.style.maxHeight = `${frame.height}px`;
+}
+
+function clearPhoneSheet(dialog: HTMLDialogElement) {
+  dialog.style.top = "";
+  dialog.style.bottom = "";
+  dialog.style.height = "";
+  dialog.style.maxHeight = "";
+  dialog.removeAttribute("autofocus");
+}
+
+/**
  * Search-and-pick palette in the cmdk style, built on a native modal dialog. Wide screens get a
- * centered panel and phones get a slide-up sheet. Focus stays in the search box. Up and Down move
- * through the results, Enter chooses, Escape closes.
+ * centered panel with the search box focused. Phones get a sheet the height of the visible
+ * screen, including the space above the keyboard, and the search box waits for a tap so the
+ * choices are on screen first. Up and Down move through the results, Enter chooses, Escape closes.
  */
 export function CommandPalette(props: CommandPaletteProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { open, onClose } = props;
+  const [phone, setPhone] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(PHONE_SHEET_QUERY);
+    const update = () => setPhone(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) {
       return;
     }
-    if (open && !dialog.open) {
-      dialog.showModal();
-    } else if (!open && dialog.open) {
-      dialog.close();
+    if (!open) {
+      if (dialog.open) {
+        dialog.close();
+      }
+      clearPhoneSheet(dialog);
+      return;
     }
+
+    const narrow = window.matchMedia(PHONE_SHEET_QUERY).matches;
+    if (!dialog.open) {
+      if (narrow) {
+        dialog.tabIndex = -1;
+        dialog.setAttribute("autofocus", "");
+      } else {
+        dialog.removeAttribute("autofocus");
+      }
+      dialog.showModal();
+      if (narrow) {
+        dialog.focus({ preventScroll: true });
+      }
+    }
+    placePhoneSheet(dialog);
+
+    const place = () => {
+      const current = dialogRef.current;
+      if (current) {
+        placePhoneSheet(current);
+      }
+    };
+    const viewport = window.visualViewport;
+    viewport?.addEventListener("resize", place);
+    viewport?.addEventListener("scroll", place);
+    window.addEventListener("resize", place);
+    return () => {
+      viewport?.removeEventListener("resize", place);
+      viewport?.removeEventListener("scroll", place);
+      window.removeEventListener("resize", place);
+    };
   }, [open]);
 
   return (
     <dialog
       ref={dialogRef}
       aria-label={props.title}
+      tabIndex={-1}
       onClose={onClose}
       onClick={(event) => {
         if (event.target === dialogRef.current) {
@@ -71,13 +147,13 @@ export function CommandPalette(props: CommandPaletteProps) {
         }
       }}
       className={cn(
-        "fixed m-auto max-h-[85dvh] max-w-none flex-col overflow-hidden rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-xl backdrop:bg-black/60 open:flex",
+        "fixed m-auto max-h-[85dvh] max-w-none flex-col overflow-hidden rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-xl outline-none backdrop:bg-black/60 open:flex",
         props.columns ? "w-[min(62rem,calc(100%-2rem))]" : "w-[min(44rem,calc(100%-2rem))]",
-        "max-sm:inset-x-0 max-sm:top-auto max-sm:bottom-0 max-sm:m-0 max-sm:w-full max-sm:rounded-b-none",
+        "max-sm:inset-x-0 max-sm:top-0 max-sm:bottom-auto max-sm:m-0 max-sm:h-dvh max-sm:max-h-none max-sm:w-full max-sm:rounded-none max-sm:pb-[env(safe-area-inset-bottom)]",
         "open:animate-in open:fade-in max-sm:open:slide-in-from-bottom",
       )}
     >
-      {open ? <PaletteBody {...props} /> : null}
+      {open ? <PaletteBody {...props} focusSearch={!phone} /> : null}
     </dialog>
   );
 }
@@ -94,7 +170,8 @@ function PaletteBody({
   emptyText,
   toolbar,
   columns,
-}: CommandPaletteProps) {
+  focusSearch,
+}: CommandPaletteProps & { focusSearch: boolean }) {
   const baseId = useId();
   const flat = sections.flatMap((section) => section.options);
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, flat.findIndex((option) => option.selected)));
@@ -120,7 +197,7 @@ function PaletteBody({
 
   return (
     <>
-      <div className="flex items-center gap-2 border-b border-border px-3 py-2">
+      <div className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-2">
         <Search aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
         <input
           role="combobox"
@@ -129,6 +206,7 @@ function PaletteBody({
           aria-controls={`${baseId}-list`}
           aria-activedescendant={active ? optionDomId(active.id) : undefined}
           aria-autocomplete="list"
+          autoFocus={focusSearch}
           autoComplete="off"
           spellCheck={false}
           placeholder={`${title}…`}

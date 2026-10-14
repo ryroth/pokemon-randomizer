@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { openFilter, waitForHydration } from "./helpers";
 
 async function openBuilder(page: Page): Promise<string> {
@@ -295,3 +295,33 @@ test("the recap offers no edit link for an ability or item the randomizer set", 
   await expect(page.getByRole("link", { name: "Edit move 1: Protect" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Edit nickname" })).toBeVisible();
 });
+
+test("a phone shows ability, move, and item choices inside the picker", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openBuilder(page);
+
+  await page.getByRole("button", { name: /^Ability:/ }).click();
+  const ability = page.getByRole("listbox", { name: "Abilities" }).getByRole("option").first();
+  await expect(ability).toBeVisible();
+  await expectInPhoneViewport(ability, 844);
+  await page.getByRole("button", { name: "Close" }).click();
+
+  await page.getByRole("button", { name: "Choose move 1" }).click();
+  const move = page.getByRole("listbox", { name: "Matching moves" }).getByRole("option").first();
+  await expect(move).toBeVisible();
+  await expectInPhoneViewport(move, 844);
+  await page.getByRole("button", { name: "Close" }).click();
+
+  await page.getByRole("button", { name: /^Held item:/ }).click();
+  const item = page.getByRole("option", { name: "None", exact: true });
+  await expect(item).toBeVisible();
+  await expectInPhoneViewport(item, 844);
+});
+
+async function expectInPhoneViewport(locator: Locator, viewportHeight: number) {
+  const box = await locator.boundingBox();
+  expect(box).toBeTruthy();
+  expect(box!.height).toBeGreaterThan(20);
+  expect(box!.y).toBeGreaterThanOrEqual(0);
+  expect(box!.y + box!.height).toBeLessThanOrEqual(viewportHeight + 1);
+}

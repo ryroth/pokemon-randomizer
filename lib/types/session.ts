@@ -68,4 +68,9 @@ export interface RandomizerSession {
   itemOptions: string[];
   draft: PokemonSetDraft;
   finalizedSet?: PokemonSet;
+  /**
+   * The builder is changing this saved team slot. Randomizer locks do not apply, and a valid
+   * draft is written back onto that slot.
+   */
+  editingTeamSlot?: { teamId: string; index: number };
 }

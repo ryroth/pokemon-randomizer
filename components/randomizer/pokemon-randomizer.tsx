@@ -15,6 +15,7 @@ import { PokemonEvolutionPicker } from "@/components/randomizer/pokemon-evolutio
 import { PokemonFilterForm } from "@/components/randomizer/pokemon-filter-form";
 import { PokemonResults } from "@/components/randomizer/pokemon-results";
 import { RandomizerFlowList } from "@/components/randomizer/randomizer-flow";
+import { RandomizerPresets } from "@/components/randomizer/randomizer-presets";
 import { RandomizerTabs } from "@/components/randomizer/randomizer-tabs";
 import {
   GenerationStatus,
@@ -44,6 +45,7 @@ import {
   chooseEvolvedPokemon,
   clampViewedRollIndex,
   clearPokemonRolls,
+  createInitialSession,
   createSeed,
   filledMoveCount,
   isExtraBeforePokemon,
@@ -51,6 +53,7 @@ import {
   matchingAbilityPoolSize,
   matchingItemPoolSize,
   matchingMovePoolSize,
+  matchingPokemonFormCount,
   matchingPokemonPoolSize,
   moveChoicesForPokemon,
   MOVES_ASSIGNED_PER_POKEMON,
@@ -125,7 +128,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const movesById = useMemo(() => new Map(moves.map((move) => [move.id, move])), [moves]);
   const itemsById = useMemo(() => new Map(items.map((item) => [item.id, item])), [items]);
 
-  const poolSize = useMemo(
+  const matchCount = useMemo(
+    () => matchingPokemonFormCount(pokemon, session.config),
+    [pokemon, session.config],
+  );
+  const rollableCount = useMemo(
     () => matchingPokemonPoolSize(pokemon, session.config),
     [pokemon, session.config],
   );
@@ -183,6 +190,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const abilityBeforePokemon = isExtraBeforePokemon(session.config, "ability");
   const moveBeforePokemon = isExtraBeforePokemon(session.config, "move");
   const itemBeforePokemon = isExtraBeforePokemon(session.config, "item");
+  const assignAbilitiesBefore = session.config.randomizeAbilities && abilityBeforePokemon;
+  const assignMovesBefore = session.config.randomizeMoves && moveBeforePokemon;
+  const assignItemsBefore = session.config.randomizeItems && itemBeforePokemon;
   const movesPerPokemon = requiredMovesPerPokemon(session.config.movesPerPokemon);
   const remainingBuilderMoveSlots = MOVES_ASSIGNED_PER_POKEMON - movesPerPokemon;
   const appliedAbilityIds = useMemo(() => {
@@ -220,7 +230,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   }, [viewedRoll]);
   const abilityChoicesByPokemon = useMemo(() => {
     const choices: Record<string, Ability[]> = {};
-    if (!abilityBeforePokemon) {
+    if (!assignAbilitiesBefore) {
       return choices;
     }
     for (const form of viewedPokemon) {
@@ -230,10 +240,10 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
       });
     }
     return choices;
-  }, [abilitiesById, abilityBeforePokemon, session, viewedPokemon]);
+  }, [abilitiesById, assignAbilitiesBefore, session, viewedPokemon]);
   const moveChoicesByPokemonSlot = useMemo(() => {
     const choices: Record<string, Array<Move[]>> = {};
-    if (!moveBeforePokemon) {
+    if (!assignMovesBefore) {
       return choices;
     }
     for (const form of viewedPokemon) {
@@ -245,10 +255,10 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
       );
     }
     return choices;
-  }, [moveBeforePokemon, movesById, movesPerPokemon, session, viewedPokemon]);
+  }, [assignMovesBefore, movesById, movesPerPokemon, session, viewedPokemon]);
   const itemChoicesByPokemon = useMemo(() => {
     const choices: Record<string, Item[]> = {};
-    if (!itemBeforePokemon) {
+    if (!assignItemsBefore) {
       return choices;
     }
     for (const form of viewedPokemon) {
@@ -258,7 +268,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
       });
     }
     return choices;
-  }, [itemBeforePokemon, itemsById, session, viewedPokemon]);
+  }, [assignItemsBefore, itemsById, session, viewedPokemon]);
   const unusedAbilities = useMemo(
     () =>
       unassignedAbilityIds(session).flatMap((id) => {
@@ -540,6 +550,15 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
       </header>
 
       <RandomizerFlowList config={session.config} onChange={handleConfigChange} />
+      <RandomizerPresets
+        config={session.config}
+        onApply={handleConfigChange}
+        onReset={() => {
+          clearExtraErrors();
+          setErrorMessage(null);
+          setSession(createInitialSession());
+        }}
+      />
 
       {tabs.length > 1 ? (
         <RandomizerTabs
@@ -759,7 +778,8 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               >
                 <PokemonFilterForm
                   config={session.config}
-                  poolSize={poolSize}
+                  matchCount={matchCount}
+                  rollableCount={rollableCount}
                   onChange={(config) => {
                     setErrorMessage(null);
                     setSession(
@@ -773,29 +793,22 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                     );
                   }}
                 />
-                {session.config.randomizeAbilities &&
-                abilityBeforePokemon &&
-                session.abilityOptions.length === 0 ? (
+                {assignAbilitiesBefore && session.abilityOptions.length === 0 ? (
                   <p role="status" className="text-sm text-muted-foreground">
-                    Ability randomizer is before Pokémon. Generate abilities first, then apply each
-                    one to a Pokémon you choose.
+                    Generate abilities on this page, then apply each one to a Pokémon you choose.
                   </p>
                 ) : null}
-                {session.config.randomizeMoves &&
-                moveBeforePokemon &&
-                session.moveOptions.length === 0 ? (
+                {assignMovesBefore && session.moveOptions.length === 0 ? (
                   <p role="status" className="text-sm text-muted-foreground">
-                    Move randomizer is before Pokémon. Generate moves first, then apply{" "}
-                    {moveCountPhrase(movesPerPokemon)} to a Pokémon you choose.
+                    Generate moves on this page, then apply {moveCountPhrase(movesPerPokemon)} to a
+                    Pokémon you choose.
                     {remainingSlotsSentence(remainingBuilderMoveSlots)}
                   </p>
                 ) : null}
-                {session.config.randomizeItems &&
-                itemBeforePokemon &&
-                session.itemOptions.length === 0 ? (
+                {assignItemsBefore && session.itemOptions.length === 0 ? (
                   <p role="status" className="text-sm text-muted-foreground">
-                    Item randomizer is before Pokémon. Generate items first, then apply each
-                    one to a Pokémon you choose. None is always a choice.
+                    Generate items on this page, then apply each one to a Pokémon you choose. None
+                    is always a choice.
                   </p>
                 ) : null}
                 {errorMessage ? (
@@ -839,24 +852,109 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             </CardContent>
           </Card>
 
+          {assignAbilitiesBefore ? (
+            <section aria-label="Abilities to apply" className="flex flex-col gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <h2 className="contents">Abilities</h2>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <AbilityConfigForm
+                    config={session.config}
+                    poolSize={abilityPoolSize}
+                    beforePokemon
+                    onChange={handleConfigChange}
+                  />
+                </CardContent>
+              </Card>
+              <AbilityResults
+                abilities={rolledAbilities}
+                selectedAbilityId={undefined}
+                selectable={false}
+                errorMessage={abilityErrorMessage}
+                onGenerate={handleGenerateAbilities}
+                onSelect={() => undefined}
+                onReroll={handleRerollAbility}
+              />
+            </section>
+          ) : null}
+          {assignMovesBefore ? (
+            <section aria-label="Moves to apply" className="flex flex-col gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <h2 className="contents">Moves</h2>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <MoveConfigForm
+                    config={session.config}
+                    poolSize={movePoolSize}
+                    beforePokemon
+                    onChange={handleConfigChange}
+                  />
+                </CardContent>
+              </Card>
+              <MoveResults
+                moves={rolledMoves}
+                selectedMoveIds={[]}
+                selectable={false}
+                errorMessage={moveErrorMessage}
+                onGenerate={handleGenerateMoves}
+                onSelect={() => undefined}
+                onReroll={handleRerollMove}
+              />
+            </section>
+          ) : null}
+          {assignItemsBefore ? (
+            <section aria-label="Items to apply" className="flex flex-col gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <h2 className="contents">Items</h2>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ItemConfigForm
+                    config={session.config}
+                    poolSize={itemPoolSize}
+                    beforePokemon
+                    onChange={handleConfigChange}
+                  />
+                </CardContent>
+              </Card>
+              <ItemResults
+                items={rolledItems}
+                selectedItemId={undefined}
+                selectable={false}
+                errorMessage={itemErrorMessage}
+                onGenerate={handleGenerateItems}
+                onSelect={() => undefined}
+                onReroll={handleRerollItem}
+              />
+            </section>
+          ) : null}
+
           <div ref={resultsRef}>
             <PokemonResults
               pokemon={viewedPokemon}
               selectedPokemonId={session.selectedPokemonId}
-              appliedAbilityIds={abilityBeforePokemon ? appliedAbilityIds : undefined}
+              appliedAbilityIds={assignAbilitiesBefore ? appliedAbilityIds : undefined}
               abilityChoicesByPokemon={
-                abilityBeforePokemon ? abilityChoicesByPokemon : undefined
+                assignAbilitiesBefore ? abilityChoicesByPokemon : undefined
               }
-              unusedAbilities={abilityBeforePokemon ? unusedAbilities : undefined}
-              appliedMoveIds={moveBeforePokemon ? appliedMoveIds : undefined}
+              unusedAbilities={assignAbilitiesBefore ? unusedAbilities : undefined}
+              appliedMoveIds={assignMovesBefore ? appliedMoveIds : undefined}
               moveChoicesByPokemonSlot={
-                moveBeforePokemon ? moveChoicesByPokemonSlot : undefined
+                assignMovesBefore ? moveChoicesByPokemonSlot : undefined
               }
-              unusedMoves={moveBeforePokemon ? unusedMoves : undefined}
-              movesPerPokemon={moveBeforePokemon ? movesPerPokemon : undefined}
-              appliedItemIds={itemBeforePokemon ? appliedItemIds : undefined}
-              itemChoicesByPokemon={itemBeforePokemon ? itemChoicesByPokemon : undefined}
-              unusedItems={itemBeforePokemon ? unusedItems : undefined}
+              unusedMoves={assignMovesBefore ? unusedMoves : undefined}
+              movesPerPokemon={assignMovesBefore ? movesPerPokemon : undefined}
+              appliedItemIds={assignItemsBefore ? appliedItemIds : undefined}
+              itemChoicesByPokemon={assignItemsBefore ? itemChoicesByPokemon : undefined}
+              unusedItems={assignItemsBefore ? unusedItems : undefined}
               showPokedexEntry={session.config.showPokedexEntry}
               generationNumber={generationNumber}
               generationCount={generationCount}
@@ -867,7 +965,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                 setSession(selectRolledPokemon(session, pokemonId));
               }}
               onApplyAbility={
-                abilityBeforePokemon
+                assignAbilitiesBefore
                   ? (pokemonId, abilityId) => {
                       clearExtraErrors();
                       setSession(applyAbilityToRolledPokemon(session, pokemonId, abilityId));
@@ -875,7 +973,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                   : undefined
               }
               onApplyMove={
-                moveBeforePokemon
+                assignMovesBefore
                   ? (pokemonId, slotIndex, moveId) => {
                       clearExtraErrors();
                       setSession(applyMoveToRolledPokemon(session, pokemonId, slotIndex, moveId));
@@ -883,7 +981,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                   : undefined
               }
               onApplyItem={
-                itemBeforePokemon
+                assignItemsBefore
                   ? (pokemonId, itemId) => {
                       clearExtraErrors();
                       setSession(applyItemToRolledPokemon(session, pokemonId, itemId));
@@ -935,9 +1033,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                   battlePokemon: chosenBattlePokemon,
                   selectedPokemon,
                   next: nextFromPokemon,
-                  abilityBeforePokemon,
-                  moveBeforePokemon,
-                  itemBeforePokemon,
+                  abilityBeforePokemon: assignAbilitiesBefore,
+                  moveBeforePokemon: assignMovesBefore,
+                  itemBeforePokemon: assignItemsBefore,
                   movesPerPokemon,
                   remainingBuilderMoveSlots,
                 })}

@@ -59,6 +59,7 @@ export type { ItemRandomizerResult } from "@/lib/randomizer/items";
 export {
   assertPokemonCount,
   InvalidPokemonCountError,
+  matchingPokemonFormCount,
   matchingPokemonPoolSize,
   randomizePokemon,
   rerollPokemon,

@@ -48,6 +48,18 @@ export function assertPokemonCount(count: number): void {
   }
 }
 
+/** Every form that passes the filters. This is the number shown as matching. */
+export function matchingPokemonFormCount(
+  pokemon: readonly PokemonForm[],
+  config: RandomizerConfig,
+): number {
+  return filterPokemonForms(pokemon, config).length;
+}
+
+/**
+ * How many of those forms can share one roll. Overlapping evolution lines count once,
+ * so this is smaller than {@link matchingPokemonFormCount} and is what generation uses.
+ */
 export function matchingPokemonPoolSize(
   pokemon: readonly PokemonForm[],
   config: RandomizerConfig,

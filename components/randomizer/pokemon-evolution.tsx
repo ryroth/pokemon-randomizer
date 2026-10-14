@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { pokemonImage } from "@/lib/art/pokemonImage";
+import { BaseStatLine } from "@/components/randomizer/base-stat-line";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TYPE_LABELS } from "@/lib/types/pokemon-type";
 import type { PokemonForm } from "@/lib/types/pokemon";
@@ -96,6 +97,7 @@ export function PokemonEvolutionPicker({
                       <CardTitle>
                         <h3 className="contents">{form.displayName}</h3>
                       </CardTitle>
+                      <BaseStatLine stats={form.baseStats} showTotal />
                       {chosen ? (
                         <p className="text-sm font-medium text-primary">
                           {isKeep ? "Keeping this Pokémon" : "Using this evolution"}

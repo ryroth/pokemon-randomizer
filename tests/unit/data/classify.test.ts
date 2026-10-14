@@ -20,6 +20,13 @@ describe("classifyFormType", () => {
   it("treats default species as base, including hyphenated names", () => {
     expect(classifyFormType({ slug: "kommo-o" })).toBe("base");
   });
+
+  it("does not treat Meganium or Yanmega as Mega Evolutions", () => {
+    expect(classifyFormType({ slug: "meganium" })).toBe("base");
+    expect(classifyFormType({ slug: "yanmega" })).toBe("base");
+    expect(classifyFormType({ slug: "venusaur-mega", formName: "mega" })).toBe("mega");
+    expect(classifyFormType({ slug: "charizardmegax" })).toBe("mega");
+  });
 });
 
 describe("classifyEvolutionStages", () => {

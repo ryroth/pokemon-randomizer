@@ -514,11 +514,14 @@ describe("randomizer session helpers", () => {
   it("clears abilities when the battle Pokémon changes and keeps them when it does not", () => {
     const charmander = { ...makeForm("charmander"), evolutionTargetIds: ["charizard"] };
     const selected = selectRolledPokemon(
-      applyPokemonRoll(createInitialSession(), {
-        seed: "abc",
-        poolSize: 2,
-        pokemon: [charmander, makeForm("mewtwo")],
-      }),
+      applyPokemonRoll(
+        createInitialSession({ ...DEFAULT_RANDOMIZER_CONFIG, randomizeAbilities: true }),
+        {
+          seed: "abc",
+          poolSize: 2,
+          pokemon: [charmander, makeForm("mewtwo")],
+        },
+      ),
       "charmander",
     );
     const withAbilities = selectRolledAbility(
@@ -749,11 +752,14 @@ describe("randomizer session helpers", () => {
   it("clears moves when the battle Pokémon changes after Pokémon", () => {
     const charmander = { ...makeForm("charmander"), evolutionTargetIds: ["charizard"] };
     const selected = selectRolledPokemon(
-      applyPokemonRoll(createInitialSession(), {
-        seed: "abc",
-        poolSize: 2,
-        pokemon: [charmander, makeForm("mewtwo")],
-      }),
+      applyPokemonRoll(
+        createInitialSession({ ...DEFAULT_RANDOMIZER_CONFIG, randomizeMoves: true }),
+        {
+          seed: "abc",
+          poolSize: 2,
+          pokemon: [charmander, makeForm("mewtwo")],
+        },
+      ),
       "charmander",
     );
     const withMoves = selectRolledMove(
@@ -772,6 +778,43 @@ describe("randomizer session helpers", () => {
     const switched = selectRolledPokemon(withMoves, "mewtwo");
     expect(switched.moveOptions).toEqual([]);
     expect(switched.draft.moveIds).toEqual([undefined, undefined, undefined, undefined]);
+  });
+
+  it("keeps generated pools when those randomizers are turned off and restores them when turned back on", () => {
+    const before = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeMoves: true,
+      randomizeItems: true,
+      movesPerPokemon: 1,
+      randomizerOrder: ["move", "item", "pokemon", "ability"],
+    });
+    const rolled = applyPokemonRoll(
+      applyItemRoll(applyMoveRoll(before, moveResult(["tackle", "growl"])), itemResult(["leftovers", "lifeorb"])),
+      {
+        seed: "abc",
+        poolSize: 2,
+        pokemon: [makeForm("charmander"), makeForm("squirtle")],
+      },
+    );
+
+    const off = applySessionConfig(rolled, {
+      ...rolled.config,
+      randomizeMoves: false,
+      randomizeItems: false,
+    });
+    const selected = selectRolledPokemon(off, "charmander");
+    expect(selected.selectedPokemonId).toBe("charmander");
+    expect(selected.moveOptions).toEqual(["tackle", "growl"]);
+    expect(selected.itemOptions).toEqual(["leftovers", "lifeorb"]);
+
+    const on = applySessionConfig(selected, {
+      ...selected.config,
+      randomizeMoves: true,
+      randomizeItems: true,
+    });
+    expect(moveChoicesForPokemon(on, "charmander", 0)).toEqual(["tackle", "growl"]);
+    expect(itemChoicesForPokemon(on, "charmander")).toEqual(["leftovers", "lifeorb"]);
+    expect(selectRolledPokemon(on, "squirtle").selectedPokemonId).toBeUndefined();
   });
 
   it("lets the user apply a chosen number of unique moves from a pool generated before Pokémon", () => {
@@ -1031,11 +1074,14 @@ describe("randomizer session helpers", () => {
   it("clears items when the battle Pokémon changes and keeps them when it does not", () => {
     const charmander = { ...makeForm("charmander"), evolutionTargetIds: ["charizard"] };
     const selected = selectRolledPokemon(
-      applyPokemonRoll(createInitialSession(), {
-        seed: "abc",
-        poolSize: 2,
-        pokemon: [charmander, makeForm("mewtwo")],
-      }),
+      applyPokemonRoll(
+        createInitialSession({ ...DEFAULT_RANDOMIZER_CONFIG, randomizeItems: true }),
+        {
+          seed: "abc",
+          poolSize: 2,
+          pokemon: [charmander, makeForm("mewtwo")],
+        },
+      ),
       "charmander",
     );
     const withItems = selectRolledItem(

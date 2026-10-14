@@ -78,6 +78,7 @@ export function applyPokemonRoll(
       viewedRollIndex: 0,
       selectedPokemonId,
       evolvedPokemonId,
+      editingTeamSlot: undefined,
       draft: freshTraining(
         {
           ...session.draft,
@@ -123,6 +124,7 @@ export function selectRolledPokemon(
       ...session,
       selectedPokemonId: pokemonId,
       evolvedPokemonId: pokemonId,
+      editingTeamSlot: undefined,
       draft: samePokemon
         ? {
             ...session.draft,
@@ -159,6 +161,7 @@ export function chooseEvolvedPokemon(
     {
       ...session,
       evolvedPokemonId: nextBattlePokemonId,
+      editingTeamSlot: undefined,
       // The same Pokémon evolving stays shiny if it rolled shiny.
       draft: freshTraining(
         {
@@ -207,6 +210,7 @@ export function clearPokemonRolls(session: RandomizerSession): RandomizerSession
     viewedRollIndex: 0,
     selectedPokemonId: undefined,
     evolvedPokemonId: undefined,
+    editingTeamSlot: undefined,
     abilityOptions: keepAbilityPool ? [...session.abilityOptions] : [],
     moveOptions: keepMovePool ? [...session.moveOptions] : [],
     itemOptions: keepItemPool ? [...session.itemOptions] : [],
@@ -931,14 +935,19 @@ function withAbilityState(
     };
   }
 
-  const keepAbilities = Boolean(
-    battlePokemonId(next) && battlePokemonId(next) === battlePokemonId(previous),
-  );
+  const sameBattle = sameBattlePokemon(next, previous);
+  if (!next.config.randomizeAbilities) {
+    return {
+      ...next,
+      abilityOptions: [...previous.abilityOptions],
+      draft: withDraftAbility(next.draft, sameBattle ? previous.draft.abilityId : undefined),
+    };
+  }
 
   return {
     ...next,
-    abilityOptions: keepAbilities ? previous.abilityOptions : [],
-    draft: withDraftAbility(next.draft, keepAbilities ? previous.draft.abilityId : undefined),
+    abilityOptions: sameBattle ? previous.abilityOptions : [],
+    draft: withDraftAbility(next.draft, sameBattle ? previous.draft.abilityId : undefined),
   };
 }
 
@@ -960,14 +969,19 @@ function withMoveState(
     };
   }
 
-  const keepMoves = Boolean(
-    battlePokemonId(next) && battlePokemonId(next) === battlePokemonId(previous),
-  );
+  const sameBattle = sameBattlePokemon(next, previous);
+  if (!next.config.randomizeMoves) {
+    return {
+      ...next,
+      moveOptions: [...previous.moveOptions],
+      draft: withDraftMoves(next.draft, sameBattle ? previous.draft.moveIds : emptyMoveSlots()),
+    };
+  }
 
   return {
     ...next,
-    moveOptions: keepMoves ? previous.moveOptions : [],
-    draft: withDraftMoves(next.draft, keepMoves ? previous.draft.moveIds : emptyMoveSlots()),
+    moveOptions: sameBattle ? previous.moveOptions : [],
+    draft: withDraftMoves(next.draft, sameBattle ? previous.draft.moveIds : emptyMoveSlots()),
   };
 }
 
@@ -989,15 +1003,25 @@ function withItemState(
     };
   }
 
-  const keepItems = Boolean(
-    battlePokemonId(next) && battlePokemonId(next) === battlePokemonId(previous),
-  );
+  const sameBattle = sameBattlePokemon(next, previous);
+  if (!next.config.randomizeItems) {
+    return {
+      ...next,
+      itemOptions: [...previous.itemOptions],
+      draft: withDraftItem(next.draft, sameBattle ? previous.draft.itemId : undefined),
+    };
+  }
 
   return {
     ...next,
-    itemOptions: keepItems ? previous.itemOptions : [],
-    draft: withDraftItem(next.draft, keepItems ? previous.draft.itemId : undefined),
+    itemOptions: sameBattle ? previous.itemOptions : [],
+    draft: withDraftItem(next.draft, sameBattle ? previous.draft.itemId : undefined),
   };
+}
+
+function sameBattlePokemon(next: RandomizerSession, previous: RandomizerSession): boolean {
+  const nextId = battlePokemonId(next);
+  return Boolean(nextId && nextId === battlePokemonId(previous));
 }
 
 function assignsAbilitiesBeforePokemon(session: RandomizerSession): boolean {
