@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { nameImpliesMega } from "@/lib/data/classify";
 import type { Catalog } from "@/lib/types/catalog";
 import type { PokemonForm } from "@/lib/types/pokemon";
 
@@ -26,6 +27,14 @@ function readOptionalJson<T>(name: string): T | undefined {
   }
   // JSON.parse cannot prove the shape; the files are written by `npm run import:art`.
   return JSON.parse(readFileSync(filePath, "utf8")) as T;
+}
+
+/** The stored catalog tagged Meganium and Yanmega as Mega because their names contain those letters. */
+function repairMegaName(form: PokemonForm): PokemonForm {
+  if (form.formType !== "mega" || nameImpliesMega(form.id) || nameImpliesMega(form.pokeApiSlug)) {
+    return form;
+  }
+  return { ...form, formType: "base" };
 }
 
 function fileStamp(filePath: string): string {
@@ -57,16 +66,17 @@ export function loadGeneratedCatalog(): Catalog {
   cachedCatalog = {
     ...catalog,
     pokemon: catalog.pokemon.map((form) => {
+      const repaired = repairMegaName(form);
       const extra = art[form.id];
       if (!extra) {
-        return form;
+        return repaired;
       }
       return {
-        ...form,
+        ...repaired,
         sprites: {
-          ...form.sprites,
-          artwork: form.sprites.artwork ?? extra.artwork ?? null,
-          artworkShiny: form.sprites.artworkShiny ?? extra.artworkShiny ?? null,
+          ...repaired.sprites,
+          artwork: repaired.sprites.artwork ?? extra.artwork ?? null,
+          artworkShiny: repaired.sprites.artworkShiny ?? extra.artworkShiny ?? null,
         },
       };
     }),

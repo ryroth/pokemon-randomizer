@@ -9,6 +9,7 @@ import { TypeBadge } from "@/components/recap/type-badge";
 import { DexEntryCycler } from "@/components/dex/dex-entry-cycler";
 import { BallBadge, PokeballReveal } from "@/components/randomizer/pokeball";
 import { typeGlow } from "@/components/type-colors";
+import { BaseStatLine } from "@/components/randomizer/base-stat-line";
 import { baseStatTotal, ballForPokemon } from "@/lib/randomizer/ball";
 import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/randomizer/applyExtras";
 import { NONE_ITEM_ID, NONE_ITEM_SELECT_VALUE } from "@/lib/randomizer/items";
@@ -227,6 +228,7 @@ export function PokemonResults({
                     <CardTitle>
                       <h3 className="contents">{form.displayName}</h3>
                     </CardTitle>
+                    <BaseStatLine stats={form.baseStats} />
                     {shiny ? (
                       <p className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-500 bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-950 dark:border-amber-400 dark:bg-amber-950 dark:text-amber-100">
                         <Sparkles aria-hidden="true" className="size-3.5" />

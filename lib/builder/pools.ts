@@ -28,9 +28,14 @@ export function builderItemPool(
   session: RandomizerSession,
   items: readonly { id: string }[],
 ): Array<string | null> {
-  const holdables = session.config.randomizeItems
-    ? uniqueIds(session.itemOptions)
-    : uniqueIds(items.map((item) => item.id));
+  const holdables =
+    !session.editingTeamSlot && session.config.randomizeItems
+      ? uniqueIds(session.itemOptions)
+      : uniqueIds(items.map((item) => item.id));
+  const current = session.draft.itemId;
+  if (session.editingTeamSlot && current && !holdables.includes(current)) {
+    holdables.unshift(current);
+  }
   return [null, ...holdables];
 }
 

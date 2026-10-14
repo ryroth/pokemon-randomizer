@@ -9,10 +9,24 @@ export interface FormTypeHints {
 
 const REGIONAL_TOKENS = ["alola", "galar", "hisui", "paldea"];
 
+/**
+ * Meganium and Yanmega contain the letters "mega" but are not Mega Evolutions.
+ * A real Mega id separates that word (`venusaur-mega`, `venusaurmega`, `charizardmegax`).
+ */
+const SPECIES_NAMES_CONTAINING_MEGA = new Set(["meganium", "yanmega"]);
+
+export function nameImpliesMega(slug: string, formName?: string): boolean {
+  const id = slug.toLowerCase();
+  if (SPECIES_NAMES_CONTAINING_MEGA.has(id)) {
+    return false;
+  }
+  return `${id} ${formName ?? ""}`.toLowerCase().includes("mega");
+}
+
 export function classifyFormType(hints: FormTypeHints): FormType {
   const haystack = `${hints.slug} ${hints.formName ?? ""}`.toLowerCase();
 
-  if (hints.isMega || haystack.includes("mega")) {
+  if (hints.isMega || nameImpliesMega(hints.slug, hints.formName)) {
     return "mega";
   }
 

@@ -40,6 +40,7 @@ import { ItemIcon } from "@/components/items/item-icon";
 import { NumberInput } from "@/components/builder/number-input";
 import { MovePicker } from "@/components/builder/move-picker";
 import { useRandomizerSession } from "@/components/session/session-provider";
+import { useTeams } from "@/components/teams/team-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { builderAbilityPool, battlePokemonId, openRandomizerTab } from "@/lib/randomizer";
 import { hiddenAbilityId } from "@/lib/builder/abilities";
@@ -53,6 +54,7 @@ import {
 import type { Ability, Item, Move, Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { RandomizerTab } from "@/lib/types/randomizer";
+import { pokemonSetsEqual } from "@/lib/teams/teams";
 import { defaultTeraType } from "@/lib/validation/set";
 import { DEFAULT_HAPPINESS, DEFAULT_LEVEL, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, MAX_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
 import { cn } from "@/lib/utils";
@@ -71,6 +73,7 @@ interface SetBuilderProps {
 export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBuilderProps) {
   const router = useRouter();
   const { session, setSession, ready } = useRandomizerSession();
+  const { box, ready: teamsReady, replaceSet } = useTeams();
   const [moveList, setMoveList] = useState<BuilderMoveList>("all");
   const [learnMethods, setLearnMethods] = useState<LearnMethod[]>([]);
 
@@ -90,7 +93,20 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
     }
     const frame = window.requestAnimationFrame(() => focusBuilderTarget(target));
     return () => window.cancelAnimationFrame(frame);
-  }, [ready, hasBattlePokemon]);
+  }, [ready, hasBattlePokemon, battleId]);
+
+  const editing = session.editingTeamSlot;
+  useEffect(() => {
+    if (!teamsReady || !editing || !battlePokemon) {
+      return;
+    }
+    const saved = box.teams.find((team) => team.id === editing.teamId)?.sets[editing.index];
+    const result = validateSet(session.draft, battlePokemon);
+    if (!result.ok || !saved || pokemonSetsEqual(saved, result.value)) {
+      return;
+    }
+    replaceSet(editing.teamId, editing.index, result.value);
+  }, [teamsReady, editing, battlePokemon, session.draft, box.teams, replaceSet]);
 
   if (!ready) {
     return <RouteNotice title="Build the set" message="Loading your set…" live width="builder" />;

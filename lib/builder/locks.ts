@@ -2,10 +2,13 @@ import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/rando
 import { enabledRandomizerSteps, isExtraBeforePokemon } from "@/lib/randomizer/flow";
 import { appliedMoveIdsForPokemon } from "@/lib/randomizer/session";
 import type { RandomizerTab } from "@/lib/types/randomizer";
-import type { RandomizerSession } from "@/lib/types/session";
+import type { PokemonSet, RandomizerSession } from "@/lib/types/session";
 
 /** The ability randomizer already chose this Pokémon's ability. */
 export function abilityLockedByRandomizer(session: RandomizerSession): boolean {
+  if (session.editingTeamSlot) {
+    return false;
+  }
   return session.config.randomizeAbilities && Boolean(session.draft.abilityId);
 }
 
@@ -15,6 +18,9 @@ export function abilityLockedByRandomizer(session: RandomizerSession): boolean {
  * the remaining slots, and those stay editable. When it ran after Pokémon it filled every slot.
  */
 export function moveSlotLockedByRandomizer(session: RandomizerSession, slot: number): boolean {
+  if (session.editingTeamSlot) {
+    return false;
+  }
   const current = session.draft.moveIds[slot];
   if (!session.config.randomizeMoves || !current) {
     return false;
@@ -50,8 +56,20 @@ export function recapEditAccess(session: RandomizerSession): RecapEditAccess {
   };
 }
 
+/** Every part of a saved team Pokémon can be opened in the builder. */
+export function savedSetEditAccess(set: PokemonSet): RecapEditAccess {
+  return {
+    ability: true,
+    item: true,
+    moves: set.moveIds.map((_, index) => index),
+  };
+}
+
 /** The item randomizer already chose this Pokémon's held item, including None. */
 export function itemLockedByRandomizer(session: RandomizerSession): boolean {
+  if (session.editingTeamSlot) {
+    return false;
+  }
   return session.config.randomizeItems && session.draft.itemId !== undefined;
 }
 
@@ -61,6 +79,9 @@ export function itemLockedByRandomizer(session: RandomizerSession): boolean {
  * them in the randomizer first, so a randomized part can not be swapped for a hand-picked one.
  */
 export function pendingRandomizerSteps(session: RandomizerSession): RandomizerTab[] {
+  if (session.editingTeamSlot) {
+    return [];
+  }
   return enabledRandomizerSteps(session.config).filter((step) => {
     switch (step) {
       case "ability":

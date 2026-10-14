@@ -1,6 +1,8 @@
 import type { PokemonSet } from "@/lib/types/session";
+import { STAT_IDS } from "@/lib/types/stats";
 
 export const TEAM_SIZE = 6;
+export const MAX_TEAM_NAME_LENGTH = 24;
 
 export interface SavedTeam {
   id: string;
@@ -41,10 +43,11 @@ export function setActiveTeam(box: TeamBox, teamId: string): TeamBox {
 }
 
 /** Puts this Pokémon in slot 1 of a new team and leaves every other team unchanged. */
-export function saveSetToNewTeam(box: TeamBox, set: PokemonSet): TeamSaveResult {
+export function saveSetToNewTeam(box: TeamBox, set: PokemonSet, name?: string): TeamSaveResult {
+  const fallback = `Team ${box.teams.length + 1}`;
   const team: SavedTeam = {
     id: createTeamId(),
-    name: `Team ${box.teams.length + 1}`,
+    name: teamNameOrFallback(name, fallback),
     sets: [clonePokemonSet(set)],
   };
   return {
@@ -54,6 +57,22 @@ export function saveSetToNewTeam(box: TeamBox, set: PokemonSet): TeamSaveResult 
     teamName: team.name,
     slot: 1,
   };
+}
+
+/**
+ * Saves onto the team shown in the recap. A name renames that team first, so the field
+ * belongs to the team being viewed rather than the next team that does not exist yet.
+ */
+export function saveSetToActiveTeam(box: TeamBox, set: PokemonSet, name?: string): TeamSaveResult {
+  const active = box.teams.find((team) => team.id === box.activeTeamId);
+  if (!active || name === undefined || normalizeTeamName(name) === active.name) {
+    return saveSetToNextSlot(box, set);
+  }
+  const renamed = renameTeam(box, active.id, name);
+  if (!renamed.ok) {
+    return renamed;
+  }
+  return saveSetToNextSlot(renamed.box, set);
 }
 
 /** Fills the next open slot on the active team. A full team is left unchanged. */
@@ -137,6 +156,118 @@ export function moveSetToSlot(box: TeamBox, teamId: string, fromIndex: number, t
     fromSlot: fromIndex + 1,
     toSlot: toIndex + 1,
   };
+}
+
+export type TeamRenameResult =
+  | { ok: true; box: TeamBox; teamName: string }
+  | { ok: false; message: string };
+
+/** Renames one team. A blank name is refused so the previous name stays. */
+export function renameTeam(box: TeamBox, teamId: string, name: string): TeamRenameResult {
+  const team = box.teams.find((candidate) => candidate.id === teamId);
+  if (!team) {
+    return { ok: false, message: "That team is no longer saved." };
+  }
+  const teamName = normalizeTeamName(name);
+  if (!teamName) {
+    return { ok: false, message: "Enter a team name." };
+  }
+  return {
+    ok: true,
+    box: {
+      activeTeamId: box.activeTeamId,
+      teams: box.teams.map((candidate) => (candidate.id === team.id ? { ...team, name: teamName } : candidate)),
+    },
+    teamName,
+  };
+}
+
+/**
+ * Copies one Pokémon onto the next open slot of another team. The original stays where it is,
+ * so the same built Pokémon can be used on more than one team.
+ */
+export function copySetToTeam(
+  box: TeamBox,
+  fromTeamId: string,
+  fromIndex: number,
+  toTeamId: string,
+): TeamSaveResult {
+  const from = box.teams.find((candidate) => candidate.id === fromTeamId);
+  const to = box.teams.find((candidate) => candidate.id === toTeamId);
+  if (!from || !to) {
+    return { ok: false, message: "That team is no longer saved." };
+  }
+  if (from.id === to.id) {
+    return { ok: false, message: "Choose a different team." };
+  }
+  const set = from.sets[fromIndex];
+  if (!set) {
+    return { ok: false, message: "That slot is already empty." };
+  }
+  if (to.sets.length >= TEAM_SIZE) {
+    return { ok: false, message: `${to.name} already has ${TEAM_SIZE} Pokémon.` };
+  }
+  const slot = to.sets.length + 1;
+  const nextTeam: SavedTeam = { ...to, sets: [...to.sets, clonePokemonSet(set)] };
+  return {
+    ok: true,
+    box: {
+      activeTeamId: box.activeTeamId,
+      teams: box.teams.map((candidate) => (candidate.id === to.id ? nextTeam : candidate)),
+    },
+    teamId: to.id,
+    teamName: to.name,
+    slot,
+  };
+}
+
+/** Replaces one saved Pokémon after the user edits it in the builder. */
+export function replaceSetOnTeam(box: TeamBox, teamId: string, index: number, set: PokemonSet): TeamSaveResult {
+  const team = box.teams.find((candidate) => candidate.id === teamId);
+  if (!team || !team.sets[index]) {
+    return { ok: false, message: "That Pokémon is no longer on the team." };
+  }
+  const nextTeam: SavedTeam = {
+    ...team,
+    sets: team.sets.map((current, slot) => (slot === index ? clonePokemonSet(set) : current)),
+  };
+  return {
+    ok: true,
+    box: {
+      activeTeamId: box.activeTeamId,
+      teams: box.teams.map((candidate) => (candidate.id === team.id ? nextTeam : candidate)),
+    },
+    teamId: team.id,
+    teamName: team.name,
+    slot: index + 1,
+  };
+}
+
+export function pokemonSetsEqual(left: PokemonSet, right: PokemonSet): boolean {
+  return (
+    left.pokemonId === right.pokemonId &&
+    left.itemId === right.itemId &&
+    left.abilityId === right.abilityId &&
+    left.moveIds.length === right.moveIds.length &&
+    left.moveIds.every((id, index) => id === right.moveIds[index]) &&
+    left.natureId === right.natureId &&
+    left.teraType === right.teraType &&
+    left.gender === right.gender &&
+    left.level === right.level &&
+    left.shiny === right.shiny &&
+    left.happiness === right.happiness &&
+    (left.nickname ?? "") === (right.nickname ?? "") &&
+    STAT_IDS.every((stat) => left.evs[stat] === right.evs[stat] && left.ivs[stat] === right.ivs[stat])
+  );
+}
+
+export function normalizeTeamName(name: string): string {
+  return name.trim().replace(/\s+/g, " ").slice(0, MAX_TEAM_NAME_LENGTH);
+}
+
+function teamNameOrFallback(name: string | undefined, fallback: string): string {
+  const normalized = name === undefined ? "" : normalizeTeamName(name);
+  return normalized || fallback;
 }
 
 export type TeamImportResult =

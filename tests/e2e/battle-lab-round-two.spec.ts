@@ -130,7 +130,7 @@ test.describe("Pokédex entries from every generation", () => {
     await expect(label).toHaveText(before ?? "");
 
     // Jump straight to the oldest generation this species has.
-    const oldest = cycler.getByRole("group", { name: "Jump to a generation" }).getByRole("button").first();
+    const oldest = cycler.getByRole("group", { name: "Pokédex entries by generation" }).getByRole("button").first();
     const generation = (await oldest.textContent())?.trim() ?? "";
     await oldest.click();
     await expect(label).toContainText(`Gen ${generation} ·`);
@@ -144,7 +144,7 @@ test.describe("Pokédex entries from every generation", () => {
 
     const cycler = page.getByRole("group", { name: "Pokédex entries for Swampert" });
     await expect(cycler).toBeVisible({ timeout: 15_000 });
-    await cycler.getByRole("button", { name: "Generation 3 entry" }).click();
+    await cycler.getByRole("button", { name: "Pokédex entry from generation 3" }).click();
     await expect(cycler).toContainText("Gen 3");
     await expect(cycler).toContainText("Ruby");
   });

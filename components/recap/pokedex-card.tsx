@@ -16,10 +16,18 @@ import type { RecapEntry } from "@/lib/recap/entries";
 
 /**
  * `edit` turns each part of the Pokémon into a link that opens that part in the builder. It also says
- * which parts a randomizer chose: those stay locked, so they get no link. Saved team recaps leave
- * `edit` off because they are read-only.
+ * which parts a randomizer chose: those stay locked, so they get no link. `onEdit` is used when the
+ * Pokémon lives on a saved team, so opening the builder can load that Pokémon first.
  */
-export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEditAccess }) {
+export function PokedexCard({
+  entry,
+  edit,
+  onEdit,
+}: {
+  entry: RecapEntry;
+  edit?: RecapEditAccess;
+  onEdit?: (target: string) => void;
+}) {
   const editable = edit !== undefined;
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const stageLabel = `${entry.shiny ? "Shiny artwork" : "Artwork"} of ${entry.speciesName}`;
@@ -71,7 +79,7 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
               <dl className="grid grid-cols-1 gap-y-2.5 text-sm sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:items-center">
                 <dt className="text-[#b7d4ff]">Name</dt>
                 <dd className="font-semibold">
-                  <EditLink editable={editable} target="nickname" label="nickname">
+                  <EditLink editable={editable} target="nickname" label="nickname" onEdit={onEdit}>
                     {displayName}
                   </EditLink>
                 </dd>
@@ -87,7 +95,7 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
                 </dd>
                 <dt className="text-[#b7d4ff]">Tera type</dt>
                 <dd>
-                  <EditLink editable={editable} target="tera-type" label="Tera type">
+                  <EditLink editable={editable} target="tera-type" label="Tera type" onEdit={onEdit}>
                     <TypeBadge type={entry.teraType} />
                   </EditLink>
                 </dd>
@@ -95,25 +103,25 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
                 <dd className="font-mono font-semibold">{entry.dexNumber}</dd>
                 <dt className="text-[#b7d4ff]">Nature</dt>
                 <dd className="font-semibold">
-                  <EditLink editable={editable} target="nature" label="nature">
+                  <EditLink editable={editable} target="nature" label="nature" onEdit={onEdit}>
                     {entry.natureName}
                   </EditLink>
                 </dd>
                 <dt className="text-[#b7d4ff]">Level</dt>
                 <dd className="font-mono font-semibold tabular-nums">
-                  <EditLink editable={editable} target="level" label="level">
+                  <EditLink editable={editable} target="level" label="level" onEdit={onEdit}>
                     {entry.level}
                   </EditLink>
                 </dd>
                 <dt className="text-[#b7d4ff]">Shiny</dt>
                 <dd className="font-semibold">
-                  <EditLink editable={editable} target="shiny" label="shiny">
+                  <EditLink editable={editable} target="shiny" label="shiny" onEdit={onEdit}>
                     {entry.shiny ? "Yes" : "No"}
                   </EditLink>
                 </dd>
                 <dt className="text-[#b7d4ff]">Happiness</dt>
                 <dd className="font-mono font-semibold tabular-nums">
-                  <EditLink editable={editable} target="happiness" label="happiness">
+                  <EditLink editable={editable} target="happiness" label="happiness" onEdit={onEdit}>
                     {entry.happiness}
                   </EditLink>
                 </dd>
@@ -121,7 +129,7 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
                   <>
                     <dt className="text-[#b7d4ff]">Gender</dt>
                     <dd className="font-semibold">
-                      <EditLink editable={editable} target="gender" label="gender">
+                      <EditLink editable={editable} target="gender" label="gender" onEdit={onEdit}>
                         {entry.gender === "M" ? "Male" : "Female"}
                       </EditLink>
                     </dd>
@@ -133,7 +141,7 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
                 <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Held item</h3>
                 <p className="flex items-center gap-2 text-lg font-semibold">
                   <ItemIcon iconUrl={entry.itemIconUrl} none={!entry.itemName} className="size-8" />
-                  <EditLink editable={editable && edit.item} target="item" label="held item">
+                  <EditLink editable={editable && edit.item} target="item" label="held item" onEdit={onEdit}>
                     {entry.itemName ?? "None"}
                   </EditLink>
                 </p>
@@ -164,13 +172,13 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
           <div className="grid gap-3 lg:grid-cols-2">
             <div className="rounded-lg bg-[#163f86] p-3 sm:p-4">
               <h3 className="mb-2 text-sm font-semibold">Current moves</h3>
-              <MovePanel moves={entry.moves} editSlots={edit?.moves} />
+              <MovePanel moves={entry.moves} editSlots={edit?.moves} onEdit={onEdit} />
             </div>
             <div className="space-y-4 rounded-lg bg-[#163f86] p-3 sm:p-4">
               <div>
                 <h3 className="mb-2 flex flex-wrap items-center gap-x-3 text-sm font-semibold">
                   Stats at level {entry.level}
-                  <EditLink editable={editable} target="stats" label="EVs, IVs, and nature">
+                  <EditLink editable={editable} target="stats" label="EVs, IVs, and nature" onEdit={onEdit}>
                     Edit stats
                   </EditLink>
                 </h3>
@@ -179,7 +187,7 @@ export function PokedexCard({ entry, edit }: { entry: RecapEntry; edit?: RecapEd
               <div className="space-y-1 border-t border-white/15 pt-3">
                 <h3 className="text-xs font-medium tracking-wide text-[#b7d4ff] uppercase">Ability</h3>
                 <p className="text-lg font-semibold">
-                  <EditLink editable={editable && edit.ability} target="ability" label="ability">
+                  <EditLink editable={editable && edit.ability} target="ability" label="ability" onEdit={onEdit}>
                     {entry.abilityName}
                   </EditLink>
                 </p>
@@ -227,24 +235,33 @@ function EditLink({
   editable,
   target,
   label,
+  onEdit,
   children,
 }: {
   editable: boolean;
   target: string;
   label: string;
+  onEdit?: (target: string) => void;
   children: ReactNode;
 }) {
   if (!editable) {
     return <>{children}</>;
   }
+  const className =
+    "inline-flex items-center gap-1.5 rounded-md underline decoration-dotted underline-offset-4 outline-none hover:text-[#f2c14e] focus-visible:ring-2 focus-visible:ring-[#f2c14e]";
+  const pencil = <Pencil aria-hidden="true" className="size-3.5 shrink-0 text-[#f2c14e]" />;
+  if (onEdit) {
+    return (
+      <button type="button" aria-label={`Edit ${label}`} className={className} onClick={() => onEdit(target)}>
+        {children}
+        {pencil}
+      </button>
+    );
+  }
   return (
-    <Link
-      href={`/builder#${target}`}
-      aria-label={`Edit ${label}`}
-      className="inline-flex items-center gap-1.5 rounded-md underline decoration-dotted underline-offset-4 outline-none hover:text-[#f2c14e] focus-visible:ring-2 focus-visible:ring-[#f2c14e]"
-    >
+    <Link href={`/builder#${target}`} aria-label={`Edit ${label}`} className={className}>
       {children}
-      <Pencil aria-hidden="true" className="size-3.5 shrink-0 text-[#f2c14e]" />
+      {pencil}
     </Link>
   );
 }

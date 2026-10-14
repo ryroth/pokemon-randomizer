@@ -179,8 +179,13 @@ export function builderAbilityPool(
   form: PokemonForm,
   session: RandomizerSession,
 ): string[] {
-  if (session.config.randomizeAbilities) {
+  if (!session.editingTeamSlot && session.config.randomizeAbilities) {
     return [...session.abilityOptions];
   }
-  return [...form.abilityIds];
+  const ids = [...form.abilityIds];
+  const current = session.draft.abilityId;
+  if (session.editingTeamSlot && current && !ids.includes(current)) {
+    ids.unshift(current);
+  }
+  return ids;
 }

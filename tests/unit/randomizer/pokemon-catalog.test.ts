@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { evolutionConflictContext, evolutionFormsConflict } from "@/lib/data/evolution";
 import { generatedCatalogPath, loadGeneratedCatalog, slimPokemonForClient } from "@/lib/data/loadCatalog";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
-import { randomizePokemon } from "@/lib/randomizer/pokemon";
+import { matchingPokemonFormCount, randomizePokemon } from "@/lib/randomizer/pokemon";
 import { InsufficientPoolError } from "@/lib/randomizer/randomUtils";
 
 const catalogPath = generatedCatalogPath();
@@ -22,6 +22,7 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon randomizer", () => {
       result.pokemon.every((form) => ["base", "regional", "other"].includes(form.formType)),
     ).toBe(true);
     expect(result.poolSize).toBeGreaterThanOrEqual(6);
+    expect(matchingPokemonFormCount(catalog.pokemon, DEFAULT_RANDOMIZER_CONFIG)).toBeGreaterThan(1000);
 
     const again = randomizePokemon(catalog.pokemon, DEFAULT_RANDOMIZER_CONFIG, "catalog-seed");
     expect(again.pokemon.map((form) => form.id)).toEqual(ids);

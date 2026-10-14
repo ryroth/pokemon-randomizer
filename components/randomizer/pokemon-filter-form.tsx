@@ -37,12 +37,20 @@ import {
 
 interface PokemonFilterFormProps {
   config: RandomizerConfig;
-  poolSize: number;
+  /** Forms that pass the filters. */
+  matchCount: number;
+  /** How many of those forms can share one roll. */
+  rollableCount: number;
   onChange: (config: RandomizerConfig) => void;
 }
 
-export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterFormProps) {
-  const poolTooSmall = poolSize < config.pokemonCount;
+export function PokemonFilterForm({
+  config,
+  matchCount,
+  rollableCount,
+  onChange,
+}: PokemonFilterFormProps) {
+  const poolTooSmall = rollableCount < config.pokemonCount;
 
   return (
     <div className="space-y-6">
@@ -276,17 +284,19 @@ export function PokemonFilterForm({ config, poolSize, onChange }: PokemonFilterF
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p aria-live="polite" className="text-sm">
+          <span className="font-mono tabular-nums">{matchCount}</span> Pokémon match these filters.
           {poolTooSmall ? (
-            <span>
-              Only <span className="font-mono tabular-nums">{poolSize}</span> Pokémon match these filters. Reduce the count or broaden the filters
-              before generating.
-            </span>
+            <>
+              {" "}
+              Only <span className="font-mono tabular-nums">{rollableCount}</span> can be rolled
+              together, because a generation keeps overlapping evolution lines unique. Reduce the
+              count or broaden the filters before generating.
+            </>
           ) : (
-            <span>
-              <span className="font-mono tabular-nums">{poolSize}</span> Pokémon match these
-              filters. Ready to generate{" "}
-              <span className="font-mono tabular-nums">{config.pokemonCount}</span>.
-            </span>
+            <>
+              {" "}
+              Ready to generate <span className="font-mono tabular-nums">{config.pokemonCount}</span>.
+            </>
           )}
         </p>
         <Button type="button" variant="ghost" onClick={() => onChange(resetPokemonFilters(config))}>

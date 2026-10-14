@@ -12,9 +12,10 @@ const controlClass =
   "h-9 w-full rounded-lg border border-input bg-background px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function SaveToTeam({ set, catalog }: { set: PokemonSet; catalog: RecapCatalog }) {
-  const { box, ready, chooseTeam, saveToNewTeam, saveToNextSlot, removeFromTeam, moveWithinTeam } = useTeams();
+  const { box, ready, chooseTeam, saveToNewTeam, saveToActiveTeam, rename, removeFromTeam, moveWithinTeam } = useTeams();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [nameDraft, setNameDraft] = useState<{ id: string | null; name: string } | null>(null);
 
   if (!ready) {
     return (
@@ -26,6 +27,28 @@ export function SaveToTeam({ set, catalog }: { set: PokemonSet; catalog: RecapCa
 
   const active = box.teams.find((team) => team.id === box.activeTeamId) ?? null;
   const full = active !== null && active.sets.length >= TEAM_SIZE;
+  const activeId = active?.id ?? null;
+  const teamName = nameDraft?.id === activeId ? nameDraft.name : (active?.name ?? "");
+
+  function commitName() {
+    if (!active) {
+      return;
+    }
+    if (teamName.trim() === active.name) {
+      setNameDraft({ id: active.id, name: active.name });
+      return;
+    }
+    const result = rename(active.id, teamName);
+    if (!result.ok) {
+      setNameDraft({ id: active.id, name: active.name });
+      setMessage(null);
+      setError(result.message);
+      return;
+    }
+    setNameDraft({ id: active.id, name: result.teamName });
+    setError(null);
+    setMessage(`Renamed the team to ${result.teamName}.`);
+  }
 
   function remember(result: { ok: true; teamName: string; slot: number } | { ok: false; message: string }) {
     if (result.ok) {
@@ -93,9 +116,32 @@ export function SaveToTeam({ set, catalog }: { set: PokemonSet; catalog: RecapCa
         />
       ) : null}
 
+      <label className="block max-w-sm space-y-1.5 text-sm font-medium">
+        {active ? "Team name" : "New team name"}
+        <input
+          className={controlClass}
+          value={teamName}
+          maxLength={24}
+          placeholder={active ? undefined : `Team ${box.teams.length + 1}`}
+          onChange={(event) => setNameDraft({ id: activeId, name: event.target.value })}
+          onBlur={commitName}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.currentTarget.blur();
+            }
+          }}
+        />
+      </label>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         {active ? (
-          <Button type="button" size="lg" className="w-fit" disabled={full} onClick={() => remember(saveToNextSlot(set))}>
+          <Button
+            type="button"
+            size="lg"
+            className="w-fit"
+            disabled={full}
+            onClick={() => remember(saveToActiveTeam(set, teamName))}
+          >
             {full ? `${active.name} is full` : `Save to ${active.name}, slot ${active.sets.length + 1}`}
           </Button>
         ) : null}
@@ -104,7 +150,12 @@ export function SaveToTeam({ set, catalog }: { set: PokemonSet; catalog: RecapCa
           size="lg"
           variant={active ? "outline" : "default"}
           className="w-fit"
-          onClick={() => remember(saveToNewTeam(set))}
+          onClick={() => {
+            remember(saveToNewTeam(set, active ? undefined : teamName));
+            if (!active) {
+              setNameDraft(null);
+            }
+          }}
         >
           Save to a new team
         </Button>

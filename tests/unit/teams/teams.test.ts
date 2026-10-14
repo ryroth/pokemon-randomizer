@@ -5,10 +5,14 @@ import { parseStoredTeams } from "@/lib/teams/storage";
 import {
   clampToFilledSlot,
   clearTeam,
+  copySetToTeam,
   createEmptyTeamBox,
   importSetsToTeam,
   removeSetFromTeam,
   moveSetToSlot,
+  renameTeam,
+  replaceSetOnTeam,
+  saveSetToActiveTeam,
   saveSetToNewTeam,
   saveSetToNextSlot,
   slotIndexAfterMove,
@@ -319,6 +323,69 @@ describe("importing Pokémon into teams", () => {
       expect(result.box.activeTeamId).toBe(result.teamId);
       expect(result.box.teams[0]?.sets).toHaveLength(1);
     }
+  });
+
+  it("names a new team and copies a Pokémon onto another team", () => {
+    const first = saveSetToNewTeam(createEmptyTeamBox(), swampert, "  Rain   Dance ");
+    expect(first.ok).toBe(true);
+    if (!first.ok) {
+      return;
+    }
+    expect(first.teamName).toBe("Rain Dance");
+    const second = saveSetToNewTeam(first.box, marshtomp);
+    expect(second.ok).toBe(true);
+    if (!second.ok) {
+      return;
+    }
+
+    const renamed = renameTeam(second.box, second.teamId, "Sun");
+    expect(renamed).toMatchObject({ ok: true, teamName: "Sun" });
+    expect(renameTeam(second.box, second.teamId, "   ")).toEqual({
+      ok: false,
+      message: "Enter a team name.",
+    });
+
+    const copied = copySetToTeam(second.box, first.teamId, 0, second.teamId);
+    expect(copied.ok).toBe(true);
+    if (!copied.ok || !renamed.ok) {
+      return;
+    }
+    const destination = copied.box.teams.find((team) => team.id === second.teamId);
+    expect(destination?.sets.map((set) => set.nickname)).toEqual(["Puddle", "Mud"]);
+    expect(copied.box.teams.find((team) => team.id === first.teamId)?.sets).toHaveLength(1);
+    expect(copySetToTeam(copied.box, first.teamId, 0, first.teamId)).toEqual({
+      ok: false,
+      message: "Choose a different team.",
+    });
+
+    const edited = replaceSetOnTeam(first.box, first.teamId, 0, { ...swampert, nickname: "Muddy" });
+    expect(edited.ok).toBe(true);
+    if (!edited.ok) {
+      return;
+    }
+    expect(edited.box.teams.find((team) => team.id === first.teamId)?.sets[0]?.nickname).toBe("Muddy");
+    expect(replaceSetOnTeam(edited.box, first.teamId, 3, swampert)).toEqual({
+      ok: false,
+      message: "That Pokémon is no longer on the team.",
+    });
+  });
+
+  it("renames the team being saved to before filling its next slot", () => {
+    const created = saveSetToNewTeam(createEmptyTeamBox(), swampert);
+    if (!created.ok) {
+      return;
+    }
+    const saved = saveSetToActiveTeam(created.box, marshtomp, "Sun");
+    expect(saved).toMatchObject({ ok: true, teamName: "Sun", slot: 2 });
+    if (!saved.ok) {
+      return;
+    }
+    expect(saved.box.teams[0]?.name).toBe("Sun");
+    expect(saved.box.teams[0]?.sets.map((set) => set.nickname)).toEqual(["Mud", "Puddle"]);
+    expect(saveSetToActiveTeam(saved.box, swampert, "   ")).toEqual({
+      ok: false,
+      message: "Enter a team name.",
+    });
   });
 
   it("explains an empty box, a full team, and an empty import", () => {

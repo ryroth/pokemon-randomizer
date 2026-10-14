@@ -107,10 +107,8 @@ export function DexEntryCycler({
       <p aria-live="polite" className={cn("text-sm leading-6", styles.text)}>
         {entry.text}
       </p>
-      <div role="group" aria-label="Jump to a generation" className="flex flex-wrap items-center gap-1">
-        <span aria-hidden="true" className={cn("pr-0.5 text-[11px] font-medium uppercase", styles.label)}>
-          Gen
-        </span>
+      <div role="group" aria-label="Pokédex entries by generation" className="flex flex-wrap items-center gap-1">
+        <span className={cn("pr-0.5 text-[11px] font-medium", styles.label)}>Pokédex</span>
         {generations.map((generation) => {
           const active = generation === entry.generation;
           return (
@@ -118,7 +116,7 @@ export function DexEntryCycler({
               key={generation}
               type="button"
               aria-pressed={active}
-              aria-label={`Generation ${generation} entry`}
+              aria-label={`Pokédex entry from generation ${generation}`}
               className={cn(
                 "inline-flex min-h-6 min-w-8 items-center justify-center rounded-full border px-2 font-mono text-[11px] font-semibold tabular-nums outline-none focus-visible:ring-3 focus-visible:ring-ring/60",
                 active ? styles.chipActive : styles.chip,

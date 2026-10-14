@@ -125,6 +125,8 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
     const megaVenusaur = byPokeApiSlug("venusaur-mega");
     expect(megaVenusaur.showdownName).toBe("Venusaur-Mega");
     expect(megaVenusaur.formType).toBe("mega");
+    expect(byId("meganium").formType).toBe("base");
+    expect(byId("yanmega").formType).toBe("base");
     expect(megaVenusaur.speciesId).toBe("venusaur");
     expect(megaVenusaur.generation).toBe(6);
   });

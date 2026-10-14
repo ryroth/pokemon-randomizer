@@ -29,7 +29,7 @@ export function TeamRoster({
   headingLevel?: 2 | 3;
   onClose?: () => void;
 }) {
-  const { box, ready, chooseTeam, moveWithinTeam } = useTeams();
+  const { box, ready, chooseTeam, moveWithinTeam, copyToTeam } = useTeams();
   const active = box.teams.find((team) => team.id === box.activeTeamId) ?? null;
   const lookup = useDockPokemon(active?.sets.map((set) => set.pokemonId) ?? []);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -82,10 +82,10 @@ export function TeamRoster({
           <Heading id={headingId} className="text-lg font-semibold">
             Team
           </Heading>
+          {active ? <p className="text-base font-semibold">{active.name}</p> : null}
           <p className="text-sm text-muted-foreground">
             {active ? (
               <>
-                {active.name} ·{" "}
                 <span className="font-mono tabular-nums">
                   {filled}/{TEAM_SIZE}
                 </span>{" "}
@@ -159,6 +159,16 @@ export function TeamRoster({
                 }}
                 onDragEnd={endDrag}
                 onMove={(toIndex) => move(active, index, toIndex)}
+                otherTeams={box.teams.filter((team) => team.id !== active.id)}
+                onCopyTo={(teamId) => {
+                  const result = copyToTeam(active.id, index, teamId);
+                  setFallbackText(null);
+                  setMessage(
+                    result.ok
+                      ? `Copied the Pokémon to ${result.teamName}, slot ${result.slot}.`
+                      : result.message,
+                  );
+                }}
               />
             );
           })}
@@ -209,6 +219,8 @@ function RosterSlot({
   onDrop,
   onDragEnd,
   onMove,
+  otherTeams = [],
+  onCopyTo,
 }: {
   index: number;
   set: SavedTeam["sets"][number] | null;
@@ -221,6 +233,8 @@ function RosterSlot({
   onDrop: () => void;
   onDragEnd: () => void;
   onMove: (toIndex: number) => void;
+  otherTeams?: readonly SavedTeam[];
+  onCopyTo?: (teamId: string) => void;
 }) {
   if (!set) {
     return (
@@ -290,6 +304,29 @@ function RosterSlot({
               <TypeBadge key={type} type={type} />
             ))}
           </div>
+        ) : null}
+        {otherTeams.length > 0 && onCopyTo ? (
+          <label className="mt-1 block text-xs font-medium text-muted-foreground">
+            Copy to
+            <select
+              className="mt-0.5 h-8 w-full rounded-lg border border-input bg-background px-1.5 text-xs text-foreground"
+              aria-label={`Copy ${name} to another team`}
+              value=""
+              onChange={(event) => {
+                const teamId = event.target.value;
+                if (teamId) {
+                  onCopyTo(teamId);
+                }
+              }}
+            >
+              <option value="">Choose a team</option>
+              {otherTeams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
+          </label>
         ) : null}
       </div>
       <div className="flex shrink-0 flex-col">
