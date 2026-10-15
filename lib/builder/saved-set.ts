@@ -1,3 +1,4 @@
+import { requiredFormItemId } from "@/lib/data/formItems";
 import type { PokemonSet, PokemonSetDraft, RandomizerSession } from "@/lib/types/session";
 import { MAX_MOVE_COUNT } from "@/lib/validation/moves";
 
@@ -8,13 +9,15 @@ export function openSavedSetInBuilder(
   teamId: string,
   index: number,
 ): RandomizerSession {
+  const requiredItemId = requiredFormItemId(set.pokemonId);
+  const source = requiredItemId ? { ...set, itemId: requiredItemId } : set;
   return {
     ...session,
     step: "builder",
     selectedPokemonId: set.pokemonId,
     evolvedPokemonId: set.pokemonId,
-    draft: draftFromPokemonSet(set),
-    finalizedSet: cloneSet(set),
+    draft: draftFromPokemonSet(source),
+    finalizedSet: cloneSet(source),
     editingTeamSlot: { teamId, index },
   };
 }

@@ -1,4 +1,5 @@
 import { evolutionChoiceAllowed, isValidBattlePokemonId } from "@/lib/data/evolution";
+import { requiredFormItemId } from "@/lib/data/formItems";
 import type { AbilityRandomizerResult } from "@/lib/randomizer/abilities";
 import {
   MOVES_ASSIGNED_PER_POKEMON,
@@ -113,7 +114,8 @@ export function selectRolledPokemon(
 
   if (
     assignsItemsBeforePokemon(session) &&
-    appliedItemIdForPokemon(session, pokemonId) === undefined
+    appliedItemIdForPokemon(session, pokemonId) === undefined &&
+    !requiredFormItemId(pokemonId)
   ) {
     return session;
   }
@@ -273,6 +275,13 @@ export function applyItemRoll(
   result: ItemRandomizerResult,
   forPokemonId?: string,
 ): RandomizerSession {
+  if (
+    !assignsItemsBeforePokemon(session) &&
+    requiredFormItemId(battlePokemonId(session))
+  ) {
+    return session;
+  }
+
   const itemOptions = result.items.map((item) => item.id);
 
   if (assignsItemsBeforePokemon(session)) {
@@ -302,6 +311,9 @@ export function selectRolledItem(
   session: RandomizerSession,
   itemId: string | null,
 ): RandomizerSession {
+  if (requiredFormItemId(battlePokemonId(session))) {
+    return session;
+  }
   if (assignsItemsBeforePokemon(session)) {
     return session;
   }
@@ -996,26 +1008,38 @@ function withItemState(
         ? previous.draft.itemId
         : appliedItemIdForPokemon(next, next.selectedPokemonId);
 
-    return {
+    return withRequiredFormItem({
       ...next,
       itemOptions: [...previous.itemOptions],
       draft: withDraftItem(next.draft, itemId),
-    };
+    });
   }
 
   const sameBattle = sameBattlePokemon(next, previous);
   if (!next.config.randomizeItems) {
-    return {
+    return withRequiredFormItem({
       ...next,
       itemOptions: [...previous.itemOptions],
       draft: withDraftItem(next.draft, sameBattle ? previous.draft.itemId : undefined),
-    };
+    });
   }
 
-  return {
+  return withRequiredFormItem({
     ...next,
     itemOptions: sameBattle ? previous.itemOptions : [],
     draft: withDraftItem(next.draft, sameBattle ? previous.draft.itemId : undefined),
+  });
+}
+
+/** Puts the form's required item on the draft. The same session comes back when it already holds it. */
+export function withRequiredFormItem(session: RandomizerSession): RandomizerSession {
+  const itemId = requiredFormItemId(battlePokemonId(session));
+  if (!itemId || session.draft.itemId === itemId) {
+    return session;
+  }
+  return {
+    ...session,
+    draft: withDraftItem(session.draft, itemId),
   };
 }
 

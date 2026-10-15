@@ -1,6 +1,7 @@
+import { requiredFormItemId } from "@/lib/data/formItems";
 import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/randomizer/applyExtras";
 import { enabledRandomizerSteps, isExtraBeforePokemon } from "@/lib/randomizer/flow";
-import { appliedMoveIdsForPokemon } from "@/lib/randomizer/session";
+import { appliedMoveIdsForPokemon, battlePokemonId } from "@/lib/randomizer/session";
 import type { RandomizerTab } from "@/lib/types/randomizer";
 import type { PokemonSet, RandomizerSession } from "@/lib/types/session";
 
@@ -51,7 +52,7 @@ export function recapEditAccess(session: RandomizerSession): RecapEditAccess {
   });
   return {
     ability: !abilityLockedByRandomizer(session),
-    item: !itemLockedByRandomizer(session),
+    item: !itemLockedByRandomizer(session) && !itemLockedByForm(session),
     moves,
   };
 }
@@ -60,9 +61,14 @@ export function recapEditAccess(session: RandomizerSession): RecapEditAccess {
 export function savedSetEditAccess(set: PokemonSet): RecapEditAccess {
   return {
     ability: true,
-    item: true,
+    item: !requiredFormItemId(set.pokemonId),
     moves: set.moveIds.map((_, index) => index),
   };
+}
+
+/** This form only exists while it holds one item, so the builder cannot swap that item. */
+export function itemLockedByForm(session: RandomizerSession): boolean {
+  return Boolean(requiredFormItemId(battlePokemonId(session)));
 }
 
 /** The item randomizer already chose this Pokémon's held item, including None. */

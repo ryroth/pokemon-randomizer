@@ -5,17 +5,20 @@ import type { Species } from "@pkmn/dex";
 import { loadGeneratedCatalog } from "../../lib/data/loadCatalog";
 
 /**
- * Level-up (L), TM/HM/TR (M), egg (E), tutor (T), and transfer (V). Event and Dream World sources
- * stay out. Each move is written as `moveId:CODES`, such as `surf:MT`, so the builder can filter
- * by how a move is learned.
+ * Level-up (L), TM/HM/TR (M), egg (E), tutor (T), transfer (V), and a move the form itself
+ * adds (R), such as Overheat on Rotom-Heat. Event and Dream World sources stay out. Each move
+ * is written as `moveId:CODES`, such as `surf:MT`, so the builder can filter by how it is learned.
  */
-const NATURAL_SOURCE = /[LEMTV]/g;
-const SOURCE_ORDER = "LMETV";
+const NATURAL_SOURCE = /[LEMTVR]/g;
+const SOURCE_ORDER = "LMETVR";
 
 /**
  * Writes each catalog form's in-game learnset.
- * A form with no learnset of its own uses its base form.
+ * Follows Pokémon Showdown's learnset chain: a form with no learnset of its own uses
+ * `changesFrom` or its base form, and a form whose learnset only adds a few moves
+ * (Rotom-Heat, Zacian-Crowned) keeps those and also inherits the form it changes from.
  * Earlier stages are included, because those moves can be learned before evolving.
+ * Kyurem's fused forms have their own complete learnsets and do not inherit Kyurem.
  */
 async function main() {
   const catalog = loadGeneratedCatalog();
@@ -45,38 +48,94 @@ function sortCodes(codes: ReadonlySet<string>): string {
 async function learnableMoves(speciesId: string): Promise<Map<string, Set<string>>> {
   const moves = new Map<string, Set<string>>();
   const seen = new Set<string>();
-  let species = Dex.species.getByID(speciesId as Species["id"]);
+  let species: Species | null = Dex.species.getByID(speciesId as Species["id"]);
   if (!species.exists) {
     return moves;
   }
 
-  while (species.exists && !seen.has(species.id)) {
+  while (species?.exists && !seen.has(species.id)) {
     seen.add(species.id);
-    const learnsetSpecies = await speciesWithLearnset(species);
-    const learnset = await Dex.learnsets.getByID(learnsetSpecies.id);
-    for (const [moveId, sources] of Object.entries(learnset.learnset ?? {})) {
-      const codes = sources.flatMap((source) => source.replace(/\d/g, "").match(NATURAL_SOURCE) ?? []);
-      if (codes.length > 0) {
-        const known = moves.get(moveId) ?? new Set<string>();
-        for (const code of codes) {
-          known.add(code);
-        }
-        moves.set(moveId, known);
+    const learnset = await Dex.learnsets.getByID(species.id);
+    if (learnset.learnset) {
+      addSources(moves, learnset.learnset);
+      species = await learnsetParent(species);
+      continue;
+    }
+
+    // A form with no learnset of its own uses the form it changes from, then its base form.
+    if ((species.changesFrom || species.baseSpecies) !== species.name) {
+      const next = Dex.species.get(species.changesFrom || species.baseSpecies);
+      species = next.exists ? next : null;
+      continue;
+    }
+
+    if (species.prevo) {
+      const prevo = Dex.species.get(species.prevo);
+      const prevoLearnset = prevo.exists ? await Dex.learnsets.getByID(prevo.id) : undefined;
+      if (prevo.exists && prevoLearnset?.learnset) {
+        species = prevo;
+        continue;
       }
     }
-    species = species.prevo ? Dex.species.get(species.prevo) : Dex.species.get("");
+
+    break;
   }
 
   return moves;
 }
 
-async function speciesWithLearnset(species: Species): Promise<Species> {
-  const own = await Dex.learnsets.getByID(species.id);
-  if (own.exists || species.baseSpecies === species.name) {
-    return species;
+/**
+ * The next species whose moves this one may also know. Mirrors Showdown's `learnsetParent`:
+ * an evolution walks to its previous stage, and a form that extends another form
+ * (Rotom-Heat, Necrozma-Dusk-Mane) walks to `changesFrom`. Kyurem-Black and Kyurem-White
+ * are the exception: their learnsets already replace Kyurem's.
+ */
+async function learnsetParent(species: Species): Promise<Species | null> {
+  const learnset = await Dex.learnsets.getByID(species.id);
+  if (!learnset.learnset && species.forme) {
+    const next = Dex.species.get(species.changesFrom || species.baseSpecies);
+    return next.exists ? next : null;
   }
-  const base = Dex.species.get(species.baseSpecies);
-  return base.exists ? base : species;
+  if (species.prevo) {
+    const prevo = Dex.species.get(species.prevo);
+    return prevo.exists ? prevo : null;
+  }
+  if (species.changesFrom && species.baseSpecies !== "Kyurem") {
+    const next = Dex.species.get(species.changesFrom);
+    return next.exists ? next : null;
+  }
+  if (!species.prevo && species.baseSpecies && species.baseSpecies !== species.name) {
+    let base = Dex.species.get(species.baseSpecies);
+    if (!base.exists || !base.prevo) {
+      return null;
+    }
+    while (base.prevo) {
+      const prevo = Dex.species.get(base.prevo);
+      if (!prevo.exists) {
+        break;
+      }
+      base = prevo;
+    }
+    return base.id === species.id ? null : base;
+  }
+  return null;
+}
+
+function addSources(
+  moves: Map<string, Set<string>>,
+  learnset: { [moveId: string]: readonly string[] },
+): void {
+  for (const [moveId, sources] of Object.entries(learnset)) {
+    const codes = sources.flatMap((source) => source.replace(/\d/g, "").match(NATURAL_SOURCE) ?? []);
+    if (codes.length === 0) {
+      continue;
+    }
+    const known = moves.get(moveId) ?? new Set<string>();
+    for (const code of codes) {
+      known.add(code);
+    }
+    moves.set(moveId, known);
+  }
 }
 
 main().catch((error: unknown) => {

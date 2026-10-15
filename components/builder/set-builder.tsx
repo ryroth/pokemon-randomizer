@@ -47,6 +47,7 @@ import { hiddenAbilityId } from "@/lib/builder/abilities";
 import { focusBuilderTarget } from "@/components/builder/focus-target";
 import {
   abilityLockedByRandomizer,
+  itemLockedByForm,
   itemLockedByRandomizer,
   moveSlotLockedByRandomizer,
   pendingRandomizerSteps,
@@ -149,7 +150,8 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
     id ? moves.find((move) => move.id === id) : undefined,
   );
   const abilityLocked = abilityLockedByRandomizer(session);
-  const itemLocked = itemLockedByRandomizer(session);
+  const formItemLock = itemLockedByForm(session);
+  const itemLocked = formItemLock || itemLockedByRandomizer(session);
   const chosenAbility = abilities.find((ability) => ability.id === session.draft.abilityId);
   const heldItem = items.find((item) => item.id === session.draft.itemId);
   const chosenNature = natures.find((entry) => entry.id === session.draft.natureId);
@@ -347,7 +349,9 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         <section id="item" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none">
           <h2 className="text-lg font-medium">Held item</h2>
           <p className="text-sm text-muted-foreground">
-            {itemLocked
+            {formItemLock
+              ? `${battlePokemon.displayName} holds ${heldItem?.name ?? "its form item"}. This form needs that item. Choose a different Pokémon in the randomizer to hold something else.`
+              : itemLocked
               ? "This held item was set by the item randomizer."
               : itemPending
                 ? "The item randomizer has not given this Pokémon an item yet."

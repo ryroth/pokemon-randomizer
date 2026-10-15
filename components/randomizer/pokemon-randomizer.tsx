@@ -30,6 +30,7 @@ import { openBuilder } from "@/lib/builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { faceIconImageCandidates, pokemonImage, pokemonImageCandidates } from "@/lib/art/pokemonImage";
 import { evolutionChoices } from "@/lib/data/evolution";
+import { requiredFormItemId } from "@/lib/data/formItems";
 import {
   applyAbilityRoll,
   applyAbilityToRolledPokemon,
@@ -174,6 +175,19 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const chosenBattlePokemonId = battlePokemonId(session);
   const chosenBattlePokemon = chosenBattlePokemonId
     ? pokemonById.get(chosenBattlePokemonId)
+    : undefined;
+  const requiredFormItemByPokemon = useMemo(() => {
+    const map: Record<string, Item> = {};
+    for (const form of pokemon) {
+      const item = itemsById.get(requiredFormItemId(form.id) ?? "");
+      if (item) {
+        map[form.id] = item;
+      }
+    }
+    return map;
+  }, [itemsById, pokemon]);
+  const requiredBattleItem = chosenBattlePokemon
+    ? requiredFormItemByPokemon[chosenBattlePokemon.id]
     : undefined;
   const rolledAbilities = session.abilityOptions.flatMap((id) => {
     const ability = abilitiesById.get(id);
@@ -585,6 +599,22 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
           {!itemBeforePokemon && chosenBattlePokemon ? (
             <BattlePokemonSummary pokemon={chosenBattlePokemon} />
           ) : null}
+          {!itemBeforePokemon && requiredBattleItem ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <h2 className="contents">Items</h2>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {chosenBattlePokemon?.displayName} holds {requiredBattleItem.name}. This form
+                  needs that item. Choose a different Pokémon to hold something else.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
           <Card>
             <CardHeader>
               <CardTitle>
@@ -609,6 +639,8 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             onSelect={(itemId) => setSession(selectRolledItem(session, itemId))}
             onReroll={handleRerollItem}
           />
+            </>
+          )}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <ContinueControl
               ready={itemContinueReady}
@@ -954,6 +986,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               movesPerPokemon={assignMovesBefore ? movesPerPokemon : undefined}
               appliedItemIds={assignItemsBefore ? appliedItemIds : undefined}
               itemChoicesByPokemon={assignItemsBefore ? itemChoicesByPokemon : undefined}
+              requiredFormItems={requiredFormItemByPokemon}
               unusedItems={assignItemsBefore ? unusedItems : undefined}
               showPokedexEntry={session.config.showPokedexEntry}
               generationNumber={generationNumber}
