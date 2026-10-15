@@ -48,6 +48,7 @@ Cursor should follow these rules on every change.
 - The tab icon is Ditto's official Pokémon HOME picture as a face icon (`app/icon.png`, made by `npm run import:ditto-icon`). When the user selects a Pokémon on `/randomizer` it turns into that Pokémon's official artwork (whole picture, not a head crop), then goes back to Ditto. Generating or rolling alone does not change it (`components/randomizer/ditto-favicon.tsx`, `lib/art/faceIcon.ts`, `lib/art/dittoMorph.ts`). It is built in the browser from still pictures only, so it is not an animated Pokémon sprite. Reduced motion keeps the still icon.
 - Use the word "forms", not "formes", in user-facing text. Call the Builder's EV recommendation a "suggested spread", not a guess.
 - Mega Evolutions are a first-class form type and are off by default. Dynamax is not a form. Gigantamax is a form and is off by default.
+- Do not generate costume Pikachu (Cosplay and every cap), Castform's Sunny, Rainy, and Snowy forms, Darmanitan Zen Mode, Galarian Darmanitan Zen Mode, Meloetta Pirouette, Wishiwashi School, Mimikyu Busted, Cramorant Gorging and Gulping, Eiscue Noice, Morpeko Hangry, Eternatus Eternamax, or Palafin Hero (`isGeneratablePokemon` in `lib/data/generatableForms.ts`). Leave them in the catalog. The base form is what a roll can return. Zen Mode, Relic Song, Hunger Switch, Zero to Hero, and the other battle abilities and moves still change that Pokémon during a battle. Vivillon rolls are Meadow, Fancy, and Poké Ball only.
 
 ## Testing and quality
 

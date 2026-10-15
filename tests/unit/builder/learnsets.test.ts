@@ -61,12 +61,17 @@ describe("learnsetMoveIds", () => {
     expect(learnsetMoveIds("pichuspikyeared").length).toBeGreaterThan(10);
   });
 
-  it("gives every form except Unown a learnset", () => {
+  it("gives every form a learnset, including Unown's Hidden Power", () => {
     const catalog = loadGeneratedCatalog();
     const empty = catalog.pokemon
       .filter((form) => learnsetMoveIds(form.id).length === 0)
       .map((form) => form.id);
-    expect(empty).toEqual(["unown"]);
+    expect(empty).toEqual([]);
+    expect(learnsetMoveIds("unown")).toContain("hiddenpower");
+    expect(learnsetMoveIds("unown")).toContain("hiddenpowerfire");
+    expect(learnsetMoveIds("pikachu")).toEqual(
+      expect.arrayContaining(["return", "frustration", "hiddenpower", "hiddenpowerbug"]),
+    );
   });
 });
 

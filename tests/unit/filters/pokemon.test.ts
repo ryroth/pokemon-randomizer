@@ -245,4 +245,22 @@ describe("matchesPokemonFilters", () => {
     expect(matchesPokemonFilters(megaCharizardX, DEFAULT_RANDOMIZER_CONFIG)).toBe(false);
     expect(matchesPokemonFilters(charizard, DEFAULT_RANDOMIZER_CONFIG)).toBe(true);
   });
+
+  it("rejects a mid-battle form even when every filter would allow it", () => {
+    const zen = makeForm({
+      id: "darmanitanzen",
+      formType: "other",
+      generation: 5,
+      types: ["fire", "psychic"],
+    });
+    const darmanitan = makeForm({
+      id: "darmanitan",
+      formType: "base",
+      generation: 5,
+      types: ["fire"],
+    });
+
+    expect(matchesPokemonFilters(zen, DEFAULT_RANDOMIZER_CONFIG)).toBe(false);
+    expect(matchesPokemonFilters(darmanitan, DEFAULT_RANDOMIZER_CONFIG)).toBe(true);
+  });
 });

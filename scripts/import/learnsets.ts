@@ -19,14 +19,25 @@ const SOURCE_ORDER = "LMETVR";
  * (Rotom-Heat, Zacian-Crowned) keeps those and also inherits the form it changes from.
  * Earlier stages are included, because those moves can be learned before evolving.
  * Kyurem's fused forms have their own complete learnsets and do not inherit Kyurem.
+ * A Pokémon that learns Hidden Power also learns each Hidden Power type, which Showdown stores
+ * as a separate entry with the same move id.
  */
 async function main() {
   const catalog = loadGeneratedCatalog();
   const standardMoves = new Set(catalog.moves.map((move) => move.id));
+  const hiddenPowerTypeIds = catalog.moves
+    .filter((move) => move.id.startsWith("hiddenpower") && move.id !== "hiddenpower")
+    .map((move) => move.id);
   const learnsets: Record<string, string[]> = {};
 
   for (const form of catalog.pokemon) {
     const moves = await learnableMoves(form.id);
+    const hiddenPower = moves.get("hiddenpower");
+    if (hiddenPower) {
+      for (const id of hiddenPowerTypeIds) {
+        moves.set(id, new Set(hiddenPower));
+      }
+    }
     learnsets[form.id] = [...moves]
       .filter(([id]) => standardMoves.has(id))
       .map(([id, codes]) => `${id}:${sortCodes(codes)}`)

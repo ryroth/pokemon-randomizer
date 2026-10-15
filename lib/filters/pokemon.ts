@@ -1,3 +1,4 @@
+import { isGeneratablePokemon } from "@/lib/data/generatableForms";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { PokemonType } from "@/lib/types/pokemon-type";
 import type { RandomizerConfig } from "@/lib/types/randomizer";
@@ -36,7 +37,9 @@ interface PokemonFilterContext {
 /**
  * Returns the Pokémon forms that match generation, type, form type,
  * evolution stage, and special-classification filters. Empty generation,
- * type, form-type, or evolution-stage lists match nothing.
+ * type, form-type, or evolution-stage lists match nothing. Costume Pikachu,
+ * Castform's weather forms, and mid-battle forms are never included
+ * (`isGeneratablePokemon`).
  *
  * Type OR: the form has at least one selected type.
  * Type AND: the form has every selected type.
@@ -74,6 +77,10 @@ function createFilterContext(config: PokemonFilterConfig): PokemonFilterContext 
 }
 
 function matchesContext(form: PokemonForm, context: PokemonFilterContext): boolean {
+  if (!isGeneratablePokemon(form)) {
+    return false;
+  }
+
   if (context.generations.size === 0 || !context.generations.has(form.generation)) {
     return false;
   }

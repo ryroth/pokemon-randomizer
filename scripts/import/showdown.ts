@@ -38,15 +38,15 @@ export function isCatalogAbility(ability: Ability): boolean {
 }
 
 /**
- * Showdown marks a move "Past" when it cannot be used in the current generation's games
- * (for example Spider Web, which was removed in Generation VIII). Those moves are not selectable in battle,
- * so they stay out of the catalog.
+ * Z-Moves, Max moves, and CAP / Custom / Future / Let's Go moves stay out.
+ * Moves Showdown marks "Past" (removed from the current games, such as Return or Hidden Power)
+ * stay in, so the randomizer, All Moves, and each Pokémon's moveset can still offer them.
  */
 export function isCatalogMove(move: Move): boolean {
   if (!move.exists || move.num <= 0 || move.isZ || move.isMax) {
     return false;
   }
-  return !isExcludedNonstandard(move.isNonstandard) && move.isNonstandard !== "Past";
+  return !isExcludedNonstandard(move.isNonstandard);
 }
 
 export function isCatalogItem(item: Item): boolean {

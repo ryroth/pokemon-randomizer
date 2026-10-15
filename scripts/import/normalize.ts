@@ -138,7 +138,7 @@ export function buildCatalog(
   }
 
   const catalog: Catalog = {
-    version: "2.4.0",
+    version: "2.5.0",
     generatedAt: new Date().toISOString(),
     pokemon: sortById(applyEvolutionTargetsToPokemon(pokemon, sources.species)),
     species: sortById([...speciesById.values()]),
@@ -462,14 +462,16 @@ function buildAbility(ability: ShowdownAbility, snapshot: PokeApiSnapshot): Abil
 }
 
 function buildMove(move: ShowdownMove, snapshot: PokeApiSnapshot): Move | null {
-  const poke = snapshot.movesByName.get(move.id);
+  // Hidden Power Fire and the other type entries share Hidden Power's id. Each one is its own move.
+  const typeVariant = Boolean(move.realMove);
+  const poke = typeVariant ? undefined : snapshot.movesByName.get(move.id);
   const type = parsePokemonType(poke?.type?.name ?? move.type);
   const category = parseMoveCategory(poke?.damage_class?.name ?? move.category);
   if (!type || !category) {
     return null;
   }
   return {
-    id: move.id,
+    id: typeVariant ? toShowdownId(move.name) : move.id,
     pokeApiSlug: poke?.name ?? toPokeApiKebab(move.name),
     name: poke ? englishName(poke.names, move.name) : move.name,
     showdownName: move.name,

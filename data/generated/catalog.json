@@ -1,6 +1,6 @@
 {
-  "version": "2.4.0",
-  "generatedAt": "2026-10-12T14:17:39.338Z",
+  "version": "2.5.0",
+  "generatedAt": "2026-10-15T23:17:24.288Z",
   "pokemon": [
     {
       "id": "abomasnow",
@@ -7591,7 +7591,9 @@
         "spe": 60
       },
       "genderRule": "mixed",
-      "evolutionTargetIds": []
+      "evolutionTargetIds": [
+        "meganium"
+      ]
     },
     {
       "id": "beartic",
@@ -15429,7 +15431,8 @@
       },
       "genderRule": "mixed",
       "evolutionTargetIds": [
-        "bayleef"
+        "bayleef",
+        "meganium"
       ]
     },
     {
@@ -57801,7 +57804,7 @@
       ],
       "speciesId": "meganium",
       "form": "base",
-      "formType": "mega",
+      "formType": "base",
       "evolutionStage": "stage2",
       "isBasic": false,
       "isStage1": false,
@@ -109802,7 +109805,9 @@
         "spe": 95
       },
       "genderRule": "mixed",
-      "evolutionTargetIds": []
+      "evolutionTargetIds": [
+        "yanmega"
+      ]
     },
     {
       "id": "yanmega",
@@ -109824,7 +109829,7 @@
       ],
       "speciesId": "yanmega",
       "form": "base",
-      "formType": "mega",
+      "formType": "base",
       "evolutionStage": "stage1",
       "isBasic": false,
       "isStage1": true,
@@ -127528,6 +127533,18 @@
       "description": "Raises the user's Sp. Def by 2."
     },
     {
+      "id": "anchorshot",
+      "pokeApiSlug": "anchor-shot",
+      "name": "Anchor Shot",
+      "showdownName": "Anchor Shot",
+      "type": "steel",
+      "category": "physical",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Traps the target."
+    },
+    {
       "id": "ancientpower",
       "pokeApiSlug": "ancient-power",
       "name": "Ancient Power",
@@ -127636,6 +127653,18 @@
       "description": "Hits 2-5 times in one turn."
     },
     {
+      "id": "aromatherapy",
+      "pokeApiSlug": "aromatherapy",
+      "name": "Aromatherapy",
+      "showdownName": "Aromatherapy",
+      "type": "grass",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Cures the entire party of major status effects."
+    },
+    {
       "id": "aromaticmist",
       "pokeApiSlug": "aromatic-mist",
       "name": "Aromatic Mist",
@@ -127646,6 +127675,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Raises an ally's Sp. Def by 1."
+    },
+    {
+      "id": "assist",
+      "pokeApiSlug": "assist",
+      "name": "Assist",
+      "showdownName": "Assist",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Randomly selects and uses one of the trainer’s other Pokémon’s moves."
     },
     {
       "id": "assurance",
@@ -127756,6 +127797,18 @@
       "description": "Places the Aurora Veil effect on the user’s side of the field for the next 5 turns. If the weather is not Hail, or the weather is disabled by the effects of Cloud Nine or Air Lock, this move will fail. Any regular damage dealt to an affected Pokémon is reduced by ½. (If there are multiple Pokémon on the affected field, the reduction is ⅓.)"
     },
     {
+      "id": "autotomize",
+      "pokeApiSlug": "autotomize",
+      "name": "Autotomize",
+      "showdownName": "Autotomize",
+      "type": "steel",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Raises the user's Speed by 2; user loses 100 kg."
+    },
+    {
       "id": "avalanche",
       "pokeApiSlug": "avalanche",
       "name": "Avalanche",
@@ -127814,6 +127867,30 @@
       "accuracy": 100,
       "pp": 10,
       "description": "50% psn. 2x power if target already poisoned."
+    },
+    {
+      "id": "barrage",
+      "pokeApiSlug": "barrage",
+      "name": "Barrage",
+      "showdownName": "Barrage",
+      "type": "normal",
+      "category": "physical",
+      "power": 15,
+      "accuracy": 85,
+      "pp": 20,
+      "description": "Hits 2-5 times in one turn."
+    },
+    {
+      "id": "barrier",
+      "pokeApiSlug": "barrier",
+      "name": "Barrier",
+      "showdownName": "Barrier",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Raises the user's Defense by 2."
     },
     {
       "id": "batonpass",
@@ -127898,6 +127975,30 @@
       "accuracy": 100,
       "pp": 10,
       "description": "User pays half its max HP to raise its Attack to +6 stages. If the user cannot pay the HP cost, this move will fail."
+    },
+    {
+      "id": "bestow",
+      "pokeApiSlug": "bestow",
+      "name": "Bestow",
+      "showdownName": "Bestow",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Gives the user’s held item to the target."
+    },
+    {
+      "id": "bide",
+      "pokeApiSlug": "bide",
+      "name": "Bide",
+      "showdownName": "Bide",
+      "type": "normal",
+      "category": "physical",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Waits 2 turns; deals double the damage taken."
     },
     {
       "id": "bind",
@@ -128068,6 +128169,18 @@
       "description": "30% chance to paralyze the target."
     },
     {
+      "id": "boltbeak",
+      "pokeApiSlug": "bolt-beak",
+      "name": "Bolt Beak",
+      "showdownName": "Bolt Beak",
+      "type": "electric",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Power doubles if the user moves before the target."
+    },
+    {
       "id": "boltstrike",
       "pokeApiSlug": "bolt-strike",
       "name": "Bolt Strike",
@@ -128078,6 +128191,30 @@
       "accuracy": 85,
       "pp": 5,
       "description": "20% chance to paralyze the target."
+    },
+    {
+      "id": "boneclub",
+      "pokeApiSlug": "bone-club",
+      "name": "Bone Club",
+      "showdownName": "Bone Club",
+      "type": "ground",
+      "category": "physical",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 20,
+      "description": "10% chance to make the target flinch."
+    },
+    {
+      "id": "bonemerang",
+      "pokeApiSlug": "bonemerang",
+      "name": "Bonemerang",
+      "showdownName": "Bonemerang",
+      "type": "ground",
+      "category": "physical",
+      "power": 50,
+      "accuracy": 90,
+      "pp": 10,
+      "description": "Hits 2 times in one turn."
     },
     {
       "id": "bonerush",
@@ -128186,6 +128323,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Inflicts regular damage with no additional effect."
+    },
+    {
+      "id": "bubble",
+      "pokeApiSlug": "bubble",
+      "name": "Bubble",
+      "showdownName": "Bubble",
+      "type": "water",
+      "category": "special",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 30,
+      "description": "10% chance to lower the foe(s) Speed by 1."
     },
     {
       "id": "bubblebeam",
@@ -128320,6 +128469,30 @@
       "description": "Raises the user's Sp. Atk and Sp. Def by 1."
     },
     {
+      "id": "camouflage",
+      "pokeApiSlug": "camouflage",
+      "name": "Camouflage",
+      "showdownName": "Camouflage",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "User’s type changes to match the terrain."
+    },
+    {
+      "id": "captivate",
+      "pokeApiSlug": "captivate",
+      "name": "Captivate",
+      "showdownName": "Captivate",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Lowers the foe(s) Sp. Atk by 2 if opposite gender."
+    },
+    {
       "id": "ceaselessedge",
       "pokeApiSlug": "ceaseless-edge",
       "name": "Ceaseless Edge",
@@ -128380,6 +128553,18 @@
       "description": "Lowers the target's Attack by 2."
     },
     {
+      "id": "chatter",
+      "pokeApiSlug": "chatter",
+      "name": "Chatter",
+      "showdownName": "Chatter",
+      "type": "flying",
+      "category": "special",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Inflicts regular damage. Has either a 1%, 11%, or 31% chance to confuse the target, based on the volume of the recording made for this move; louder recordings increase the chance of confusion. If the user is not a Chatot, this move will not cause confusion. This move cannot be copied by Mimic, Mirror Move, or Sketch, nor selected by Assist, Metronome, or Sleep Talk."
+    },
+    {
       "id": "chillingwater",
       "pokeApiSlug": "chilling-water",
       "name": "Chilling Water",
@@ -128404,6 +128589,18 @@
       "description": "For 5 turns, the weather becomes Snow. The user switches out even if it is trapped and is replaced immediately by a selected party member. The user does not switch out if there are no unfainted party members."
     },
     {
+      "id": "chipaway",
+      "pokeApiSlug": "chip-away",
+      "name": "Chip Away",
+      "showdownName": "Chip Away",
+      "type": "normal",
+      "category": "physical",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Ignores the target’s stat modifiers."
+    },
+    {
       "id": "chloroblast",
       "pokeApiSlug": "chloroblast",
       "name": "Chloroblast",
@@ -128426,6 +128623,18 @@
       "accuracy": 90,
       "pp": 10,
       "description": "Ends wild battles. Forces trainers to switch Pokémon."
+    },
+    {
+      "id": "clamp",
+      "pokeApiSlug": "clamp",
+      "name": "Clamp",
+      "showdownName": "Clamp",
+      "type": "water",
+      "category": "physical",
+      "power": 35,
+      "accuracy": 85,
+      "pp": 15,
+      "description": "Prevents the target from fleeing and inflicts damage for 2-5 turns."
     },
     {
       "id": "clangingscales",
@@ -128524,6 +128733,18 @@
       "description": "30% chance to paralyze the target."
     },
     {
+      "id": "cometpunch",
+      "pokeApiSlug": "comet-punch",
+      "name": "Comet Punch",
+      "showdownName": "Comet Punch",
+      "type": "normal",
+      "category": "physical",
+      "power": 18,
+      "accuracy": 85,
+      "pp": 15,
+      "description": "Hits 2-5 times in one turn."
+    },
+    {
       "id": "comeuppance",
       "pokeApiSlug": "comeuppance",
       "name": "Comeuppance",
@@ -128572,6 +128793,18 @@
       "description": "10% chance to confuse the target."
     },
     {
+      "id": "constrict",
+      "pokeApiSlug": "constrict",
+      "name": "Constrict",
+      "showdownName": "Constrict",
+      "type": "normal",
+      "category": "physical",
+      "power": 10,
+      "accuracy": 100,
+      "pp": 35,
+      "description": "10% chance to lower the target's Speed by 1."
+    },
+    {
       "id": "conversion",
       "pokeApiSlug": "conversion",
       "name": "Conversion",
@@ -128606,6 +128839,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Uses the target’s last used move."
+    },
+    {
+      "id": "coreenforcer",
+      "pokeApiSlug": "core-enforcer",
+      "name": "Core Enforcer",
+      "showdownName": "Core Enforcer",
+      "type": "dragon",
+      "category": "special",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Nullifies the target’s ability if it moves earlier."
     },
     {
       "id": "corrosivegas",
@@ -128702,6 +128947,18 @@
       "accuracy": 90,
       "pp": 10,
       "description": "Has an increased chance for a critical hit."
+    },
+    {
+      "id": "craftyshield",
+      "pokeApiSlug": "crafty-shield",
+      "name": "Crafty Shield",
+      "showdownName": "Crafty Shield",
+      "type": "fairy",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Protects all friendly Pokémon from non-damaging moves."
     },
     {
       "id": "crosschop",
@@ -128992,6 +129249,18 @@
       "description": "Dives underwater turn 1, strikes turn 2."
     },
     {
+      "id": "dizzypunch",
+      "pokeApiSlug": "dizzy-punch",
+      "name": "Dizzy Punch",
+      "showdownName": "Dizzy Punch",
+      "type": "normal",
+      "category": "physical",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "20% chance to confuse the target."
+    },
+    {
       "id": "doodle",
       "pokeApiSlug": "doodle",
       "name": "Doodle",
@@ -129040,6 +129309,18 @@
       "description": "Hits 2 times in one turn."
     },
     {
+      "id": "doubleironbash",
+      "pokeApiSlug": "double-iron-bash",
+      "name": "Double Iron Bash",
+      "showdownName": "Double Iron Bash",
+      "type": "steel",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Hits twice. 30% chance to make the target flinch."
+    },
+    {
       "id": "doublekick",
       "pokeApiSlug": "double-kick",
       "name": "Double Kick",
@@ -129062,6 +129343,18 @@
       "accuracy": 100,
       "pp": 5,
       "description": "The user discharges all the electricity from its body to perform a high-damage attack. After using this move, the user will no longer be Electric type."
+    },
+    {
+      "id": "doubleslap",
+      "pokeApiSlug": "double-slap",
+      "name": "Double Slap",
+      "showdownName": "Double Slap",
+      "type": "normal",
+      "category": "physical",
+      "power": 15,
+      "accuracy": 85,
+      "pp": 10,
+      "description": "Hits 2-5 times in one turn."
     },
     {
       "id": "doubleteam",
@@ -129196,6 +129489,18 @@
       "description": "Inflicts regular damage with no additional effect."
     },
     {
+      "id": "dragonrage",
+      "pokeApiSlug": "dragon-rage",
+      "name": "Dragon Rage",
+      "showdownName": "Dragon Rage",
+      "type": "dragon",
+      "category": "special",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Inflicts 40 points of damage."
+    },
+    {
       "id": "dragonrush",
       "pokeApiSlug": "dragon-rush",
       "name": "Dragon Rush",
@@ -129290,6 +129595,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "100% chance to lower the target's Speed by 1."
+    },
+    {
+      "id": "dualchop",
+      "pokeApiSlug": "dual-chop",
+      "name": "Dual Chop",
+      "showdownName": "Dual Chop",
+      "type": "dragon",
+      "category": "physical",
+      "power": 40,
+      "accuracy": 90,
+      "pp": 15,
+      "description": "Hits 2 times in one turn."
     },
     {
       "id": "dualwingbeat",
@@ -129388,6 +129705,18 @@
       "description": "The target loses 3 PP from the last move it used."
     },
     {
+      "id": "eggbomb",
+      "pokeApiSlug": "egg-bomb",
+      "name": "Egg Bomb",
+      "showdownName": "Egg Bomb",
+      "type": "normal",
+      "category": "physical",
+      "power": 100,
+      "accuracy": 75,
+      "pp": 10,
+      "description": "Inflicts regular damage with no additional effect."
+    },
+    {
       "id": "electricterrain",
       "pokeApiSlug": "electric-terrain",
       "name": "Electric Terrain",
@@ -129398,6 +129727,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "For five turns, prevents all Pokémon on the ground from sleeping and strengthens their Electric moves to 1.5× their power."
+    },
+    {
+      "id": "electrify",
+      "pokeApiSlug": "electrify",
+      "name": "Electrify",
+      "showdownName": "Electrify",
+      "type": "electric",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Changes the target’s move’s type to Electric if it hasn’t moved yet this turn."
     },
     {
       "id": "electroball",
@@ -129446,6 +129787,18 @@
       "accuracy": 95,
       "pp": 15,
       "description": "100% chance to lower the foe(s) Speed by 1."
+    },
+    {
+      "id": "embargo",
+      "pokeApiSlug": "embargo",
+      "name": "Embargo",
+      "showdownName": "Embargo",
+      "type": "dark",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "For 5 turns, the target's item has no effect."
     },
     {
       "id": "ember",
@@ -129542,6 +129895,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "100% chance to raise user Speed by 1. High crit."
+    },
+    {
+      "id": "eternabeam",
+      "pokeApiSlug": "eternabeam",
+      "name": "Eternabeam",
+      "showdownName": "Eternabeam",
+      "type": "dragon",
+      "category": "special",
+      "power": 160,
+      "accuracy": 90,
+      "pp": 5,
+      "description": "User foregoes its next turn to recharge."
     },
     {
       "id": "expandingforce",
@@ -129700,6 +130065,18 @@
       "description": "Hits through Protect and Detect."
     },
     {
+      "id": "feintattack",
+      "pokeApiSlug": "feint-attack",
+      "name": "Feint Attack",
+      "showdownName": "Feint Attack",
+      "type": "dark",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Never misses."
+    },
+    {
       "id": "fellstinger",
       "pokeApiSlug": "fell-stinger",
       "name": "Fell Stinger",
@@ -129856,6 +130233,18 @@
       "description": "Can only be used as the first move after the user enters battle."
     },
     {
+      "id": "fishiousrend",
+      "pokeApiSlug": "fishious-rend",
+      "name": "Fishious Rend",
+      "showdownName": "Fishious Rend",
+      "type": "water",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Power doubles if the user moves before the target."
+    },
+    {
       "id": "fissure",
       "pokeApiSlug": "fissure",
       "name": "Fissure",
@@ -129878,6 +130267,18 @@
       "accuracy": 100,
       "pp": 15,
       "description": "Inflicts more damage when the user has less HP remaining, with a maximum of 200 power."
+    },
+    {
+      "id": "flameburst",
+      "pokeApiSlug": "flame-burst",
+      "name": "Flame Burst",
+      "showdownName": "Flame Burst",
+      "type": "fire",
+      "category": "special",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Inflicts regular damage. If this move successfully hits the target, any Pokémon adjacent to the target are damaged for 1/16 their max HP."
     },
     {
       "id": "flamecharge",
@@ -129926,6 +130327,18 @@
       "accuracy": 100,
       "pp": 15,
       "description": "User takes 1/3 the damage inflicted in recoil. Has a chance to burn the target."
+    },
+    {
+      "id": "flash",
+      "pokeApiSlug": "flash",
+      "name": "Flash",
+      "showdownName": "Flash",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Lowers the target's accuracy by 1."
     },
     {
       "id": "flashcannon",
@@ -129998,6 +130411,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Heals the target by 50% of its max HP."
+    },
+    {
+      "id": "flowershield",
+      "pokeApiSlug": "flower-shield",
+      "name": "Flower Shield",
+      "showdownName": "Flower Shield",
+      "type": "fairy",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Raises Defense by 1 of all active Grass types."
     },
     {
       "id": "flowertrick",
@@ -130096,6 +130521,18 @@
       "description": "30% chance to paralyze the target."
     },
     {
+      "id": "foresight",
+      "pokeApiSlug": "foresight",
+      "name": "Foresight",
+      "showdownName": "Foresight",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 40,
+      "description": "As long as the target remains active, its evasiveness stat stage is ignored during accuracy checks against it if it is greater than 0, and Normal- and Fighting-type attacks can hit the target if it is a Ghost type. Fails if the target is already affected, or affected by Miracle Eye or Odor Sleuth."
+    },
+    {
       "id": "forestscurse",
       "pokeApiSlug": "forests-curse",
       "name": "Forest’s Curse",
@@ -130180,6 +130617,18 @@
       "description": "Always scores a critical hit."
     },
     {
+      "id": "frustration",
+      "pokeApiSlug": "frustration",
+      "name": "Frustration",
+      "showdownName": "Frustration",
+      "type": "normal",
+      "category": "physical",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Power increases as happiness decreases, up to a maximum of 102."
+    },
+    {
       "id": "furyattack",
       "pokeApiSlug": "fury-attack",
       "name": "Fury Attack",
@@ -130262,6 +130711,42 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Nullifies target’s ability until it leaves battle."
+    },
+    {
+      "id": "geargrind",
+      "pokeApiSlug": "gear-grind",
+      "name": "Gear Grind",
+      "showdownName": "Gear Grind",
+      "type": "steel",
+      "category": "physical",
+      "power": 50,
+      "accuracy": 85,
+      "pp": 15,
+      "description": "Hits 2 times in one turn."
+    },
+    {
+      "id": "gearup",
+      "pokeApiSlug": "gear-up",
+      "name": "Gear Up",
+      "showdownName": "Gear Up",
+      "type": "steel",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Raises Atk, Sp. Atk of allies with Plus/Minus by 1."
+    },
+    {
+      "id": "geomancy",
+      "pokeApiSlug": "geomancy",
+      "name": "Geomancy",
+      "showdownName": "Geomancy",
+      "type": "fairy",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Charges, then raises SpA, SpD, Spe by 2 turn 2."
     },
     {
       "id": "gigadrain",
@@ -130372,6 +130857,18 @@
       "description": "With Fire Pledge, damages opposing Pokémon for 1/8 their max HP every turn for four turns."
     },
     {
+      "id": "grasswhistle",
+      "pokeApiSlug": "grass-whistle",
+      "name": "Grass Whistle",
+      "showdownName": "Grass Whistle",
+      "type": "grass",
+      "category": "status",
+      "power": null,
+      "accuracy": 55,
+      "pp": 15,
+      "description": "Puts the target to sleep."
+    },
+    {
       "id": "grassyglide",
       "pokeApiSlug": "grassy-glide",
       "name": "Grassy Glide",
@@ -130442,6 +130939,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Raises user's Attack and Sp. Atk by 1; 2 in Sun."
+    },
+    {
+      "id": "grudge",
+      "pokeApiSlug": "grudge",
+      "name": "Grudge",
+      "showdownName": "Grudge",
+      "type": "ghost",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "If the user faints this turn, the PP of the move that fainted it drops to 0."
     },
     {
       "id": "guardsplit",
@@ -130516,6 +131025,18 @@
       "description": "Power raises when the user has lower Speed, up to a maximum of 150."
     },
     {
+      "id": "hail",
+      "pokeApiSlug": "hail",
+      "name": "Hail",
+      "showdownName": "Hail",
+      "type": "ice",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "For 5 turns, hail crashes down."
+    },
+    {
       "id": "hammerarm",
       "pokeApiSlug": "hammer-arm",
       "name": "Hammer Arm",
@@ -130588,6 +131109,18 @@
       "description": "30% chance to make the target flinch."
     },
     {
+      "id": "headcharge",
+      "pokeApiSlug": "head-charge",
+      "name": "Head Charge",
+      "showdownName": "Head Charge",
+      "type": "normal",
+      "category": "physical",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "User receives 1/4 the damage it inflicts in recoil."
+    },
+    {
       "id": "headlongrush",
       "pokeApiSlug": "headlong-rush",
       "name": "Headlong Rush",
@@ -130624,6 +131157,18 @@
       "description": "Cures the entire party of major status effects."
     },
     {
+      "id": "healblock",
+      "pokeApiSlug": "heal-block",
+      "name": "Heal Block",
+      "showdownName": "Heal Block",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "For 5 turns, the foe(s) is prevented from healing."
+    },
+    {
       "id": "healingwish",
       "pokeApiSlug": "healing-wish",
       "name": "Healing Wish",
@@ -130636,6 +131181,18 @@
       "description": "User faints. Its replacement has its HP fully restored and any major status effect removed."
     },
     {
+      "id": "healorder",
+      "pokeApiSlug": "heal-order",
+      "name": "Heal Order",
+      "showdownName": "Heal Order",
+      "type": "bug",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Heals the user by 50% of its max HP."
+    },
+    {
       "id": "healpulse",
       "pokeApiSlug": "heal-pulse",
       "name": "Heal Pulse",
@@ -130646,6 +131203,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Heals the target by 50% of its max HP."
+    },
+    {
+      "id": "heartstamp",
+      "pokeApiSlug": "heart-stamp",
+      "name": "Heart Stamp",
+      "showdownName": "Heart Stamp",
+      "type": "psychic",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "description": "30% chance to make the target flinch."
     },
     {
       "id": "heartswap",
@@ -130718,6 +131287,210 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Has double power if the target has a major status ailment."
+    },
+    {
+      "id": "hiddenpower",
+      "pokeApiSlug": "hidden-power",
+      "name": "Hidden Power",
+      "showdownName": "Hidden Power",
+      "type": "normal",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Power and type depend upon user’s IVs. Power can range from 30 to 70."
+    },
+    {
+      "id": "hiddenpowerbug",
+      "pokeApiSlug": "hidden-power-bug",
+      "name": "Hidden Power Bug",
+      "showdownName": "Hidden Power Bug",
+      "type": "bug",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerdark",
+      "pokeApiSlug": "hidden-power-dark",
+      "name": "Hidden Power Dark",
+      "showdownName": "Hidden Power Dark",
+      "type": "dark",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerdragon",
+      "pokeApiSlug": "hidden-power-dragon",
+      "name": "Hidden Power Dragon",
+      "showdownName": "Hidden Power Dragon",
+      "type": "dragon",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerelectric",
+      "pokeApiSlug": "hidden-power-electric",
+      "name": "Hidden Power Electric",
+      "showdownName": "Hidden Power Electric",
+      "type": "electric",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerfighting",
+      "pokeApiSlug": "hidden-power-fighting",
+      "name": "Hidden Power Fighting",
+      "showdownName": "Hidden Power Fighting",
+      "type": "fighting",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerfire",
+      "pokeApiSlug": "hidden-power-fire",
+      "name": "Hidden Power Fire",
+      "showdownName": "Hidden Power Fire",
+      "type": "fire",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerflying",
+      "pokeApiSlug": "hidden-power-flying",
+      "name": "Hidden Power Flying",
+      "showdownName": "Hidden Power Flying",
+      "type": "flying",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerghost",
+      "pokeApiSlug": "hidden-power-ghost",
+      "name": "Hidden Power Ghost",
+      "showdownName": "Hidden Power Ghost",
+      "type": "ghost",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowergrass",
+      "pokeApiSlug": "hidden-power-grass",
+      "name": "Hidden Power Grass",
+      "showdownName": "Hidden Power Grass",
+      "type": "grass",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerground",
+      "pokeApiSlug": "hidden-power-ground",
+      "name": "Hidden Power Ground",
+      "showdownName": "Hidden Power Ground",
+      "type": "ground",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerice",
+      "pokeApiSlug": "hidden-power-ice",
+      "name": "Hidden Power Ice",
+      "showdownName": "Hidden Power Ice",
+      "type": "ice",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerpoison",
+      "pokeApiSlug": "hidden-power-poison",
+      "name": "Hidden Power Poison",
+      "showdownName": "Hidden Power Poison",
+      "type": "poison",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerpsychic",
+      "pokeApiSlug": "hidden-power-psychic",
+      "name": "Hidden Power Psychic",
+      "showdownName": "Hidden Power Psychic",
+      "type": "psychic",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerrock",
+      "pokeApiSlug": "hidden-power-rock",
+      "name": "Hidden Power Rock",
+      "showdownName": "Hidden Power Rock",
+      "type": "rock",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowersteel",
+      "pokeApiSlug": "hidden-power-steel",
+      "name": "Hidden Power Steel",
+      "showdownName": "Hidden Power Steel",
+      "type": "steel",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
+    },
+    {
+      "id": "hiddenpowerwater",
+      "pokeApiSlug": "hidden-power-water",
+      "name": "Hidden Power Water",
+      "showdownName": "Hidden Power Water",
+      "type": "water",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": ""
     },
     {
       "id": "highhorsepower",
@@ -130900,6 +131673,18 @@
       "description": "The user spins the pointed part of its body at high speed to pierce the target. This attack can hit a target using a move such as Protect or Detect."
     },
     {
+      "id": "hyperfang",
+      "pokeApiSlug": "hyper-fang",
+      "name": "Hyper Fang",
+      "showdownName": "Hyper Fang",
+      "type": "normal",
+      "category": "physical",
+      "power": 80,
+      "accuracy": 90,
+      "pp": 15,
+      "description": "10% chance to make the target flinch."
+    },
+    {
       "id": "hyperspacefury",
       "pokeApiSlug": "hyperspace-fury",
       "name": "Hyperspace Fury",
@@ -130946,6 +131731,18 @@
       "accuracy": 60,
       "pp": 20,
       "description": "Puts the target to sleep."
+    },
+    {
+      "id": "iceball",
+      "pokeApiSlug": "ice-ball",
+      "name": "Ice Ball",
+      "showdownName": "Ice Ball",
+      "type": "ice",
+      "category": "physical",
+      "power": 30,
+      "accuracy": 90,
+      "pp": 20,
+      "description": "Inflicts regular damage. User is forced to use this move for five turns. Power doubles every time this move is used in succession to a maximum of 16x, and resets to normal after the lock-in ends. If this move misses or becomes unusable, the lock-in ends. If the user has used Defense Curl since entering the field, this move has double power."
     },
     {
       "id": "icebeam",
@@ -131152,6 +131949,18 @@
       "description": "Forces the target to repeat its last used move."
     },
     {
+      "id": "iondeluge",
+      "pokeApiSlug": "ion-deluge",
+      "name": "Ion Deluge",
+      "showdownName": "Ion Deluge",
+      "type": "electric",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 25,
+      "description": "Changes all Normal moves to Electric moves for the rest of the turn."
+    },
+    {
       "id": "irondefense",
       "pokeApiSlug": "iron-defense",
       "name": "Iron Defense",
@@ -131236,6 +132045,18 @@
       "description": "If the user is holding a appropriate plate or drive, the damage inflicted will match it."
     },
     {
+      "id": "jumpkick",
+      "pokeApiSlug": "jump-kick",
+      "name": "Jump Kick",
+      "showdownName": "Jump Kick",
+      "type": "fighting",
+      "category": "physical",
+      "power": 100,
+      "accuracy": 95,
+      "pp": 10,
+      "description": "User is hurt by 50% of its max HP if it misses."
+    },
+    {
       "id": "junglehealing",
       "pokeApiSlug": "jungle-healing",
       "name": "Jungle Healing",
@@ -131246,6 +132067,42 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Each Pokemon on the user's side has its status condition healed and restores 1/4 of its maximum HP, rounded up."
+    },
+    {
+      "id": "karatechop",
+      "pokeApiSlug": "karate-chop",
+      "name": "Karate Chop",
+      "showdownName": "Karate Chop",
+      "type": "fighting",
+      "category": "physical",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 25,
+      "description": "Has an increased chance for a critical hit."
+    },
+    {
+      "id": "kinesis",
+      "pokeApiSlug": "kinesis",
+      "name": "Kinesis",
+      "showdownName": "Kinesis",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 80,
+      "pp": 15,
+      "description": "Lowers the target's accuracy by 1."
+    },
+    {
+      "id": "kingsshield",
+      "pokeApiSlug": "kings-shield",
+      "name": "King’s Shield",
+      "showdownName": "King's Shield",
+      "type": "steel",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Protects from damaging attacks. Contact: -1 Atk."
     },
     {
       "id": "knockoff",
@@ -131270,6 +132127,30 @@
       "accuracy": 100,
       "pp": 10,
       "description": "The user slashes at the target after kowtowing to make the target let down its guard. This attack never misses."
+    },
+    {
+      "id": "landswrath",
+      "pokeApiSlug": "lands-wrath",
+      "name": "Land’s Wrath",
+      "showdownName": "Land's Wrath",
+      "type": "ground",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Inflicts regular damage with no additional effect."
+    },
+    {
+      "id": "laserfocus",
+      "pokeApiSlug": "laser-focus",
+      "name": "Laser Focus",
+      "showdownName": "Laser Focus",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 30,
+      "description": "Guarantees a critical hit with the user’s next move."
     },
     {
       "id": "lashout",
@@ -131356,6 +132237,18 @@
       "description": "Lowers the user's Sp. Atk by 2."
     },
     {
+      "id": "leaftornado",
+      "pokeApiSlug": "leaf-tornado",
+      "name": "Leaf Tornado",
+      "showdownName": "Leaf Tornado",
+      "type": "grass",
+      "category": "special",
+      "power": 65,
+      "accuracy": 90,
+      "pp": 10,
+      "description": "50% chance to lower the target's accuracy by 1."
+    },
+    {
       "id": "leechlife",
       "pokeApiSlug": "leech-life",
       "name": "Leech Life",
@@ -131416,6 +132309,18 @@
       "description": "Each Pokemon on the user's side restores 1/4 of its maximum HP, rounded half up."
     },
     {
+      "id": "lightofruin",
+      "pokeApiSlug": "light-of-ruin",
+      "name": "Light of Ruin",
+      "showdownName": "Light of Ruin",
+      "type": "fairy",
+      "category": "special",
+      "power": 140,
+      "accuracy": 90,
+      "pp": 5,
+      "description": "User receives 1/2 the damage inflicted in recoil."
+    },
+    {
       "id": "lightscreen",
       "pokeApiSlug": "light-screen",
       "name": "Light Screen",
@@ -131452,6 +132357,18 @@
       "description": "Ensures that the user’s next move will hit the target."
     },
     {
+      "id": "lovelykiss",
+      "pokeApiSlug": "lovely-kiss",
+      "name": "Lovely Kiss",
+      "showdownName": "Lovely Kiss",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 75,
+      "pp": 10,
+      "description": "Puts the target to sleep."
+    },
+    {
       "id": "lowkick",
       "pokeApiSlug": "low-kick",
       "name": "Low Kick",
@@ -131474,6 +132391,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "100% chance to lower the target's Speed by 1."
+    },
+    {
+      "id": "luckychant",
+      "pokeApiSlug": "lucky-chant",
+      "name": "Lucky Chant",
+      "showdownName": "Lucky Chant",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 30,
+      "description": "For 5 turns, shields user's party from critical hits."
     },
     {
       "id": "luminacrash",
@@ -131572,6 +132501,18 @@
       "description": "30% chance to confuse the target."
     },
     {
+      "id": "magiccoat",
+      "pokeApiSlug": "magic-coat",
+      "name": "Magic Coat",
+      "showdownName": "Magic Coat",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Reflects back the first effect move used on the user this turn."
+    },
+    {
       "id": "magicpowder",
       "pokeApiSlug": "magic-powder",
       "name": "Magic Powder",
@@ -131608,6 +132549,18 @@
       "description": "Prevents the target from fleeing and inflicts damage for 2-5 turns."
     },
     {
+      "id": "magnetbomb",
+      "pokeApiSlug": "magnet-bomb",
+      "name": "Magnet Bomb",
+      "showdownName": "Magnet Bomb",
+      "type": "steel",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Never misses."
+    },
+    {
       "id": "magneticflux",
       "pokeApiSlug": "magnetic-flux",
       "name": "Magnetic Flux",
@@ -131630,6 +132583,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "For 5 turns, the user has immunity to Ground."
+    },
+    {
+      "id": "magnitude",
+      "pokeApiSlug": "magnitude",
+      "name": "Magnitude",
+      "showdownName": "Magnitude",
+      "type": "ground",
+      "category": "physical",
+      "power": null,
+      "accuracy": 100,
+      "pp": 30,
+      "description": "Power varies randomly from 10 to 150."
     },
     {
       "id": "makeitrain",
@@ -131656,6 +132621,18 @@
       "description": "50% chance to badly poison the target."
     },
     {
+      "id": "matblock",
+      "pokeApiSlug": "mat-block",
+      "name": "Mat Block",
+      "showdownName": "Mat Block",
+      "type": "fighting",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Protects allies from damaging attacks. Turn 1 only."
+    },
+    {
       "id": "matchagotcha",
       "pokeApiSlug": "matcha-gotcha",
       "name": "Matcha Gotcha",
@@ -131678,6 +132655,30 @@
       "accuracy": 100,
       "pp": 5,
       "description": "Prevents the target from leaving battle."
+    },
+    {
+      "id": "meditate",
+      "pokeApiSlug": "meditate",
+      "name": "Meditate",
+      "showdownName": "Meditate",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 40,
+      "description": "Raises the user's Attack by 1."
+    },
+    {
+      "id": "mefirst",
+      "pokeApiSlug": "me-first",
+      "name": "Me First",
+      "showdownName": "Me First",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "If the target has selected a damaging move this turn, the user will copy that move and use it against the target, with a 50% increase in power. If the target moves before the user, this move will fail. This move cannot be copied by Mirror Move, nor selected by Assist, Metronome, or Sleep Talk."
     },
     {
       "id": "megadrain",
@@ -131776,6 +132777,18 @@
       "description": "Lowers the target's Sp. Def by 2."
     },
     {
+      "id": "meteorassault",
+      "pokeApiSlug": "meteor-assault",
+      "name": "Meteor Assault",
+      "showdownName": "Meteor Assault",
+      "type": "fighting",
+      "category": "physical",
+      "power": 150,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "User foregoes its next turn to recharge."
+    },
+    {
       "id": "meteorbeam",
       "pokeApiSlug": "meteor-beam",
       "name": "Meteor Beam",
@@ -131848,6 +132861,30 @@
       "description": "Copies the target’s last used move."
     },
     {
+      "id": "mindblown",
+      "pokeApiSlug": "mind-blown",
+      "name": "Mind Blown",
+      "showdownName": "Mind Blown",
+      "type": "fire",
+      "category": "special",
+      "power": 150,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "User loses 50% max HP. Hits adjacent Pokemon."
+    },
+    {
+      "id": "mindreader",
+      "pokeApiSlug": "mind-reader",
+      "name": "Mind Reader",
+      "showdownName": "Mind Reader",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Ensures that the user’s next move will hit the target."
+    },
+    {
       "id": "minimize",
       "pokeApiSlug": "minimize",
       "name": "Minimize",
@@ -131860,6 +132897,18 @@
       "description": "Raises the user's evasiveness by 2."
     },
     {
+      "id": "miracleeye",
+      "pokeApiSlug": "miracle-eye",
+      "name": "Miracle Eye",
+      "showdownName": "Miracle Eye",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 40,
+      "description": "As long as the target remains active, its evasiveness stat stage is ignored during accuracy checks against it if it is greater than 0, and Psychic-type attacks can hit the target if it is a Dark type. Fails if the target is already affected, or affected by Foresight or Odor Sleuth."
+    },
+    {
       "id": "mirrorcoat",
       "pokeApiSlug": "mirror-coat",
       "name": "Mirror Coat",
@@ -131870,6 +132919,30 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Inflicts twice the damage the user received from the last special hit it took."
+    },
+    {
+      "id": "mirrormove",
+      "pokeApiSlug": "mirror-move",
+      "name": "Mirror Move",
+      "showdownName": "Mirror Move",
+      "type": "flying",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Uses the target’s last used move."
+    },
+    {
+      "id": "mirrorshot",
+      "pokeApiSlug": "mirror-shot",
+      "name": "Mirror Shot",
+      "showdownName": "Mirror Shot",
+      "type": "steel",
+      "category": "special",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 10,
+      "description": "30% chance to lower the target's accuracy by 1."
     },
     {
       "id": "mist",
@@ -131992,6 +133065,18 @@
       "description": "30% chance to make the target flinch."
     },
     {
+      "id": "mudbomb",
+      "pokeApiSlug": "mud-bomb",
+      "name": "Mud Bomb",
+      "showdownName": "Mud Bomb",
+      "type": "ground",
+      "category": "special",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 10,
+      "description": "30% chance to lower the target's accuracy by 1."
+    },
+    {
       "id": "muddywater",
       "pokeApiSlug": "muddy-water",
       "name": "Muddy Water",
@@ -132026,6 +133111,30 @@
       "accuracy": 100,
       "pp": 10,
       "description": "100% chance to lower the target's accuracy by 1."
+    },
+    {
+      "id": "mudsport",
+      "pokeApiSlug": "mud-sport",
+      "name": "Mud Sport",
+      "showdownName": "Mud Sport",
+      "type": "ground",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "For 5 turns, Electric-type attacks have 1/3 power."
+    },
+    {
+      "id": "multiattack",
+      "pokeApiSlug": "multi-attack",
+      "name": "Multi-Attack",
+      "showdownName": "Multi-Attack",
+      "type": "normal",
+      "category": "physical",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "If the user is holding a appropriate plate or drive, the damage inflicted will match it."
     },
     {
       "id": "mysticalfire",
@@ -132064,6 +133173,54 @@
       "description": "Raises the user's Sp. Atk by 2."
     },
     {
+      "id": "naturalgift",
+      "pokeApiSlug": "natural-gift",
+      "name": "Natural Gift",
+      "showdownName": "Natural Gift",
+      "type": "normal",
+      "category": "physical",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Power and type depend on the held berry."
+    },
+    {
+      "id": "naturepower",
+      "pokeApiSlug": "nature-power",
+      "name": "Nature Power",
+      "showdownName": "Nature Power",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Uses a move which depends upon the terrain."
+    },
+    {
+      "id": "naturesmadness",
+      "pokeApiSlug": "natures-madness",
+      "name": "Nature’s Madness",
+      "showdownName": "Nature's Madness",
+      "type": "fairy",
+      "category": "special",
+      "power": null,
+      "accuracy": 90,
+      "pp": 10,
+      "description": "Does damage equal to 1/2 target's current HP."
+    },
+    {
+      "id": "needlearm",
+      "pokeApiSlug": "needle-arm",
+      "name": "Needle Arm",
+      "showdownName": "Needle Arm",
+      "type": "grass",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "30% chance to make the target flinch."
+    },
+    {
       "id": "nightdaze",
       "pokeApiSlug": "night-daze",
       "name": "Night Daze",
@@ -132074,6 +133231,18 @@
       "accuracy": 95,
       "pp": 10,
       "description": "40% chance to lower the target's accuracy by 1."
+    },
+    {
+      "id": "nightmare",
+      "pokeApiSlug": "nightmare",
+      "name": "Nightmare",
+      "showdownName": "Nightmare",
+      "type": "ghost",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Target loses 1/4 its max HP every turn as long as it’s asleep."
     },
     {
       "id": "nightshade",
@@ -132146,6 +133315,78 @@
       "accuracy": 100,
       "pp": 20,
       "description": "100% chance to paralyze the target."
+    },
+    {
+      "id": "oblivionwing",
+      "pokeApiSlug": "oblivion-wing",
+      "name": "Oblivion Wing",
+      "showdownName": "Oblivion Wing",
+      "type": "flying",
+      "category": "special",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Drains 75% of the damage inflicted to heal the user."
+    },
+    {
+      "id": "obstruct",
+      "pokeApiSlug": "obstruct",
+      "name": "Obstruct",
+      "showdownName": "Obstruct",
+      "type": "dark",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Prevents any moves from hitting the user this turn. If this blocks a contact move, the user has their Defense lowered by 2 stages."
+    },
+    {
+      "id": "octazooka",
+      "pokeApiSlug": "octazooka",
+      "name": "Octazooka",
+      "showdownName": "Octazooka",
+      "type": "water",
+      "category": "special",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 10,
+      "description": "50% chance to lower the target's accuracy by 1."
+    },
+    {
+      "id": "octolock",
+      "pokeApiSlug": "octolock",
+      "name": "Octolock",
+      "showdownName": "Octolock",
+      "type": "fighting",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Prevents the target from switching out. At the end of each turn, the targets Defense and Special Defense are lowered by 1 stage."
+    },
+    {
+      "id": "odorsleuth",
+      "pokeApiSlug": "odor-sleuth",
+      "name": "Odor Sleuth",
+      "showdownName": "Odor Sleuth",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 40,
+      "description": "As long as the target remains active, its evasiveness stat stage is ignored during accuracy checks against it if it is greater than 0, and Normal- and Fighting-type attacks can hit the target if it is a Ghost type. Fails if the target is already affected, or affected by Foresight or Miracle Eye."
+    },
+    {
+      "id": "ominouswind",
+      "pokeApiSlug": "ominous-wind",
+      "name": "Ominous Wind",
+      "showdownName": "Ominous Wind",
+      "type": "ghost",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "10% chance to raise all stats by 1 (not acc/eva)."
     },
     {
       "id": "orderup",
@@ -132352,6 +133593,18 @@
       "description": "Hits 2-5 times in one turn."
     },
     {
+      "id": "plasmafists",
+      "pokeApiSlug": "plasma-fists",
+      "name": "Plasma Fists",
+      "showdownName": "Plasma Fists",
+      "type": "electric",
+      "category": "physical",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "After inflicting damage, causes all Normal-type moves to become Electric-type for the remainder of the turn."
+    },
+    {
       "id": "playnice",
       "pokeApiSlug": "play-nice",
       "name": "Play Nice",
@@ -132520,6 +133773,18 @@
       "description": "Inflicts regular damage with no additional effect."
     },
     {
+      "id": "powder",
+      "pokeApiSlug": "powder",
+      "name": "Powder",
+      "showdownName": "Powder",
+      "type": "bug",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Explodes if the target uses a Fire move this turn, damaging it for 1/4 its max HP and preventing the move."
+    },
+    {
       "id": "powdersnow",
       "pokeApiSlug": "powder-snow",
       "name": "Powder Snow",
@@ -132602,6 +133867,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Power is higher the more the user’s stats have been raised, to a maximum of 31×."
+    },
+    {
+      "id": "poweruppunch",
+      "pokeApiSlug": "power-up-punch",
+      "name": "Power-Up Punch",
+      "showdownName": "Power-Up Punch",
+      "type": "fighting",
+      "category": "physical",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "100% chance to raise the user's Attack by 1."
     },
     {
       "id": "powerwhip",
@@ -132760,6 +134037,18 @@
       "description": "Has an increased chance for a critical hit."
     },
     {
+      "id": "psychoshift",
+      "pokeApiSlug": "psycho-shift",
+      "name": "Psycho Shift",
+      "showdownName": "Psycho Shift",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Transfers the user’s major status effect to the target."
+    },
+    {
       "id": "psychup",
       "pokeApiSlug": "psych-up",
       "name": "Psych Up",
@@ -132806,6 +134095,54 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Inflicts damage based on the target’s Defense, not Special Defense."
+    },
+    {
+      "id": "psywave",
+      "pokeApiSlug": "psywave",
+      "name": "Psywave",
+      "showdownName": "Psywave",
+      "type": "psychic",
+      "category": "special",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Inflicts damage between 50% and 150% of the user’s level."
+    },
+    {
+      "id": "punishment",
+      "pokeApiSlug": "punishment",
+      "name": "Punishment",
+      "showdownName": "Punishment",
+      "type": "dark",
+      "category": "physical",
+      "power": null,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Power increases against targets with more raised stats, up to a maximum of 200."
+    },
+    {
+      "id": "purify",
+      "pokeApiSlug": "purify",
+      "name": "Purify",
+      "showdownName": "Purify",
+      "type": "poison",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Cures the target of a major status ailment and heals the user for 50% of its max HP."
+    },
+    {
+      "id": "pursuit",
+      "pokeApiSlug": "pursuit",
+      "name": "Pursuit",
+      "showdownName": "Pursuit",
+      "type": "dark",
+      "category": "physical",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "If a foe is switching out, hits it at 2x power."
     },
     {
       "id": "pyroball",
@@ -132866,6 +134203,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Raises the user's Sp. Atk, Sp. Def, Speed by 1."
+    },
+    {
+      "id": "rage",
+      "pokeApiSlug": "rage",
+      "name": "Rage",
+      "showdownName": "Rage",
+      "type": "normal",
+      "category": "physical",
+      "power": 20,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Raises the user's Attack by 1 if hit during use."
     },
     {
       "id": "ragefist",
@@ -132964,6 +134313,18 @@
       "description": "50% chance to lower the target's Defense by 1."
     },
     {
+      "id": "razorwind",
+      "pokeApiSlug": "razor-wind",
+      "name": "Razor Wind",
+      "showdownName": "Razor Wind",
+      "type": "normal",
+      "category": "special",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Charges, then hits foe(s) turn 2. High crit ratio."
+    },
+    {
       "id": "recover",
       "pokeApiSlug": "recover",
       "name": "Recover",
@@ -133012,6 +134373,18 @@
       "description": "User becomes the target’s type."
     },
     {
+      "id": "refresh",
+      "pokeApiSlug": "refresh",
+      "name": "Refresh",
+      "showdownName": "Refresh",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Cleanses the user of a burn, paralysis, or poison."
+    },
+    {
       "id": "relicsong",
       "pokeApiSlug": "relic-song",
       "name": "Relic Song",
@@ -133048,6 +134421,18 @@
       "description": "Has double power if a friendly Pokémon fainted last turn."
     },
     {
+      "id": "return",
+      "pokeApiSlug": "return",
+      "name": "Return",
+      "showdownName": "Return",
+      "type": "normal",
+      "category": "physical",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Power increases with happiness, up to a maximum of 102."
+    },
+    {
       "id": "revelationdance",
       "pokeApiSlug": "revelation-dance",
       "name": "Revelation Dance",
@@ -133058,6 +134443,18 @@
       "accuracy": 100,
       "pp": 15,
       "description": "Has the same type as the user."
+    },
+    {
+      "id": "revenge",
+      "pokeApiSlug": "revenge",
+      "name": "Revenge",
+      "showdownName": "Revenge",
+      "type": "fighting",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Inflicts double damage if the user takes damage before attacking this turn."
     },
     {
       "id": "reversal",
@@ -133130,6 +134527,18 @@
       "accuracy": 90,
       "pp": 10,
       "description": "Hits 2-5 times in one turn."
+    },
+    {
+      "id": "rockclimb",
+      "pokeApiSlug": "rock-climb",
+      "name": "Rock Climb",
+      "showdownName": "Rock Climb",
+      "type": "normal",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 85,
+      "pp": 20,
+      "description": "20% chance to confuse the target."
     },
     {
       "id": "rockpolish",
@@ -133216,6 +134625,18 @@
       "description": "Copies the target’s ability."
     },
     {
+      "id": "rollingkick",
+      "pokeApiSlug": "rolling-kick",
+      "name": "Rolling Kick",
+      "showdownName": "Rolling Kick",
+      "type": "fighting",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 85,
+      "pp": 15,
+      "description": "30% chance to make the target flinch."
+    },
+    {
       "id": "rollout",
       "pokeApiSlug": "rollout",
       "name": "Rollout",
@@ -133238,6 +134659,18 @@
       "accuracy": 100,
       "pp": 5,
       "description": "Heals 50% HP. Flying-type removed 'til turn ends."
+    },
+    {
+      "id": "rototiller",
+      "pokeApiSlug": "rototiller",
+      "name": "Rototiller",
+      "showdownName": "Rototiller",
+      "type": "ground",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Raises Atk/Sp. Atk of grounded Grass types by 1."
     },
     {
       "id": "round",
@@ -133432,6 +134865,30 @@
       "description": "Lowers the target's Defense by 2."
     },
     {
+      "id": "searingshot",
+      "pokeApiSlug": "searing-shot",
+      "name": "Searing Shot",
+      "showdownName": "Searing Shot",
+      "type": "fire",
+      "category": "special",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "30% chance to burn adjacent Pokemon."
+    },
+    {
+      "id": "secretpower",
+      "pokeApiSlug": "secret-power",
+      "name": "Secret Power",
+      "showdownName": "Secret Power",
+      "type": "normal",
+      "category": "physical",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Effect varies with terrain. (30% paralysis chance)"
+    },
+    {
       "id": "secretsword",
       "pokeApiSlug": "secret-sword",
       "name": "Secret Sword",
@@ -133504,6 +134961,18 @@
       "description": "20% chance to lower the target's Sp. Def by 1."
     },
     {
+      "id": "shadowbone",
+      "pokeApiSlug": "shadow-bone",
+      "name": "Shadow Bone",
+      "showdownName": "Shadow Bone",
+      "type": "ghost",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "20% chance to lower the target's Defense by 1."
+    },
+    {
       "id": "shadowclaw",
       "pokeApiSlug": "shadow-claw",
       "name": "Shadow Claw",
@@ -133550,6 +135019,18 @@
       "accuracy": 100,
       "pp": 30,
       "description": "Inflicts regular damage with no additional effect."
+    },
+    {
+      "id": "sharpen",
+      "pokeApiSlug": "sharpen",
+      "name": "Sharpen",
+      "showdownName": "Sharpen",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 30,
+      "description": "Raises the user's Attack by 1."
     },
     {
       "id": "shedtail",
@@ -133600,6 +135081,18 @@
       "description": "Lowers Def, SpD by 1; raises Atk, SpA, Spe by 2."
     },
     {
+      "id": "shelltrap",
+      "pokeApiSlug": "shell-trap",
+      "name": "Shell Trap",
+      "showdownName": "Shell Trap",
+      "type": "fire",
+      "category": "special",
+      "power": 150,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Only inflicts damage if the user was hit by a physical move this turn."
+    },
+    {
       "id": "shelter",
       "pokeApiSlug": "shelter",
       "name": "Shelter",
@@ -133648,6 +135141,18 @@
       "description": "User restores 1/2 its max HP; 2/3 in Sandstorm."
     },
     {
+      "id": "signalbeam",
+      "pokeApiSlug": "signal-beam",
+      "name": "Signal Beam",
+      "showdownName": "Signal Beam",
+      "type": "bug",
+      "category": "special",
+      "power": 75,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "10% chance to confuse the target."
+    },
+    {
       "id": "silktrap",
       "pokeApiSlug": "silk-trap",
       "name": "Silk Trap",
@@ -133658,6 +135163,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Protects from damaging attacks. Contact: -1 Spe."
+    },
+    {
+      "id": "silverwind",
+      "pokeApiSlug": "silver-wind",
+      "name": "Silver Wind",
+      "showdownName": "Silver Wind",
+      "type": "bug",
+      "category": "special",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "10% chance to raise all stats by 1 (not acc/eva)."
     },
     {
       "id": "simplebeam",
@@ -133720,6 +135237,18 @@
       "description": "100% chance to lower target's Sp. Atk by 1."
     },
     {
+      "id": "skullbash",
+      "pokeApiSlug": "skull-bash",
+      "name": "Skull Bash",
+      "showdownName": "Skull Bash",
+      "type": "normal",
+      "category": "physical",
+      "power": 130,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Raises user's Defense by 1 on turn 1. Hits turn 2."
+    },
+    {
       "id": "skyattack",
       "pokeApiSlug": "sky-attack",
       "name": "Sky Attack",
@@ -133730,6 +135259,30 @@
       "accuracy": 90,
       "pp": 5,
       "description": "Charges, then hits turn 2. 30% flinch. High crit."
+    },
+    {
+      "id": "skydrop",
+      "pokeApiSlug": "sky-drop",
+      "name": "Sky Drop",
+      "showdownName": "Sky Drop",
+      "type": "flying",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "User and foe fly up turn 1. Damages on turn 2."
+    },
+    {
+      "id": "skyuppercut",
+      "pokeApiSlug": "sky-uppercut",
+      "name": "Sky Uppercut",
+      "showdownName": "Sky Uppercut",
+      "type": "fighting",
+      "category": "physical",
+      "power": 85,
+      "accuracy": 90,
+      "pp": 15,
+      "description": "Inflicts regular damage and can hit Bounce and Fly users."
     },
     {
       "id": "slackoff",
@@ -133852,6 +135405,18 @@
       "description": "Never misses."
     },
     {
+      "id": "smellingsalts",
+      "pokeApiSlug": "smelling-salts",
+      "name": "Smelling Salts",
+      "showdownName": "Smelling Salts",
+      "type": "normal",
+      "category": "physical",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "If the target is paralyzed, inflicts double damage and cures the paralysis."
+    },
+    {
       "id": "smog",
       "pokeApiSlug": "smog",
       "name": "Smog",
@@ -133876,6 +135441,18 @@
       "description": "Lowers the target's accuracy by 1."
     },
     {
+      "id": "snaptrap",
+      "pokeApiSlug": "snap-trap",
+      "name": "Snap Trap",
+      "showdownName": "Snap Trap",
+      "type": "grass",
+      "category": "physical",
+      "power": 35,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Prevents the target from fleeing and inflicts damage for 2-5 turns."
+    },
+    {
       "id": "snarl",
       "pokeApiSlug": "snarl",
       "name": "Snarl",
@@ -133886,6 +135463,18 @@
       "accuracy": 95,
       "pp": 15,
       "description": "100% chance to lower the foe(s) Sp. Atk by 1."
+    },
+    {
+      "id": "snatch",
+      "pokeApiSlug": "snatch",
+      "name": "Snatch",
+      "showdownName": "Snatch",
+      "type": "dark",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Steals the target’s move, if it’s self-targeted."
     },
     {
       "id": "snipeshot",
@@ -133972,6 +135561,18 @@
       "description": "Charges turn 1. Hits turn 2. No charge in sunlight."
     },
     {
+      "id": "sonicboom",
+      "pokeApiSlug": "sonic-boom",
+      "name": "Sonic Boom",
+      "showdownName": "Sonic Boom",
+      "type": "normal",
+      "category": "special",
+      "power": null,
+      "accuracy": 90,
+      "pp": 20,
+      "description": "Inflicts 20 points of damage."
+    },
+    {
       "id": "spacialrend",
       "pokeApiSlug": "spacial-rend",
       "name": "Spacial Rend",
@@ -134008,6 +135609,18 @@
       "description": "Cures the target of burns."
     },
     {
+      "id": "spectralthief",
+      "pokeApiSlug": "spectral-thief",
+      "name": "Spectral Thief",
+      "showdownName": "Spectral Thief",
+      "type": "ghost",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Steals the target’s stat increases, then inflicts regular damage. Will not steal stat increases that would put any of the user’s stats at more than +6; any excess is left on the target. Stolen increases are affected by abilities as normal."
+    },
+    {
       "id": "speedswap",
       "pokeApiSlug": "speed-swap",
       "name": "Speed Swap",
@@ -134030,6 +135643,30 @@
       "accuracy": 100,
       "pp": 15,
       "description": "Raises target's Atk by 2 and lowers its Def by 2."
+    },
+    {
+      "id": "spiderweb",
+      "pokeApiSlug": "spider-web",
+      "name": "Spider Web",
+      "showdownName": "Spider Web",
+      "type": "bug",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Prevents the target from leaving battle."
+    },
+    {
+      "id": "spikecannon",
+      "pokeApiSlug": "spike-cannon",
+      "name": "Spike Cannon",
+      "showdownName": "Spike Cannon",
+      "type": "normal",
+      "category": "physical",
+      "power": 20,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Hits 2-5 times in one turn."
     },
     {
       "id": "spikes",
@@ -134140,6 +135777,18 @@
       "description": "Puts the target to sleep."
     },
     {
+      "id": "spotlight",
+      "pokeApiSlug": "spotlight",
+      "name": "Spotlight",
+      "showdownName": "Spotlight",
+      "type": "normal",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Forces the target’s opponents to aim at the target for the rest of the turn."
+    },
+    {
       "id": "springtidestorm",
       "pokeApiSlug": "springtide-storm",
       "name": "Springtide Storm",
@@ -134174,6 +135823,18 @@
       "accuracy": 95,
       "pp": 5,
       "description": "30% chance to burn the target. Thaws target."
+    },
+    {
+      "id": "steamroller",
+      "pokeApiSlug": "steamroller",
+      "name": "Steamroller",
+      "showdownName": "Steamroller",
+      "type": "bug",
+      "category": "physical",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "30% chance to make the target flinch."
     },
     {
       "id": "steelbeam",
@@ -134296,6 +135957,18 @@
       "description": "Power is higher the more the user’s stats have been raised, to a maximum of 31×."
     },
     {
+      "id": "stormthrow",
+      "pokeApiSlug": "storm-throw",
+      "name": "Storm Throw",
+      "showdownName": "Storm Throw",
+      "type": "fighting",
+      "category": "physical",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Always scores a critical hit."
+    },
+    {
       "id": "strangesteam",
       "pokeApiSlug": "strange-steam",
       "name": "Strange Steam",
@@ -134390,6 +136063,18 @@
       "accuracy": 75,
       "pp": 30,
       "description": "Paralyzes the target."
+    },
+    {
+      "id": "submission",
+      "pokeApiSlug": "submission",
+      "name": "Submission",
+      "showdownName": "Submission",
+      "type": "fighting",
+      "category": "physical",
+      "power": 80,
+      "accuracy": 80,
+      "pp": 20,
+      "description": "User receives 1/4 the damage it inflicts in recoil."
     },
     {
       "id": "substitute",
@@ -134596,6 +136281,18 @@
       "description": "Raises the user's Attack by 2."
     },
     {
+      "id": "synchronoise",
+      "pokeApiSlug": "synchronoise",
+      "name": "Synchronoise",
+      "showdownName": "Synchronoise",
+      "type": "psychic",
+      "category": "special",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Hits any Pokémon that shares a type with the user."
+    },
+    {
       "id": "synthesis",
       "pokeApiSlug": "synthesis",
       "name": "Synthesis",
@@ -134764,6 +136461,18 @@
       "description": "All Pokemon on the field consume their held berries."
     },
     {
+      "id": "technoblast",
+      "pokeApiSlug": "techno-blast",
+      "name": "Techno Blast",
+      "showdownName": "Techno Blast",
+      "type": "normal",
+      "category": "special",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "If the user is holding a appropriate plate or drive, the damage inflicted will match it."
+    },
+    {
       "id": "teeterdance",
       "pokeApiSlug": "teeter-dance",
       "name": "Teeter Dance",
@@ -134774,6 +136483,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Confuses the target."
+    },
+    {
+      "id": "telekinesis",
+      "pokeApiSlug": "telekinesis",
+      "name": "Telekinesis",
+      "showdownName": "Telekinesis",
+      "type": "psychic",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "Moves have 100% accuracy against the target for three turns."
     },
     {
       "id": "teleport",
@@ -134846,6 +136567,30 @@
       "accuracy": 100,
       "pp": 25,
       "description": "Takes the target’s item."
+    },
+    {
+      "id": "thousandarrows",
+      "pokeApiSlug": "thousand-arrows",
+      "name": "Thousand Arrows",
+      "showdownName": "Thousand Arrows",
+      "type": "ground",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Grounds the target, and hits even Flying-type or levitating Pokémon."
+    },
+    {
+      "id": "thousandwaves",
+      "pokeApiSlug": "thousand-waves",
+      "name": "Thousand Waves",
+      "showdownName": "Thousand Waves",
+      "type": "ground",
+      "category": "physical",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Prevents the target from leaving battle."
     },
     {
       "id": "thrash",
@@ -135124,6 +136869,18 @@
       "description": "User and target swap items."
     },
     {
+      "id": "trickortreat",
+      "pokeApiSlug": "trick-or-treat",
+      "name": "Trick-or-Treat",
+      "showdownName": "Trick-or-Treat",
+      "type": "ghost",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Adds Ghost to the target’s types."
+    },
+    {
       "id": "trickroom",
       "pokeApiSlug": "trick-room",
       "name": "Trick Room",
@@ -135196,6 +136953,18 @@
       "description": "100% chance to lower the target's Attack by 1."
     },
     {
+      "id": "trumpcard",
+      "pokeApiSlug": "trump-card",
+      "name": "Trump Card",
+      "showdownName": "Trump Card",
+      "type": "normal",
+      "category": "special",
+      "power": null,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Power increases when this move has less PP, up to a maximum of 200."
+    },
+    {
       "id": "twinbeam",
       "pokeApiSlug": "twin-beam",
       "name": "Twin Beam",
@@ -135206,6 +136975,18 @@
       "accuracy": 100,
       "pp": 10,
       "description": "Hits 2 times in one turn."
+    },
+    {
+      "id": "twineedle",
+      "pokeApiSlug": "twineedle",
+      "name": "Twineedle",
+      "showdownName": "Twineedle",
+      "type": "bug",
+      "category": "physical",
+      "power": 25,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Hits 2 times. Each hit has 20% chance to poison."
     },
     {
       "id": "twister",
@@ -135280,6 +137061,18 @@
       "description": "Lowers the user's Defense, Sp. Def, Speed by 1."
     },
     {
+      "id": "venomdrench",
+      "pokeApiSlug": "venom-drench",
+      "name": "Venom Drench",
+      "showdownName": "Venom Drench",
+      "type": "poison",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 20,
+      "description": "Lowers Atk/Sp. Atk/Speed of poisoned foes by 1."
+    },
+    {
       "id": "venoshock",
       "pokeApiSlug": "venoshock",
       "name": "Venoshock",
@@ -135328,6 +137121,18 @@
       "description": "No additional effect."
     },
     {
+      "id": "vitalthrow",
+      "pokeApiSlug": "vital-throw",
+      "name": "Vital Throw",
+      "showdownName": "Vital Throw",
+      "type": "fighting",
+      "category": "physical",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "Never misses."
+    },
+    {
       "id": "voltswitch",
       "pokeApiSlug": "volt-switch",
       "name": "Volt Switch",
@@ -135350,6 +137155,18 @@
       "accuracy": 100,
       "pp": 15,
       "description": "User takes 1/3 the damage inflicted in recoil. Has a chance to paralyze the target."
+    },
+    {
+      "id": "wakeupslap",
+      "pokeApiSlug": "wake-up-slap",
+      "name": "Wake-Up Slap",
+      "showdownName": "Wake-Up Slap",
+      "type": "fighting",
+      "category": "physical",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 10,
+      "description": "If the target is asleep, has double power and wakes it up."
     },
     {
       "id": "waterfall",
@@ -135410,6 +137227,18 @@
       "accuracy": 100,
       "pp": 20,
       "description": "Hits 2–5 times."
+    },
+    {
+      "id": "watersport",
+      "pokeApiSlug": "water-sport",
+      "name": "Water Sport",
+      "showdownName": "Water Sport",
+      "type": "water",
+      "category": "status",
+      "power": null,
+      "accuracy": 100,
+      "pp": 15,
+      "description": "For 5 turns, Fire-type attacks have 1/3 power."
     },
     {
       "id": "waterspout",
@@ -135638,6 +137467,18 @@
       "accuracy": 90,
       "pp": 20,
       "description": "Prevents the target from fleeing and inflicts damage for 2-5 turns."
+    },
+    {
+      "id": "wringout",
+      "pokeApiSlug": "wring-out",
+      "name": "Wring Out",
+      "showdownName": "Wring Out",
+      "type": "normal",
+      "category": "special",
+      "power": null,
+      "accuracy": 100,
+      "pp": 5,
+      "description": "Power increases against targets with more HP remaining, up to a maximum of 121 power."
     },
     {
       "id": "xscissor",

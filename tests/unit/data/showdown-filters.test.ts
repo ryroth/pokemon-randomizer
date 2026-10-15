@@ -24,12 +24,23 @@ describe("Showdown catalog filters", () => {
     expect(isCatalogItem(Dex.items.get("Leftovers"))).toBe(true);
   });
 
-  it("drops moves that cannot be used in the current generation", () => {
-    for (const name of ["Spider Web", "Hidden Power", "Return", "Pursuit", "Hail"]) {
-      expect(isCatalogMove(Dex.moves.get(name)), name).toBe(false);
-    }
-    for (const name of ["Protect", "Snowscape", "Behemoth Blade", "Last Respects"]) {
+  it("keeps moves removed from the current games and drops Let's Go and CAP moves", () => {
+    for (const name of [
+      "Spider Web",
+      "Hidden Power",
+      "Hidden Power Fire",
+      "Return",
+      "Pursuit",
+      "Hail",
+      "Protect",
+      "Snowscape",
+      "Behemoth Blade",
+      "Last Respects",
+    ]) {
       expect(isCatalogMove(Dex.moves.get(name)), name).toBe(true);
+    }
+    for (const name of ["Pika Papow", "Paleo Wave", "Nihil Light"]) {
+      expect(isCatalogMove(Dex.moves.get(name)), name).toBe(false);
     }
   });
 
