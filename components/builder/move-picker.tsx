@@ -35,6 +35,7 @@ const LEARN_SHORT_LABELS: Record<LearnMethod, string> = {
   tm: "TM",
   egg: "Egg",
   tutor: "Tutor",
+  form: "Form",
 };
 
 /** Name, type, category, power, accuracy, PP, then (when shown) how it is learned, then the effect. */

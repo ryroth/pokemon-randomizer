@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "import:data": "tsx scripts/import/index.ts",
     "import:learnsets": "tsx scripts/import/learnsets.ts",
+    "import:form-items": "tsx scripts/import/form-items.ts",
     "import:hidden-abilities": "tsx scripts/import/hidden-abilities.ts",
     "import:genera": "tsx scripts/import/genera.ts",
     "import:dex-entries": "tsx scripts/import/dex-entries.ts",

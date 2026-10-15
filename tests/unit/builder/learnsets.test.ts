@@ -4,6 +4,7 @@ import {
   learnsetMoveIds,
   learnsetMoveIdsByMethod,
 } from "@/lib/builder/learnsets";
+import { loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 
 describe("learnsetMoveIds", () => {
   it("includes Maushold's level-up and TM moves and leaves out moves it cannot learn", () => {
@@ -26,6 +27,46 @@ describe("learnsetMoveIds", () => {
     for (const id of learnsetMoveIds("pikachu")) {
       expect(id).toMatch(/^[a-z0-9]+$/);
     }
+  });
+
+  it("gives a form with no learnset of its own the same moves as the form it changes from", () => {
+    expect([...learnsetMoveIds("giratinaorigin")].sort()).toEqual([...learnsetMoveIds("giratina")].sort());
+    expect([...learnsetMoveIds("dialgaorigin")].sort()).toEqual([...learnsetMoveIds("dialga")].sort());
+    expect([...learnsetMoveIds("palkiaorigin")].sort()).toEqual([...learnsetMoveIds("palkia")].sort());
+    expect(learnsetMoveIds("shayminsky").length).toBeGreaterThan(0);
+    expect([...learnsetMoveIds("arceusfire")].sort()).toEqual([...learnsetMoveIds("arceus")].sort());
+  });
+
+  it("keeps a form's own move and the moves of the form it changes from", () => {
+    const heat = learnsetMoveIds("rotomheat");
+    expect(heat).toContain("overheat");
+    expect(heat).toEqual(expect.arrayContaining([...learnsetMoveIds("rotom")]));
+    expect(learnMethodsForMove("rotomheat", "overheat")).toEqual(["form"]);
+
+    const crowned = learnsetMoveIds("zaciancrowned");
+    expect(crowned).toContain("behemothblade");
+    expect(crowned).toEqual(expect.arrayContaining([...learnsetMoveIds("zacian")]));
+
+    expect(learnsetMoveIds("zygarde10")).toEqual(
+      expect.arrayContaining([...learnsetMoveIds("zygarde")]),
+    );
+  });
+
+  it("leaves Kyurem-Black its own learnset instead of adding Glaciate", () => {
+    expect(learnsetMoveIds("kyuremblack")).not.toContain("glaciate");
+    expect(learnsetMoveIds("kyurem")).toContain("glaciate");
+  });
+
+  it("still lists Spiky-eared Pichu's own moves", () => {
+    expect(learnsetMoveIds("pichuspikyeared").length).toBeGreaterThan(10);
+  });
+
+  it("gives every form except Unown a learnset", () => {
+    const catalog = loadGeneratedCatalog();
+    const empty = catalog.pokemon
+      .filter((form) => learnsetMoveIds(form.id).length === 0)
+      .map((form) => form.id);
+    expect(empty).toEqual(["unown"]);
   });
 });
 

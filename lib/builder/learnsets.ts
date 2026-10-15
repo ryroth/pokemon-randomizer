@@ -1,13 +1,14 @@
 import learnsets from "@/data/generated/learnsets.json";
 
 /** How a Pokémon learns a move. Transfer-only moves have no method of their own. */
-export type LearnMethod = "level-up" | "tm" | "egg" | "tutor";
+export type LearnMethod = "level-up" | "tm" | "egg" | "tutor" | "form";
 
 export const LEARN_METHODS: ReadonlyArray<{ id: LearnMethod; label: string; code: string }> = [
   { id: "level-up", label: "Level-Up", code: "L" },
   { id: "tm", label: "TM", code: "M" },
   { id: "egg", label: "Egg", code: "E" },
   { id: "tutor", label: "Tutor", code: "T" },
+  { id: "form", label: "Form", code: "R" },
 ];
 
 /** Each entry is `moveId:CODES`, such as `surf:MT`. The importer writes the file. */
@@ -29,7 +30,7 @@ function learnsetFor(pokemonId: string): ReadonlyMap<string, string> {
   return moves;
 }
 
-/** Standard moves this Pokémon can learn by level-up, egg, TM, tutor, or transfer. */
+/** Standard moves this Pokémon can learn by level-up, egg, TM, tutor, form change, or transfer. */
 export function learnsetMoveIds(pokemonId: string): readonly string[] {
   return [...learnsetFor(pokemonId).keys()];
 }

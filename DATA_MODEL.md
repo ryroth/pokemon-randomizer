@@ -27,6 +27,8 @@ Every entity keeps both `pokeApiSlug` and `showdownName`. Catalog `id` values ar
 - The app must not call PokéAPI in the browser. Re-run the importer when source data changes.
 - `data/generated/pokemon-art.json` and `data/generated/item-icons.json` come from `npm run import:art`. They fill still artwork and shiny artwork for forms the main import left without any (PokéAPI official-artwork or HOME, then Showdown `home` / `home-shiny`, then the base form) and give held items an icon (PokéAPI, then Serebii). `loadGeneratedCatalog` overlays them onto `sprites.artwork`, `sprites.artworkShiny`, and `Item.iconUrl`. Do not hand-edit them. The app uses still images only: no 3D models, GIFs, or animated sprites.
 - `data/generated/genera.json` is the English PokéAPI genus (`npm run import:genera`). Do not hand-edit it. The recap name plate shows that genus under the species name.
+- `data/generated/learnsets.json` (`npm run import:learnsets`) is each form's moves as `moveId:CODES` (L level-up, M TM, E egg, T tutor, V transfer, R form-change). A form with an empty Showdown learnset inherits the form it changes from. Do not hand-edit it. Unown stays empty because Hidden Power is a Past move.
+- `data/generated/form-items.json` (`npm run import:form-items`) maps an Other form or Mega Evolution to the one item it must hold. The builder locks that item until a different Pokémon is selected. A Mega uses its Mega Stone. Mega Rayquaza has no entry. Do not hand-edit it.
 - Saved teams are not catalog data. They live in browser `localStorage` under `pokemon-randomizer.teams.v1`.
 
 ## Classification

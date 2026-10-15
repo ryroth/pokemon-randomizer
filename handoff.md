@@ -19,16 +19,16 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), then **tester feedback part 2** (PR #14) |
+| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), **tester feedback part 2** (PR #14), then **form learnsets and required held items** |
 | Current work | None. Later features only if the user asks |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
-| Latest on `master` | The merge of pull request #14 (tester feedback part 2). Run `git log -1` for the hash |
+| Latest on `master` | The merge of the form-learnsets and required-item pull request. Run `git log -1` for the hash |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
 | Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme, [#10](https://github.com/ryroth/pokemon-randomizer/pull/10) Tester feedback (builder, recap links, still art, locks, evolution stages), [#11](https://github.com/ryroth/pokemon-randomizer/pull/11) scroll, evolution stages, and lock scope, [#12](https://github.com/ryroth/pokemon-randomizer/pull/12) drop moves removed from the games, [#13](https://github.com/ryroth/pokemon-randomizer/pull/13) Ditto tab icon, [#14](https://github.com/ryroth/pokemon-randomizer/pull/14) Tester feedback part 2 |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the tester feedback round (PR #10) through the Ditto tab icon (PR #13), and tester feedback part 2 (PR #14) are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
+Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the tester feedback round (PR #10) through the Ditto tab icon (PR #13), tester feedback part 2 (PR #14), and form learnsets with required held items are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
 
 Start the next feature from up-to-date `master` on a new branch.
 
@@ -84,6 +84,7 @@ npm run test:e2e
 npm run build
 npm run import:data              # PokéAPI + Showdown snapshot → data/generated/catalog.json
 npm run import:learnsets         # data/generated/learnsets.json
+npm run import:form-items        # data/generated/form-items.json — item an Other form or Mega must hold
 npm run import:hidden-abilities  # data/generated/hidden-abilities.json
 npm run import:art               # still artwork and held-item icons for anything the catalog lacks: pokemon-art.json, item-icons.json
 npm run import:genera            # PokéAPI English genus → data/generated/genera.json
@@ -187,12 +188,12 @@ lib/showdown/exportSet.ts    One set, and a team paste with a blank line between
 lib/recap/                   Recap entries (still artwork, item icon, Showdown text)
 lib/art/                     pokemonImage: newest still artwork, shiny artwork for shiny Pokémon
 lib/teams/                   Team box, localStorage, Showdown team paste, HOME sprite URLs
-scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, Hidden Abilities, model index, genera, and `world-art.ts` (backdrops)
+scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, form items, Hidden Abilities, model index, genera, and `world-art.ts` (backdrops)
 lib/world/                   Which backdrop each route shows (`sceneForPath`, `sceneImages`)
 components/layout/scene-backdrop.tsx  The two decorative backdrop layers
 public/world/                Compressed official backdrops and `sources.json` (generated, committed)
 app/fonts/                   pokemon-solid.ttf (fan-made logo lettering, see the world-theme section)
-data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, hidden-abilities.json, join-report.json, pokemon-art.json, item-icons.json, genera.json
+data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, form-items.json, hidden-abilities.json, join-report.json, pokemon-art.json, item-icons.json, genera.json
 data/cache/pokeapi/          Gitignored HTTP cache
 tests/unit/                  Domain tests (Vitest), including `tests/unit/ui/type-colors.test.ts`
 tests/e2e/builder.spec.ts    Builder, recap, and saved-team flow (Playwright)
@@ -274,7 +275,7 @@ Continue to builder opens `/builder` with the same session. The battle Pokémon,
 `/builder` reads the persisted session. Domain updates live in `lib/builder`. UI is `components/builder/set-builder.tsx` plus the ability dropdown, move picker, item picker, and stat sheet.
 
 - Ability: usual `abilityIds` when Ability was skipped, grouped in a dropdown as Abilities then Hidden Ability (`data/generated/hidden-abilities.json`). When the ability randomizer set one, that ability is locked and its effect stays visible.
-- Moves: applied randomizer moves stay in that many slots and are locked. Empty slots use every standard move or that Pokémon's learnset (`data/generated/learnsets.json`: level-up, egg, TM, tutor, and transfer, including earlier stages). The list is not capped. Search matches letters the way a Showdown id does. Rows are single lines of aligned columns (name, type, category, power, accuracy, PP, how it is learned, effect) under a sticky header, and each column heading sorts the current list. In learnset mode, chips for Level-up, TM, Egg, and Tutor filter the list (`lib/builder/learnsets.ts`, compact `moveId:CODES` strings, codes L/M/E/T/V). A power of 1 is a variable-damage placeholder and displays as a dash; those dashes sort as the lowest power.
+- Moves: applied randomizer moves stay in that many slots and are locked. Empty slots use every standard move or that Pokémon's learnset (`data/generated/learnsets.json`: level-up, egg, TM, tutor, transfer, and form-change moves, including earlier stages and the form a Pokémon changes from). A form with no learnset of its own uses that form's moves, so Giratina-Origin has Giratina's moves. Rotom-Heat, Zacian-Crowned, and similar forms keep their own move and the rest of the form they change from. Kyurem-Black and Kyurem-White do not inherit Glaciate. The list is not capped. Search matches letters the way a Showdown id does. Rows are single lines of aligned columns (name, type, category, power, accuracy, PP, how it is learned, effect) under a sticky header, and each column heading sorts the current list. In learnset mode, chips for Level-up, TM, Egg, Tutor, and Form filter the list (`lib/builder/learnsets.ts`, compact `moveId:CODES` strings, codes L/M/E/T/V/R). A power of 1 is a variable-damage placeholder and displays as a dash; those dashes sort as the lowest power. Unown's only move is Hidden Power, which is not in the current games, so its learnset is empty.
 - Item: a categorized scrollable list matching the item randomizer (Popular items, Items, Pokémon-specific items, Usually useless items, Useless items), with search. Explicit None stays available. A randomizer-chosen item, including None, is locked and its effect stays visible.
 - Stats: six rows like the Showdown teambuilder (base bar, EVs, slider, IVs, calculated stat). Formula is official Gen 3+ in `lib/stats/battleStat.ts`. Blank EVs preview as 0. Missing IVs preview as 31. Unset level previews at 100. Shedinja's base HP of 1 stays 1.
 - A suggested spread appears once four moves are chosen (Ditto, Unown, and Last Resort can suggest sooner). `suggestEvSpread` in `lib/builder/suggestEvs.ts` follows the Pokémon Showdown teambuilder stat guesser (`BattleStatGuesser`) for Gen 9 with normal EV limits. The role comes from move categories and base stats, plus the ability, item, level, and IVs. It is not a published Smogon set. `data/smogon/gen9-analyses.json` is gone. "Use this spread" fills those EVs and the Nature that matches the plus and minus stats, and does not confirm.
@@ -405,7 +406,7 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8, the Battle Laboratory overhaul, and tester feedback through part 2 are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8, the Battle Laboratory overhaul, tester feedback through part 2, and form learnsets with required held items are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
 
 ## Tester feedback round (merged in PR #10)
 
@@ -446,8 +447,13 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 - **Stats:** Each result card and each evolution choice shows HP, Attack, Defense, Special Attack, Special Defense, and Speed (`components/randomizer/base-stat-line.tsx`). Evolution choices also show BST.
 - **Pokédex chips:** Labeled “Pokédex” / “Pokédex entry from generation N”.
 - **Team names and copying:** See the `/teams` paragraph above. `renameTeam` refuses a blank name.
-- **Edit a saved Pokémon:** `openSavedSetInBuilder` (`lib/builder/saved-set.ts`) loads that set into the Builder and sets `RandomizerSession.editingTeamSlot` (`{ teamId, index }`, 0-based). While it is set, ability, item, and move locks are off and `pendingRandomizerSteps` is empty, so a finished set stays editable even when randomizers are on. `savedSetEditAccess` turns on Edit for the ability, the item, and each saved move. Ability choices are the species’ usual abilities plus the current ability when it is outside that list. Item choices are the full catalog plus the current item when it is missing. A valid `validateSet` result is written back with `replaceSetOnTeam` when the set actually changed. Blank gender is not invented during that sync. A new roll, a different selected Pokémon, an evolution, Clear generated Pokémon, or Next Randomizer clears `editingTeamSlot`, so a new roll cannot overwrite the team.
+- **Edit a saved Pokémon:** `openSavedSetInBuilder` (`lib/builder/saved-set.ts`) loads that set into the Builder and sets `RandomizerSession.editingTeamSlot` (`{ teamId, index }`, 0-based). While it is set, ability, item, and move locks from the randomizer are off and `pendingRandomizerSteps` is empty, so a finished set stays editable even when randomizers are on. A form that must hold one item is the exception: that item stays locked (`itemLockedByForm`, `savedSetEditAccess.item`). `savedSetEditAccess` turns on Edit for the ability, the item (unless the form requires it), and each saved move. Ability choices are the species’ usual abilities plus the current ability when it is outside that list. Item choices are the full catalog plus the current item when it is missing. A valid `validateSet` result is written back with `replaceSetOnTeam` when the set actually changed. Blank gender is not invented during that sync. A new roll, a different selected Pokémon, an evolution, Clear generated Pokémon, or Next Randomizer clears `editingTeamSlot`, so a new roll cannot overwrite the team.
 - **Recap name field:** On “Save to a team”, the field names the team being viewed. `saveSetToActiveTeam` renames that team and then fills its next slot. “Save to a new team” does not reuse that field once a team exists.
 - **Phone picker:** `phoneSheetFrame` (`components/builder/phone-sheet.ts`) sizes the ability, move, and item dialog to the visible viewport at `max-width: 639px`, including the space above the keyboard. Search is focused on a wide screen and waits for a tap on a phone.
 - **Reset and presets:** “Reset to defaults” and Next Randomizer call `createInitialSession()`. Presets (`lib/randomizer/presets.ts`, `localStorage` key `pokemon-randomizer.presets.v1`, at most 20, name at most 24) save randomizer config and filters with the seed removed. Applying one uses `applySessionConfig` and does not restore generated pools.
 - **Tests:** `tests/unit/randomizer/presets.test.ts`, `tests/unit/builder/phone-sheet.test.ts`, `tests/unit/builder/saved-set.test.ts`, plus cases in the teams, session, classify, and catalog tests. `tests/e2e/tester-feedback.spec.ts` includes a phone-width picker check.
+
+### Other-form learnsets and required items
+
+- **Learnsets:** `scripts/import/learnsets.ts` follows Showdown's learnset chain. A form with an empty learnset (Giratina-Origin, Dialga-Origin, Palkia-Origin, the Arceus plates, Shaymin-Sky, the Forces of Nature Therian forms, and the rest of that list) uses the form it changes from, including earlier stages. A form that only adds a move (Rotom-Heat's Overheat, Zacian-Crowned's Behemoth Blade, code `R`) keeps that move and the rest of the parent learnset. Kyurem-Black and Kyurem-White do not inherit Glaciate. Re-run `npm run import:learnsets` after changing this. Unown stays empty because Hidden Power is a `Past` move.
+- **Held item:** `npm run import:form-items` writes `data/generated/form-items.json`. Selecting an Other form or Mega Evolution that must hold an item sets that item on the draft and locks it (`withRequiredFormItem`, `itemLockedByForm`) until a different Pokémon is selected. The builder, the recap Edit link, and the item randomizer all respect the lock. Plates, orbs, masks, drives, and memories win over a Z-Crystal when both are listed. A Mega uses its Mega Stone. Mega Rayquaza has no stone. 97 forms are in the file, including Giratina-Origin → Griseous Core and Venusaur-Mega → Venusaurite.

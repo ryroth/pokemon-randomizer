@@ -1,9 +1,11 @@
 import { ivPresetById } from "@/lib/builder/ivPresets";
 import { rollGender } from "@/lib/randomizer/gender";
 import { createSeed } from "@/lib/randomizer/randomUtils";
+import { requiredFormItemId } from "@/lib/data/formItems";
 import { battlePokemonId } from "@/lib/randomizer/session";
 import {
   abilityLockedByRandomizer,
+  itemLockedByForm,
   itemLockedByRandomizer,
   moveSlotLockedByRandomizer,
 } from "@/lib/builder/locks";
@@ -147,7 +149,7 @@ export function setDraftItem(
   itemId: string | null | undefined,
   pool: readonly (string | null)[],
 ): RandomizerSession {
-  if (itemLockedByRandomizer(session)) {
+  if (itemLockedByRandomizer(session) || itemLockedByForm(session)) {
     return session;
   }
   if (itemId !== undefined && !pool.includes(itemId)) {
@@ -330,8 +332,13 @@ export function finalizeBuilderSet(
   pokemon: PokemonForm | undefined,
   seed: string = createSeed(),
 ): RandomizerSession {
-  const needsGender = pokemon?.genderRule === "mixed" && session.draft.gender === undefined;
-  const result = validateSet(session.draft, pokemon, {
+  const requiredItemId = pokemon ? requiredFormItemId(pokemon.id) : undefined;
+  const draftWithItem =
+    requiredItemId && session.draft.itemId !== requiredItemId
+      ? { ...session.draft, itemId: requiredItemId }
+      : session.draft;
+  const needsGender = pokemon?.genderRule === "mixed" && draftWithItem.gender === undefined;
+  const result = validateSet(draftWithItem, pokemon, {
     fallbackGender: needsGender ? rollGender(seed) : undefined,
   });
   if (!result.ok) {
@@ -341,8 +348,8 @@ export function finalizeBuilderSet(
   // not roll a different one.
   const draft =
     needsGender && result.value.gender
-      ? { ...session.draft, gender: result.value.gender }
-      : session.draft;
+      ? { ...draftWithItem, gender: result.value.gender }
+      : draftWithItem;
   return { ...session, step: "recap", draft, finalizedSet: result.value };
 }
 

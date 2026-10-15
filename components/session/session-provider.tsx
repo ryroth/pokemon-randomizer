@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { applyBuilderDefaults } from "@/lib/builder";
-import { battlePokemonId, createInitialSession } from "@/lib/randomizer/session";
+import { battlePokemonId, createInitialSession, withRequiredFormItem } from "@/lib/randomizer/session";
 import { parseStoredSession, RANDOMIZER_SESSION_STORAGE_KEY } from "@/lib/session/storage";
 import type { RandomizerSession } from "@/lib/types/session";
 
@@ -29,8 +29,9 @@ export function RandomizerSessionProvider({ children }: { children: ReactNode })
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
-  const visibleSession =
-    ready && battlePokemonId(session) ? applyBuilderDefaults(session) : session;
+  const visibleSession = withRequiredFormItem(
+    ready && battlePokemonId(session) ? applyBuilderDefaults(session) : session,
+  );
 
   useEffect(() => {
     if (!ready || visibleSession === session) {

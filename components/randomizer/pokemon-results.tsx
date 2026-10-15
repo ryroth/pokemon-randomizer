@@ -31,6 +31,8 @@ interface PokemonResultsProps {
   unusedMoves?: readonly Move[];
   appliedItemIds?: Readonly<Record<string, string | null | undefined>>;
   itemChoicesByPokemon?: Readonly<Record<string, readonly Item[]>>;
+  /** Other forms that have to hold one item. The card shows that item and does not offer a choice. */
+  requiredFormItems?: Readonly<Record<string, Item>>;
   unusedItems?: readonly Item[];
   movesPerPokemon?: number;
   showPokedexEntry: boolean;
@@ -60,6 +62,7 @@ export function PokemonResults({
   unusedMoves,
   appliedItemIds,
   itemChoicesByPokemon,
+  requiredFormItems,
   unusedItems,
   movesPerPokemon = MOVES_ASSIGNED_PER_POKEMON,
   showPokedexEntry,
@@ -172,13 +175,14 @@ export function PokemonResults({
           const appliedMoves = appliedMoveIds?.[form.id] ?? [];
           const appliedMoveCount = filledMoveCount(appliedMoves);
           const appliedItemId = appliedItemIds?.[form.id];
+          const requiredItem = requiredFormItems?.[form.id];
           const appliedItem =
             appliedItemId === NONE_ITEM_ID
               ? undefined
               : itemChoicesByPokemon?.[form.id]?.find((item) => item.id === appliedItemId);
           const abilityReady = !onApplyAbility || Boolean(appliedAbilityId);
           const movesReady = !onApplyMove || appliedMoveCount >= applySlotCount;
-          const itemReady = !onApplyItem || appliedItemId !== undefined;
+          const itemReady = !onApplyItem || Boolean(requiredItem) || appliedItemId !== undefined;
           const canSelect = abilityReady && movesReady && itemReady;
           const choices = abilityChoicesByPokemon?.[form.id] ?? [];
           const moveSlotChoices = moveChoicesByPokemonSlot?.[form.id] ?? [];
@@ -323,7 +327,12 @@ export function PokemonResults({
                     </label>
                   </div>
                 ) : null}
-                {onApplyItem ? (
+                {requiredItem ? (
+                  <p className="border-t border-border px-6 py-4 text-sm text-muted-foreground">
+                    Holds {requiredItem.name}. This form needs that item.
+                  </p>
+                ) : null}
+                {onApplyItem && !requiredItem ? (
                   <div className="border-t border-border px-6 py-4">
                     <label className="block space-y-1 text-sm">
                       <span className="font-medium">Item for {form.displayName}</span>
