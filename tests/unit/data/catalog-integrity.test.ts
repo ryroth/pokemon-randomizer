@@ -31,9 +31,16 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
     expect(catalog.pokemon.length).toBeGreaterThan(1000);
     expect(catalog.species.length).toBeGreaterThan(900);
     expect(catalog.abilities.length).toBeGreaterThan(200);
-    expect(catalog.moves.length).toBeGreaterThan(600);
-    // Moves removed from the games (Spider Web, Hidden Power, and so on) are not selectable in battle.
-    for (const id of ["spiderweb", "hiddenpower", "return", "pursuit", "hail"]) {
+    expect(catalog.moves.length).toBeGreaterThan(800);
+    const moveIds = catalog.moves.map((move) => move.id);
+    expect(new Set(moveIds).size).toBe(moveIds.length);
+    for (const id of ["spiderweb", "hiddenpower", "hiddenpowerfire", "return", "pursuit", "hail"]) {
+      expect(catalog.moves.some((move) => move.id === id), id).toBe(true);
+    }
+    const hiddenPowerFire = catalog.moves.find((move) => move.id === "hiddenpowerfire");
+    expect(hiddenPowerFire?.showdownName).toBe("Hidden Power Fire");
+    expect(hiddenPowerFire?.type).toBe("fire");
+    for (const id of ["catastropika", "maxstrike", "pikapapow", "paleowave"]) {
       expect(catalog.moves.some((move) => move.id === id), id).toBe(false);
     }
     expect(catalog.items.length).toBeGreaterThan(200);

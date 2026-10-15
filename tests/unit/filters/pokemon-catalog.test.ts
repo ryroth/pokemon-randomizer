@@ -1,8 +1,11 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { NON_GENERATABLE_POKEMON_ID_LIST } from "@/lib/data/generatableForms";
 import { filterPokemonForms } from "@/lib/filters/pokemon";
 import { generatedCatalogPath, loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
+import { POKEMON_TYPES } from "@/lib/types/pokemon-type";
+import { EVOLUTION_STAGES, FORM_TYPES, GENERATIONS } from "@/lib/types/taxonomy";
 import type { PokemonFilterConfig } from "@/lib/filters/pokemon";
 import type { PokemonForm } from "@/lib/types/pokemon";
 
@@ -182,5 +185,56 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon filters", () => {
     expect(defaults.has(bySlug("kyogre-primal").id)).toBe(false);
     expect(primals.has(bySlug("kyogre-primal").id)).toBe(true);
     expect(primals.has(bySlug("kyogre").id)).toBe(false);
+  });
+
+  it("keeps costume and mid-battle forms in the catalog and out of every roll", () => {
+    const widest = idsOf(
+      filter({
+        generations: [...GENERATIONS],
+        types: [...POKEMON_TYPES],
+        typeMatchMode: "or",
+        formTypes: [...FORM_TYPES],
+        evolutionStages: [...EVOLUTION_STAGES],
+        allowPseudoLegendary: true,
+        allowSubLegendary: true,
+        allowLegendary: true,
+        allowMythical: true,
+        allowParadox: true,
+        allowUltraBeast: true,
+      }),
+    );
+
+    for (const id of NON_GENERATABLE_POKEMON_ID_LIST) {
+      expect(catalog.pokemon.some((form) => form.id === id), id).toBe(true);
+      expect(widest.has(id), id).toBe(false);
+    }
+
+    for (const id of [
+      "pikachu",
+      "pikachugmax",
+      "castform",
+      "darmanitan",
+      "darmanitangalar",
+      "meloetta",
+      "vivillon",
+      "vivillonfancy",
+      "vivillonpokeball",
+      "wishiwashi",
+      "mimikyu",
+      "cramorant",
+      "eiscue",
+      "morpeko",
+      "eternatus",
+      "palafin",
+      "raichualola",
+    ]) {
+      expect(widest.has(id), id).toBe(true);
+    }
+
+    const vivillonIds = catalog.pokemon
+      .filter((form) => form.id.startsWith("vivillon"))
+      .map((form) => form.id)
+      .sort();
+    expect(vivillonIds).toEqual(["vivillon", "vivillonfancy", "vivillonpokeball"]);
   });
 });

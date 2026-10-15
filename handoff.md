@@ -20,7 +20,7 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 | Item | Value |
 | --- | --- |
 | Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), **tester feedback part 2** (PR #14), then **form learnsets and required held items** (PR #15) |
-| Current work | None. Later features only if the user asks |
+| Current work | Battle-only and costume forms stay out of generation, and moves removed from the current games are back in the catalog. Branch work; pull request number is recorded in the docs commit |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
 | Current branch locally | `master` |
 | Latest on `master` | The merge of pull request #15 (form learnsets and required held items). Run `git log -1` for the hash |
@@ -32,7 +32,7 @@ Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the test
 
 Start the next feature from up-to-date `master` on a new branch.
 
-Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`. Last full run on the tester-feedback branch (merged as #10): tsc clean, ESLint 0 errors, Vitest 422, Playwright 92 (one a11y Showdown dialog test flaked once under load and passed alone), build passes. The keyboard tab-stop audits in `a11y.spec.ts` and a few Showdown tests can flake when many workers share one cold dev server (a different one each run); re-run the named test alone before treating it as a regression. Playwright covers the randomizer, builder-through-teams, dock, Showdown, accessibility, Round 2, and tester-feedback flows (`npx playwright install` may still be needed). Catalog version **2.4.0**. Do not hand-edit `catalog.json`, `genera.json`, `pokemon-art.json`, or `item-icons.json`. Learnsets and Hidden Abilities are separate generated files.
+Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`. Last full run on the tester-feedback branch (merged as #10): tsc clean, ESLint 0 errors, Vitest 422, Playwright 92 (one a11y Showdown dialog test flaked once under load and passed alone), build passes. The keyboard tab-stop audits in `a11y.spec.ts` and a few Showdown tests can flake when many workers share one cold dev server (a different one each run); re-run the named test alone before treating it as a regression. Playwright covers the randomizer, builder-through-teams, dock, Showdown, accessibility, Round 2, and tester-feedback flows (`npx playwright install` may still be needed). Catalog version **2.5.0**. Do not hand-edit `catalog.json`, `genera.json`, `pokemon-art.json`, or `item-icons.json`. Learnsets and Hidden Abilities are separate generated files.
 
 ---
 
@@ -114,10 +114,11 @@ Do not silently reverse these.
 | Form types | `base \| regional \| mega \| primal \| gmax \| other` |
 | Dynamax | Not a form. Gigantamax **is** a form |
 | Default form filter | **Base, regional, and other on.** Mega, primal, and gmax **off** |
+| Not generated | Costume Pikachu, Castform weather forms, Darmanitan Zen (including Galarian), Meloetta Pirouette, Vivillon patterns other than Meadow, Fancy, and Poké Ball, Wishiwashi School, Mimikyu Busted, Cramorant Gorging and Gulping, Eiscue Noice, Morpeko Hangry, Eternatus Eternamax, Palafin Hero. They stay in the catalog (`isGeneratablePokemon`). The base form is rolled; the battle ability or move still causes the form in a battle |
 | Type filter | Default OR; AND is already implemented in `lib/filters` |
 | Specials default | All allowed (user unchecks to exclude) |
 | Ability random ON | All standard abilities (`abilityPoolMode: "all"`). Legal-only is a future pool mode |
-| Move random ON | All standard catalog moves (`movePoolMode: "all"`). Z/Max/CAP and Showdown `Past` moves (removed from the games, e.g. Spider Web) already excluded at import. Learnset-only is a future pool mode |
+| Move random ON | All catalog moves (`movePoolMode: "all"`), including moves Showdown marks `Past` (removed from the current games, e.g. Return, Hidden Power, Spider Web). Z/Max/CAP/Let's Go stay excluded at import. Learnset-only is a future pool mode |
 | Item random ON | Showdown holdables + explicit None, then selected teambuilder categories (Popular / Items / Pokémon-Specific / Usually Useless / Useless; all on by default) |
 | Count | 1–12 Pokémon, default 6. Ability 1–12, default 3. Moves 4–12, default 8. Move-before `movesPerPokemon` 1–4, default 4. Items 1–12, default 3 |
 | Insufficient pools | Typed error + user-facing explanation; never a silent short list |
@@ -178,6 +179,7 @@ lib/data/genera.ts           English PokéAPI genus
 lib/data/loadCatalog.ts      Node loader (mtime-aware cache) + slim Pokémon payload
 lib/data/moveDisplay.ts      Power / Accuracy chip labels
 lib/data/item-teambuilder.ts Showdown item category mapping
+lib/data/generatableForms.ts  Forms that stay in the catalog but are never rolled
 lib/filters/                 Pokémon, move, and item filters from RandomizerConfig
 lib/randomizer/              defaults, RNG, engines, custom order, extras, session helpers
 lib/builder/                Draft setters, pools, learnsets, move search/sort, item search, ability groups, Showdown EV suggestion, randomizer locks
@@ -193,7 +195,7 @@ lib/world/                   Which backdrop each route shows (`sceneForPath`, `s
 components/layout/scene-backdrop.tsx  The two decorative backdrop layers
 public/world/                Compressed official backdrops and `sources.json` (generated, committed)
 app/fonts/                   pokemon-solid.ttf (fan-made logo lettering, see the world-theme section)
-data/generated/              catalog.json (~4.7MB, version 2.4.0), learnsets.json, form-items.json, hidden-abilities.json, join-report.json, pokemon-art.json, item-icons.json, genera.json
+data/generated/              catalog.json (~4.7MB, version 2.5.0), learnsets.json, form-items.json, hidden-abilities.json, join-report.json, pokemon-art.json, item-icons.json, genera.json
 data/cache/pokeapi/          Gitignored HTTP cache
 tests/unit/                  Domain tests (Vitest), including `tests/unit/ui/type-colors.test.ts`
 tests/e2e/builder.spec.ts    Builder, recap, and saved-team flow (Playwright)
@@ -207,7 +209,7 @@ tests/unit/world/            Scene mapping, shipped backdrop files, credits (Vit
 
 ## Catalog (do not rebuild, do not hand-edit)
 
-`npm run import:data` already produced the catalog. Current version **2.4.0** includes `evolutionTargetIds`, Showdown item teambuilder categories, latest unique English Pokédex flavor, and numeric ability/move/item effects.
+`npm run import:data` already produced the catalog. Current version **2.5.0** includes `evolutionTargetIds`, Showdown item teambuilder categories, latest unique English Pokédex flavor, numeric ability/move/item effects, and moves Showdown marks `Past`.
 
 | Collection | Count |
 | --- | --- |
@@ -429,7 +431,7 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ### Move pool follows the current games (merged, PR #12)
 
-- `isCatalogMove` (`scripts/import/showdown.ts`) drops moves Showdown marks `Past` (not usable in battle in the current generation, e.g. Spider Web, Hidden Power, Return, Hail). The catalog went from about 850 to 697 moves. After changing this filter run `npm run import:data` then `npm run import:learnsets`.
+- `isCatalogMove` (`scripts/import/showdown.ts`) keeps moves Showdown marks `Past` (removed from the current games, e.g. Spider Web, Hidden Power, Return, Hail). Z-Moves, Max moves, CAP, Custom, Future, and Let's Go moves stay out. After changing this filter run `npm run import:data` then `npm run import:learnsets`.
 - Moves Showdown marks `Unobtainable` (Power Shift, Cut, the Torque moves, and so on) are still in the catalog. Say so if they should go too.
 
 ### Ditto tab icon (merged, PR #13)
@@ -455,5 +457,10 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ### Form learnsets and required items (merged, PR #15)
 
-- **Learnsets:** `scripts/import/learnsets.ts` follows Showdown's learnset chain. A form with an empty learnset (Giratina-Origin, Dialga-Origin, Palkia-Origin, the Arceus plates, Shaymin-Sky, the Forces of Nature Therian forms, and the rest of that list) uses the form it changes from, including earlier stages. A form that only adds a move (Rotom-Heat's Overheat, Zacian-Crowned's Behemoth Blade, code `R`) keeps that move and the rest of the parent learnset. Kyurem-Black and Kyurem-White do not inherit Glaciate. Re-run `npm run import:learnsets` after changing this. Unown stays empty because Hidden Power is a `Past` move.
+- **Learnsets:** `scripts/import/learnsets.ts` follows Showdown's learnset chain. A form with an empty learnset (Giratina-Origin, Dialga-Origin, Palkia-Origin, the Arceus plates, Shaymin-Sky, the Forces of Nature Therian forms, and the rest of that list) uses the form it changes from, including earlier stages. A form that only adds a move (Rotom-Heat's Overheat, Zacian-Crowned's Behemoth Blade, code `R`) keeps that move and the rest of the parent learnset. Kyurem-Black and Kyurem-White do not inherit Glaciate. Re-run `npm run import:learnsets` after changing this. Unown's learnset is Hidden Power.
 - **Held item:** `npm run import:form-items` writes `data/generated/form-items.json`. Selecting an Other form or Mega Evolution that must hold an item sets that item on the draft and locks it (`withRequiredFormItem`, `itemLockedByForm`) until a different Pokémon is selected. The builder, the recap Edit link, and the item randomizer all respect the lock. Plates, orbs, masks, drives, and memories win over a Z-Crystal when both are listed. A Mega uses its Mega Stone. Mega Rayquaza has no stone. 97 forms are in the file, including Giratina-Origin → Griseous Core and Venusaur-Mega → Venusaurite.
+
+### Battle-only forms and restored moves
+
+- **Not generated:** `isGeneratablePokemon` (`lib/data/generatableForms.ts`) is applied inside `filterPokemonForms`, so the match count and the roll use the same pool. The forms stay in the catalog. A roll never returns Cosplay Pikachu or a Pikachu with a cap (including the Alola cap), Castform Sunny, Rainy, or Snowy, Darmanitan Zen Mode, Galarian Darmanitan Zen Mode, Meloetta Pirouette, Wishiwashi School, Mimikyu Busted, Cramorant Gorging, Cramorant Gulping, Eiscue Noice, Morpeko Hangry, Eternatus Eternamax, or Palafin Hero. The base form still can be rolled. Zen Mode, Relic Song, Hunger Switch, Zero to Hero, Forecast, Schooling, Disguise, Gulp Missile, and Ice Face still change that Pokémon during a battle. Vivillon rolls are Meadow, Fancy, and Poké Ball. Other Vivillon patterns are cosmetic and are already left out of the catalog; any other Vivillon id is blocked too. Pikachu, Pikachu-Gmax, and Alolan Raichu still roll.
+- **Past moves:** `isCatalogMove` keeps moves Showdown marks `Past` (removed from the current games). Catalog version **2.5.0** has 850 moves. Z-Moves, Max moves, CAP, Custom, Future, and Let's Go moves stay out. Hidden Power's type entries share Showdown's id `hiddenpower`, so each catalog id is the name (`hiddenpowerfire`) and `showdownName` stays `Hidden Power Fire`. A Pokémon that learns Hidden Power also gets each type on its learnset, with the same learn methods. Unown's learnset is Hidden Power. The type entries have no English effect text, so their description is empty; type, power, accuracy, and PP come from Showdown. After changing this filter, run `npm run import:data` then `npm run import:learnsets`.
