@@ -1,3 +1,4 @@
+import { isLearnableMove } from "@/lib/filters/moves";
 import { fail, ok, type ValidationResult } from "@/lib/validation/result";
 import type { ValidationIssue } from "@/lib/validation/result";
 
@@ -35,6 +36,13 @@ export function validateMoves(
   }
 
   const errors: ValidationIssue[] = [];
+  if (selected.some((id) => !isLearnableMove({ id }))) {
+    errors.push({
+      code: "moves.struggle",
+      field: "moveIds",
+      message: "Struggle is used when a Pokémon is out of PP. It cannot be one of its moves.",
+    });
+  }
   const seen = new Set<string>();
   for (const id of selected) {
     if (seen.has(id)) {

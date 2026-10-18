@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { generatedCatalogPath, loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
+import { isLearnableMove } from "@/lib/filters/moves";
 import { randomizeMoves } from "@/lib/randomizer/moves";
 
 const catalogPath = generatedCatalogPath();
@@ -20,7 +21,9 @@ describe.skipIf(!catalogAvailable)("catalog move randomizer", () => {
 
     expect(ids).toHaveLength(DEFAULT_RANDOMIZER_CONFIG.moveCount);
     expect(new Set(ids).size).toBe(DEFAULT_RANDOMIZER_CONFIG.moveCount);
-    expect(result.poolSize).toBe(catalog.moves.length);
+    expect(catalog.moves.some((move) => move.id === "struggle")).toBe(true);
+    expect(ids.includes("struggle")).toBe(false);
+    expect(result.poolSize).toBe(catalog.moves.filter((move) => isLearnableMove(move)).length);
     expect(catalog.moves.length).toBeGreaterThan(600);
     expect(ids.includes("maxguard")).toBe(false);
     expect(catalog.moves.some((move) => move.id === "maxguard")).toBe(false);
@@ -49,7 +52,7 @@ describe.skipIf(!catalogAvailable)("catalog move randomizer", () => {
     expect(result.moves).toHaveLength(DEFAULT_RANDOMIZER_CONFIG.moveCount);
     expect(result.moves.every((move) => move.category === "physical")).toBe(true);
     expect(result.poolSize).toBe(
-      catalog.moves.filter((move) => move.category === "physical").length,
+      catalog.moves.filter((move) => isLearnableMove(move) && move.category === "physical").length,
     );
     expect(result.poolSize).toBeLessThan(catalog.moves.length);
     expect(result.poolSize).toBeGreaterThan(DEFAULT_RANDOMIZER_CONFIG.moveCount);

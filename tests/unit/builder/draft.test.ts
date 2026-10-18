@@ -93,18 +93,22 @@ describe("builder pools", () => {
 
   it("uses the standard catalog when moves were not randomized", () => {
     const session = createInitialSession();
-    expect(builderMovePool(session, [{ id: "tackle" }, { id: "hiddenpower" }, { id: "hiddenpower" }])).toEqual([
-      "tackle",
-      "hiddenpower",
-    ]);
+    expect(
+      builderMovePool(session, [
+        { id: "tackle" },
+        { id: "hiddenpower" },
+        { id: "hiddenpower" },
+        { id: "struggle" },
+      ]),
+    ).toEqual(["tackle", "hiddenpower"]);
   });
 
   it("limits the catalog list to the Pokémon's learnset", () => {
     const session = createInitialSession();
     expect(
-      builderMovePool(session, [{ id: "tackle" }, { id: "flamethrower" }, { id: "growl" }], {
+      builderMovePool(session, [{ id: "tackle" }, { id: "flamethrower" }, { id: "growl" }, { id: "struggle" }], {
         list: "learnset",
-        learnsetIds: ["tackle", "growl"],
+        learnsetIds: ["tackle", "growl", "struggle"],
       }),
     ).toEqual(["tackle", "growl"]);
   });

@@ -4,9 +4,17 @@ import type { RandomizerConfig } from "@/lib/types/randomizer";
 
 export type MoveFilterConfig = Pick<RandomizerConfig, "moveCategories" | "moveTypes">;
 
+/** Struggle is used when every move is out of PP. It is not a move a Pokémon learns. */
+const UNLEARNABLE_MOVE_IDS = new Set(["struggle"]);
+
+export function isLearnableMove(move: { id: string }): boolean {
+  return !UNLEARNABLE_MOVE_IDS.has(move.id);
+}
+
 /**
  * Returns catalog moves whose damage class is in `moveCategories` and whose type
  * is in `moveTypes`. An empty category list or empty type list matches nothing.
+ * Struggle is never included.
  */
 export function filterMoves(
   moves: readonly Move[],
@@ -19,7 +27,7 @@ export function filterMoves(
   }
 
   return moves.filter(
-    (move) => categories.has(move.category) && types.has(move.type),
+    (move) => isLearnableMove(move) && categories.has(move.category) && types.has(move.type),
   );
 }
 

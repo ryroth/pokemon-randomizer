@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterMoves } from "@/lib/filters/moves";
+import { filterMoves, isLearnableMove } from "@/lib/filters/moves";
 import type { Move } from "@/lib/types/catalog-entities";
 import { POKEMON_TYPES } from "@/lib/types/pokemon-type";
 
@@ -71,6 +71,17 @@ describe("filterMoves", () => {
         moveTypes: ["electric", "normal"],
       }).map((move) => move.id),
     ).toEqual(["thunderbolt"]);
+  });
+
+  it("leaves Struggle out even when its category and type are selected", () => {
+    const struggle = makeMove("struggle", { type: "normal", category: "physical" });
+    expect(isLearnableMove(struggle)).toBe(false);
+    expect(
+      filterMoves([earthquake, struggle], {
+        moveCategories: ["physical"],
+        moveTypes: ["normal", "ground"],
+      }).map((move) => move.id),
+    ).toEqual(["earthquake"]);
   });
 
   it("matches nothing when no categories or no types are selected", () => {

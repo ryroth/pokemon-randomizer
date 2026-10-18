@@ -1,3 +1,4 @@
+import { isLearnableMove } from "@/lib/filters/moves";
 import type { RandomizerSession } from "@/lib/types/session";
 
 export type BuilderMoveList = "all" | "learnset";
@@ -12,7 +13,9 @@ export function builderMovePool(
   moves: readonly { id: string }[],
   options?: { list?: BuilderMoveList; learnsetIds?: readonly string[] },
 ): string[] {
-  const catalogIds = uniqueIds(moves.map((move) => move.id));
+  const catalogIds = uniqueIds(moves.map((move) => move.id)).filter((id) =>
+    isLearnableMove({ id }),
+  );
   if (options?.list !== "learnset") {
     return catalogIds;
   }

@@ -64,6 +64,14 @@ describe("set field validators", () => {
     }
   });
 
+  it("rejects Struggle", () => {
+    const result = validateMoves(["protect", "struggle"]);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors[0]?.code).toBe("moves.struggle");
+    }
+  });
+
   it("rejects more than four moves", () => {
     const result = validateMoves(["a", "b", "c", "d", "e"]);
     expect(result.ok).toBe(false);

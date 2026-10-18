@@ -118,7 +118,7 @@ Do not silently reverse these.
 | Type filter | Default OR; AND is already implemented in `lib/filters` |
 | Specials default | All allowed (user unchecks to exclude) |
 | Ability random ON | All standard abilities (`abilityPoolMode: "all"`). Legal-only is a future pool mode |
-| Move random ON | All catalog moves (`movePoolMode: "all"`), including moves Showdown marks `Past` (removed from the current games, e.g. Return, Hidden Power, Spider Web). Z/Max/CAP/Let's Go stay excluded at import. Learnset-only is a future pool mode |
+| Move random ON | All catalog moves (`movePoolMode: "all"`), including moves Showdown marks `Past` (removed from the current games, e.g. Return, Hidden Power, Spider Web). Struggle is never offered (`isLearnableMove`). Z/Max/CAP/Let's Go stay excluded at import. Learnset-only is a future pool mode |
 | Item random ON | Showdown holdables + explicit None, then selected teambuilder categories (Popular / Items / Pokémon-Specific / Usually Useless / Useless; all on by default) |
 | Count | 1–12 Pokémon, default 6. Ability 1–12, default 3. Moves 4–12, default 8. Move-before `movesPerPokemon` 1–4, default 4. Items 1–12, default 3 |
 | Insufficient pools | Typed error + user-facing explanation; never a silent short list |
