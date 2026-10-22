@@ -66,6 +66,11 @@ export interface RandomizerSession {
   abilityOptions: string[];
   moveOptions: string[];
   itemOptions: string[];
+  /**
+   * Ability, move, or item steps the user has already left for a later randomizer.
+   * Those pools can no longer be cleared. Missing on sessions saved before this existed.
+   */
+  passedExtras?: Array<Exclude<RandomizerTab, "pokemon">>;
   draft: PokemonSetDraft;
   finalizedSet?: PokemonSet;
   /**

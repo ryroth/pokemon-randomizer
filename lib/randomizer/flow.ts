@@ -77,6 +77,64 @@ export function isExtraBeforePokemon(
   return order.indexOf(tab) < order.indexOf("pokemon");
 }
 
+/**
+ * A before-Pokémon ability, move, or item pool is generated once.
+ * Later Generate clicks do not replace it. Re-roll still replaces one result.
+ * A step that runs after Pokémon can generate again for the current Pokémon.
+ */
+export function canGenerateExtraPool(
+  session: RandomizerSession,
+  tab: Exclude<RandomizerTab, "pokemon">,
+): boolean {
+  if (!isOptionalRandomizerEnabled(session.config, tab)) {
+    return false;
+  }
+  if (!isExtraBeforePokemon(session.config, tab)) {
+    return true;
+  }
+
+  switch (tab) {
+    case "ability":
+      return session.abilityOptions.length === 0;
+    case "move":
+      return session.moveOptions.length === 0;
+    case "item":
+      return session.itemOptions.length === 0;
+  }
+}
+
+/**
+ * Clear is available only while the user is still on that step.
+ * Leaving it for a later randomizer, or already having left it, removes Clear.
+ */
+export function canClearExtraPool(
+  session: RandomizerSession,
+  tab: Exclude<RandomizerTab, "pokemon">,
+): boolean {
+  if ((session.passedExtras ?? []).includes(tab)) {
+    return false;
+  }
+  if (!isOptionalRandomizerEnabled(session.config, tab)) {
+    return false;
+  }
+
+  const order = enabledRandomizerSteps(session.config);
+  const extraIndex = order.indexOf(tab);
+  const here = order.indexOf(session.tab);
+  if (extraIndex === -1 || here === -1 || extraIndex < here) {
+    return false;
+  }
+
+  switch (tab) {
+    case "ability":
+      return session.abilityOptions.length > 0;
+    case "move":
+      return session.moveOptions.length > 0;
+    case "item":
+      return session.itemOptions.length > 0;
+  }
+}
+
 export function nextRandomizerDestination(
   config: RandomizerConfig,
   from: RandomizerTab,

@@ -2,6 +2,7 @@
 
 import { RerollButton } from "@/components/randomizer/reroll-button";
 import { MOVE_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatMoveAccuracy, formatMovePower } from "@/lib/data/moveDisplay";
 import { MOVES_ASSIGNED_PER_POKEMON } from "@/lib/randomizer/applyExtras";
@@ -15,8 +16,11 @@ interface MoveResultsProps {
   moves: readonly Move[];
   selectedMoveIds: readonly (string | undefined)[];
   selectable: boolean;
+  canGenerate: boolean;
+  canClear: boolean;
   errorMessage: string | null;
   onGenerate: () => void;
+  onClear: () => void;
   onSelect: (moveId: string) => void;
   onReroll: (moveId: string) => void;
 }
@@ -25,8 +29,11 @@ export function MoveResults({
   moves,
   selectedMoveIds,
   selectable,
+  canGenerate,
+  canClear,
   errorMessage,
   onGenerate,
+  onClear,
   onSelect,
   onReroll,
 }: MoveResultsProps) {
@@ -42,7 +49,20 @@ export function MoveResults({
           {errorMessage}
         </p>
       ) : null}
-      <GenerateButton label="Generate moves" steps={MOVE_GENERATE_STEPS} onGenerate={onGenerate} />
+      {canGenerate ? (
+        <GenerateButton label="Generate moves" steps={MOVE_GENERATE_STEPS} onGenerate={onGenerate} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {canClear
+            ? "These moves are already set. Re-roll one to replace it, or clear them to generate again."
+            : "These moves are already set. Re-roll one to replace it."}
+        </p>
+      )}
+      {canClear ? (
+        <Button type="button" variant="ghost" className="w-fit" onClick={onClear}>
+          Clear generated moves
+        </Button>
+      ) : null}
       {selectable && moves.length > 0 ? (
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {selectedCount} of {MOVES_ASSIGNED_PER_POKEMON} moves selected.

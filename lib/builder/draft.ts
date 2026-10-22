@@ -2,7 +2,7 @@ import { ivPresetById } from "@/lib/builder/ivPresets";
 import { rollGender } from "@/lib/randomizer/gender";
 import { createSeed } from "@/lib/randomizer/randomUtils";
 import { requiredFormItemId } from "@/lib/data/formItems";
-import { battlePokemonId } from "@/lib/randomizer/session";
+import { battlePokemonId, passReachedRandomizer } from "@/lib/randomizer/session";
 import {
   abilityLockedByRandomizer,
   itemLockedByForm,
@@ -52,7 +52,7 @@ export function openBuilder(session: RandomizerSession): RandomizerSession {
   }
 
   return applyBuilderDefaults({
-    ...session,
+    ...passReachedRandomizer(session, "builder"),
     step: "builder",
     draft: {
       ...session.draft,

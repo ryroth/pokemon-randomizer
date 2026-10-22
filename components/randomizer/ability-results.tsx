@@ -2,6 +2,7 @@
 
 import { RerollButton } from "@/components/randomizer/reroll-button";
 import { ABILITY_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Ability } from "@/lib/types/catalog-entities";
 import { cn } from "@/lib/utils";
@@ -10,8 +11,11 @@ interface AbilityResultsProps {
   abilities: readonly Ability[];
   selectedAbilityId?: string;
   selectable: boolean;
+  canGenerate: boolean;
+  canClear: boolean;
   errorMessage: string | null;
   onGenerate: () => void;
+  onClear: () => void;
   onSelect: (abilityId: string) => void;
   onReroll: (abilityId: string) => void;
 }
@@ -20,8 +24,11 @@ export function AbilityResults({
   abilities,
   selectedAbilityId,
   selectable,
+  canGenerate,
+  canClear,
   errorMessage,
   onGenerate,
+  onClear,
   onSelect,
   onReroll,
 }: AbilityResultsProps) {
@@ -35,7 +42,20 @@ export function AbilityResults({
           {errorMessage}
         </p>
       ) : null}
-      <GenerateButton label="Generate abilities" steps={ABILITY_GENERATE_STEPS} onGenerate={onGenerate} />
+      {canGenerate ? (
+        <GenerateButton label="Generate abilities" steps={ABILITY_GENERATE_STEPS} onGenerate={onGenerate} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {canClear
+            ? "These abilities are already set. Re-roll one to replace it, or clear them to generate again."
+            : "These abilities are already set. Re-roll one to replace it."}
+        </p>
+      )}
+      {canClear ? (
+        <Button type="button" variant="ghost" className="w-fit" onClick={onClear}>
+          Clear generated abilities
+        </Button>
+      ) : null}
       {abilities.length > 0 ? (
         <ul
           aria-label="Generated abilities"

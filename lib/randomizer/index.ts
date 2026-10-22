@@ -78,6 +78,8 @@ export {
 } from "@/lib/randomizer/randomUtils";
 export {
   builderAbilityPool,
+  canClearExtraPool,
+  canGenerateExtraPool,
   canOpenRandomizerTab,
   enabledRandomizerSteps,
   firstOpenRandomizerTab,
@@ -108,6 +110,9 @@ export {
   applyPokemonRoll,
   battlePokemonId,
   chooseEvolvedPokemon,
+  clearAbilityPool,
+  clearItemPool,
+  clearMovePool,
   clearPokemonRolls,
   clampViewedRollIndex,
   createInitialSession,
@@ -117,6 +122,7 @@ export {
   itemChoicesForPokemon,
   moveChoicesForPokemon,
   openRandomizerTab,
+  passReachedRandomizer,
   replaceRolledAbility,
   replaceRolledItem,
   replaceRolledMove,

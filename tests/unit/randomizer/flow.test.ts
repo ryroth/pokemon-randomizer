@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_RANDOMIZER_CONFIG, TYPICAL_RANDOMIZER_ORDER } from "@/lib/randomizer/defaults";
 import {
   builderAbilityPool,
+  canGenerateExtraPool,
   canOpenRandomizerTab,
   extraSlotsNeeded,
   firstOpenRandomizerTab,
@@ -222,6 +223,51 @@ describe("canOpenRandomizerTab", () => {
     expect(session.tab).toBe("item");
     expect(canOpenRandomizerTab(session, "item")).toBe(true);
     expect(isExtraBeforePokemon(session.config, "item")).toBe(true);
+  });
+});
+
+describe("canGenerateExtraPool", () => {
+  it("allows the first before-Pokémon pool and refuses a replacement", () => {
+    const before = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeAbilities: true,
+      randomizeMoves: true,
+      randomizeItems: true,
+      randomizerOrder: ["ability", "move", "item", "pokemon"],
+    });
+
+    expect(canGenerateExtraPool(before, "ability")).toBe(true);
+    expect(canGenerateExtraPool(before, "move")).toBe(true);
+    expect(canGenerateExtraPool(before, "item")).toBe(true);
+
+    const generated = {
+      ...before,
+      abilityOptions: ["blaze"],
+      moveOptions: ["ember"],
+      itemOptions: ["leftovers"],
+    };
+    expect(canGenerateExtraPool(generated, "ability")).toBe(false);
+    expect(canGenerateExtraPool(generated, "move")).toBe(false);
+    expect(canGenerateExtraPool(generated, "item")).toBe(false);
+  });
+
+  it("still allows a new pool when the step runs after Pokémon", () => {
+    const after = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeAbilities: true,
+      randomizeMoves: true,
+      randomizeItems: true,
+    });
+    const generated = {
+      ...after,
+      abilityOptions: ["blaze"],
+      moveOptions: ["ember"],
+      itemOptions: ["leftovers"],
+    };
+
+    expect(canGenerateExtraPool(generated, "ability")).toBe(true);
+    expect(canGenerateExtraPool(generated, "move")).toBe(true);
+    expect(canGenerateExtraPool(generated, "item")).toBe(true);
   });
 });
 

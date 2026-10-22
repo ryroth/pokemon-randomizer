@@ -3,6 +3,7 @@
 import { ItemIcon } from "@/components/items/item-icon";
 import { RerollButton } from "@/components/randomizer/reroll-button";
 import { ITEM_GENERATE_STEPS, GenerateButton } from "@/components/randomizer/staged-generate";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NONE_ITEM_ID } from "@/lib/randomizer/items";
 import { ITEM_CATEGORY_LABELS, type Item } from "@/lib/types/catalog-entities";
@@ -12,8 +13,11 @@ interface ItemResultsProps {
   items: readonly Item[];
   selectedItemId?: string | null;
   selectable: boolean;
+  canGenerate: boolean;
+  canClear: boolean;
   errorMessage: string | null;
   onGenerate: () => void;
+  onClear: () => void;
   onSelect: (itemId: string | null) => void;
   onReroll: (itemId: string) => void;
 }
@@ -22,8 +26,11 @@ export function ItemResults({
   items,
   selectedItemId,
   selectable,
+  canGenerate,
+  canClear,
   errorMessage,
   onGenerate,
+  onClear,
   onSelect,
   onReroll,
 }: ItemResultsProps) {
@@ -39,7 +46,20 @@ export function ItemResults({
           {errorMessage}
         </p>
       ) : null}
-      <GenerateButton label="Generate items" steps={ITEM_GENERATE_STEPS} onGenerate={onGenerate} />
+      {canGenerate ? (
+        <GenerateButton label="Generate items" steps={ITEM_GENERATE_STEPS} onGenerate={onGenerate} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {canClear
+            ? "These items are already set. Re-roll one to replace it, or clear them to generate again."
+            : "These items are already set. Re-roll one to replace it."}
+        </p>
+      )}
+      {canClear ? (
+        <Button type="button" variant="ghost" className="w-fit" onClick={onClear}>
+          Clear generated items
+        </Button>
+      ) : null}
       {items.length > 0 ? (
         <ul
           aria-label="Generated items"

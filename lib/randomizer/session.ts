@@ -10,7 +10,9 @@ import {
   DEFAULT_RANDOMIZER_CONFIG,
 } from "@/lib/randomizer/defaults";
 import {
+  canClearExtraPool,
   canOpenRandomizerTab,
+  enabledRandomizerSteps,
   firstOpenRandomizerTab,
   isExtraBeforePokemon,
 } from "@/lib/randomizer/flow";
@@ -40,6 +42,7 @@ export function createInitialSession(
     abilityOptions: [],
     moveOptions: [],
     itemOptions: [],
+    passedExtras: [],
     draft: {
       moveIds: emptyMoveSlots(),
     },
@@ -226,11 +229,89 @@ export function clearPokemonRolls(session: RandomizerSession): RandomizerSession
   };
 }
 
+/** Drops a generated ability pool so it can be rolled again. Applied abilities go with it. */
+export function clearAbilityPool(session: RandomizerSession): RandomizerSession {
+  if (!canClearExtraPool(session, "ability")) {
+    return session;
+  }
+
+  if (assignsAbilitiesBeforePokemon(session)) {
+    return withSelectionMatchingAppliedAbility({
+      ...session,
+      abilityOptions: [],
+      pokemonRolls: session.pokemonRolls.map((roll) =>
+        roll.appliedAbilityIds ? { ...roll, appliedAbilityIds: undefined } : roll,
+      ),
+      draft: withDraftAbility(session.draft, undefined),
+    });
+  }
+
+  return {
+    ...session,
+    abilityOptions: [],
+    draft: withDraftAbility(session.draft, undefined),
+  };
+}
+
+/** Drops a generated move pool so it can be rolled again. Applied moves go with it. */
+export function clearMovePool(session: RandomizerSession): RandomizerSession {
+  if (!canClearExtraPool(session, "move")) {
+    return session;
+  }
+
+  if (assignsMovesBeforePokemon(session)) {
+    return withSelectionMatchingAppliedMoves({
+      ...session,
+      moveOptions: [],
+      pokemonRolls: session.pokemonRolls.map((roll) =>
+        roll.appliedMoveIds ? { ...roll, appliedMoveIds: undefined } : roll,
+      ),
+      draft: withDraftMoves(session.draft, emptyMoveSlots()),
+    });
+  }
+
+  return {
+    ...session,
+    moveOptions: [],
+    draft: withDraftMoves(session.draft, emptyMoveSlots()),
+  };
+}
+
+/** Drops a generated item pool so it can be rolled again. Applied items go with it. */
+export function clearItemPool(session: RandomizerSession): RandomizerSession {
+  if (!canClearExtraPool(session, "item")) {
+    return session;
+  }
+
+  if (assignsItemsBeforePokemon(session)) {
+    return withRequiredFormItem(
+      withSelectionMatchingAppliedItem({
+        ...session,
+        itemOptions: [],
+        pokemonRolls: session.pokemonRolls.map((roll) =>
+          roll.appliedItemIds ? { ...roll, appliedItemIds: undefined } : roll,
+        ),
+        draft: withDraftItem(session.draft, undefined),
+      }),
+    );
+  }
+
+  return withRequiredFormItem({
+    ...session,
+    itemOptions: [],
+    draft: withDraftItem(session.draft, undefined),
+  });
+}
+
 export function applyAbilityRoll(
   session: RandomizerSession,
   result: AbilityRandomizerResult,
   forPokemonId?: string,
 ): RandomizerSession {
+  if (assignsAbilitiesBeforePokemon(session) && session.abilityOptions.length > 0) {
+    return session;
+  }
+
   const abilityOptions = result.abilities.map((ability) => ability.id);
 
   if (assignsAbilitiesBeforePokemon(session)) {
@@ -279,6 +360,10 @@ export function applyItemRoll(
     !assignsItemsBeforePokemon(session) &&
     requiredFormItemId(battlePokemonId(session))
   ) {
+    return session;
+  }
+
+  if (assignsItemsBeforePokemon(session) && session.itemOptions.length > 0) {
     return session;
   }
 
@@ -338,6 +423,10 @@ export function applyMoveRoll(
   result: MoveRandomizerResult,
   forPokemonId?: string,
 ): RandomizerSession {
+  if (assignsMovesBeforePokemon(session) && session.moveOptions.length > 0) {
+    return session;
+  }
+
   const moveOptions = result.moves.map((move) => move.id);
 
   if (assignsMovesBeforePokemon(session)) {
@@ -409,9 +498,41 @@ export function openRandomizerTab(
   }
 
   return {
-    ...session,
+    ...passReachedRandomizer(session, tab),
     tab,
   };
+}
+
+/**
+ * Records ability, move, and item steps the user has moved past.
+ * The furthest of the current tab and `destination` counts. `"builder"` is after every step.
+ */
+export function passReachedRandomizer(
+  session: RandomizerSession,
+  destination: RandomizerTab | "builder",
+): RandomizerSession {
+  const order = enabledRandomizerSteps(session.config);
+  const currentIndex = order.indexOf(session.tab);
+  const destinationIndex = destination === "builder" ? order.length : order.indexOf(destination);
+  const reached = Math.max(currentIndex, destinationIndex);
+  if (reached <= 0) {
+    return session;
+  }
+
+  const passed = new Set(session.passedExtras ?? []);
+  let changed = false;
+  for (const step of order.slice(0, reached)) {
+    if (step === "pokemon" || passed.has(step)) {
+      continue;
+    }
+    passed.add(step);
+    changed = true;
+  }
+  if (!changed) {
+    return session;
+  }
+
+  return { ...session, passedExtras: [...passed] };
 }
 
 export function syncRandomizerTab(session: RandomizerSession): RandomizerSession {

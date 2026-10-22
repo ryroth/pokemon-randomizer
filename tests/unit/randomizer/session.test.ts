@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import {
+  clearAbilityPool,
+  clearItemPool,
+  clearMovePool,
   applyAbilityRoll,
   applyAbilityToRolledPokemon,
   applyItemRoll,
@@ -704,6 +707,181 @@ describe("randomizer session helpers", () => {
     expect(cleared.abilityOptions).toEqual(["a", "b", "c"]);
     expect(cleared.draft.abilityId).toBeUndefined();
     expect(cleared.tab).toBe("pokemon");
+  });
+
+  it("does not replace a before-Pokémon ability, move, or item pool", () => {
+    const before = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeAbilities: true,
+      randomizeMoves: true,
+      randomizeItems: true,
+      randomizerOrder: ["ability", "move", "item", "pokemon"],
+    });
+    const withAbilities = applyAbilityRoll(before, {
+      seed: "ability-pool",
+      poolSize: 1,
+      abilities: [makeAbility("blaze")],
+    });
+    const withMoves = applyMoveRoll(withAbilities, moveResult(["ember", "scratch", "growl", "tackle"]));
+    const withItems = applyItemRoll(withMoves, itemResult(["leftovers"]));
+
+    expect(
+      applyAbilityRoll(withItems, {
+        seed: "ability-again",
+        poolSize: 1,
+        abilities: [makeAbility("torrent")],
+      }),
+    ).toBe(withItems);
+    expect(applyMoveRoll(withItems, moveResult(["watergun", "pound", "tailwhip", "leer"]))).toBe(
+      withItems,
+    );
+    expect(applyItemRoll(withItems, itemResult(["lifeorb"]))).toBe(withItems);
+    expect(withItems.abilityOptions).toEqual(["blaze"]);
+    expect(withItems.moveOptions).toEqual(["ember", "scratch", "growl", "tackle"]);
+    expect(withItems.itemOptions).toEqual(["leftovers"]);
+  });
+
+  it("clears a before-Pokémon ability, move, or item pool and the Pokémon that used it", () => {
+    const before = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeAbilities: true,
+      randomizeMoves: true,
+      randomizeItems: true,
+      movesPerPokemon: 1,
+      randomizerOrder: ["ability", "move", "item", "pokemon"],
+    });
+    const withAbilities = applyAbilityRoll(before, {
+      seed: "ability-pool",
+      poolSize: 2,
+      abilities: [makeAbility("blaze"), makeAbility("torrent")],
+    });
+    const withMoves = applyMoveRoll(withAbilities, moveResult(["ember", "scratch", "growl", "tackle"]));
+    const withItems = applyItemRoll(withMoves, itemResult(["leftovers", "lifeorb"]));
+    const rolled = applyPokemonRoll(withItems, {
+      seed: "pokemon-seed",
+      poolSize: 2,
+      pokemon: [makeForm("a"), makeForm("b")],
+    });
+    const assigned = applyItemToRolledPokemon(
+      applyMoveToRolledPokemon(applyAbilityToRolledPokemon(rolled, "a", "blaze"), "a", 0, "ember"),
+      "a",
+      "leftovers",
+    );
+    const selected = selectRolledPokemon(assigned, "a");
+    expect(selected.draft.abilityId).toBe("blaze");
+
+    const clearedAbilities = clearAbilityPool(selected);
+    expect(clearedAbilities.abilityOptions).toEqual([]);
+    expect(clearedAbilities.pokemonRolls[0]?.appliedAbilityIds).toBeUndefined();
+    expect(clearedAbilities.selectedPokemonId).toBeUndefined();
+    expect(clearedAbilities.draft.abilityId).toBeUndefined();
+    expect(clearedAbilities.moveOptions).toEqual(selected.moveOptions);
+    expect(clearedAbilities.itemOptions).toEqual(selected.itemOptions);
+    expect(clearAbilityPool(clearedAbilities)).toBe(clearedAbilities);
+    expect(
+      applyAbilityRoll(clearedAbilities, {
+        seed: "ability-again",
+        poolSize: 1,
+        abilities: [makeAbility("torrent")],
+      }).abilityOptions,
+    ).toEqual(["torrent"]);
+
+    const clearedMoves = clearMovePool(selected);
+    expect(clearedMoves.moveOptions).toEqual([]);
+    expect(clearedMoves.pokemonRolls[0]?.appliedMoveIds).toBeUndefined();
+    expect(clearedMoves.selectedPokemonId).toBeUndefined();
+    expect(clearedMoves.draft.moveIds.every((id) => !id)).toBe(true);
+    expect(clearedMoves.abilityOptions).toEqual(selected.abilityOptions);
+
+    const clearedItems = clearItemPool(selected);
+    expect(clearedItems.itemOptions).toEqual([]);
+    expect(clearedItems.pokemonRolls[0]?.appliedItemIds).toBeUndefined();
+    expect(clearedItems.selectedPokemonId).toBeUndefined();
+    expect(clearedItems.draft.itemId).toBeUndefined();
+    expect(clearedItems.abilityOptions).toEqual(selected.abilityOptions);
+  });
+
+  it("clears an after-Pokémon pool without dropping the selected Pokémon", () => {
+    const selected = selectRolledPokemon(
+      applyPokemonRoll(
+        createInitialSession({
+          ...DEFAULT_RANDOMIZER_CONFIG,
+          randomizeAbilities: true,
+          randomizeMoves: true,
+          randomizeItems: true,
+        }),
+        {
+          seed: "abc",
+          poolSize: 2,
+          pokemon: [makeForm("a"), makeForm("b")],
+        },
+      ),
+      "a",
+    );
+    const withAbilities = selectRolledAbility(
+      applyAbilityRoll(
+        selected,
+        { seed: "ability-seed", poolSize: 1, abilities: [makeAbility("blaze")] },
+        "a",
+      ),
+      "blaze",
+    );
+    const withMoves = selectRolledMove(
+      applyMoveRoll(withAbilities, moveResult(["ember", "scratch", "growl", "tackle"]), "a"),
+      "ember",
+    );
+    const withItems = selectRolledItem(applyItemRoll(withMoves, itemResult(["leftovers"]), "a"), "leftovers");
+
+    const clearedAbilities = clearAbilityPool(withItems);
+    expect(clearedAbilities.selectedPokemonId).toBe("a");
+    expect(clearedAbilities.abilityOptions).toEqual([]);
+    expect(clearedAbilities.draft.abilityId).toBeUndefined();
+    expect(clearedAbilities.moveOptions).toEqual(withItems.moveOptions);
+    expect(clearedAbilities.draft.itemId).toBe("leftovers");
+
+    const clearedMoves = clearMovePool(withItems);
+    expect(clearedMoves.selectedPokemonId).toBe("a");
+    expect(clearedMoves.moveOptions).toEqual([]);
+    expect(clearedMoves.draft.moveIds.every((id) => !id)).toBe(true);
+    expect(clearedMoves.draft.abilityId).toBe("blaze");
+
+    const clearedItems = clearItemPool(withItems);
+    expect(clearedItems.selectedPokemonId).toBe("a");
+    expect(clearedItems.itemOptions).toEqual([]);
+    expect(clearedItems.draft.itemId).toBeUndefined();
+    expect(clearedItems.draft.abilityId).toBe("blaze");
+  });
+
+  it("refuses to clear an extra pool after the user moves to a later randomizer", () => {
+    const before = createInitialSession({
+      ...DEFAULT_RANDOMIZER_CONFIG,
+      randomizeAbilities: true,
+      randomizeMoves: true,
+      randomizerOrder: ["ability", "move", "pokemon", "item"],
+    });
+    const withAbilities = applyAbilityRoll(before, {
+      seed: "ability-pool",
+      poolSize: 1,
+      abilities: [makeAbility("blaze")],
+    });
+    const withMoves = applyMoveRoll(withAbilities, moveResult(["ember", "scratch", "growl", "tackle"]));
+
+    const onMoves = openRandomizerTab(withMoves, "move");
+    expect(onMoves.passedExtras).toEqual(["ability"]);
+    expect(clearAbilityPool(onMoves)).toBe(onMoves);
+    expect(clearMovePool(onMoves).moveOptions).toEqual([]);
+
+    const backToAbilities = openRandomizerTab(onMoves, "ability");
+    expect(clearAbilityPool(backToAbilities)).toBe(backToAbilities);
+    expect(backToAbilities.abilityOptions).toEqual(["blaze"]);
+
+    const onPokemon = openRandomizerTab(onMoves, "pokemon");
+    expect(onPokemon.passedExtras).toEqual(["ability", "move"]);
+    expect(clearMovePool(onPokemon)).toBe(onPokemon);
+
+    const backToMoves = openRandomizerTab(onPokemon, "move");
+    expect(clearAbilityPool(backToMoves)).toBe(backToMoves);
+    expect(clearMovePool(backToMoves)).toBe(backToMoves);
   });
 
   it("stores a move roll only for the current battle Pokémon", () => {

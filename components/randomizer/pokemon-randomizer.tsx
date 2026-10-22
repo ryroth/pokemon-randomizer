@@ -42,9 +42,14 @@ import {
   applyPokemonRoll,
   applySessionConfig,
   battlePokemonId,
+  canClearExtraPool,
+  canGenerateExtraPool,
   canOpenRandomizerTab,
   chooseEvolvedPokemon,
   clampViewedRollIndex,
+  clearAbilityPool,
+  clearItemPool,
+  clearMovePool,
   clearPokemonRolls,
   createInitialSession,
   createSeed,
@@ -207,6 +212,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const assignAbilitiesBefore = session.config.randomizeAbilities && abilityBeforePokemon;
   const assignMovesBefore = session.config.randomizeMoves && moveBeforePokemon;
   const assignItemsBefore = session.config.randomizeItems && itemBeforePokemon;
+  const canGenerateAbilities = canGenerateExtraPool(session, "ability");
+  const canGenerateMoves = canGenerateExtraPool(session, "move");
+  const canGenerateItems = canGenerateExtraPool(session, "item");
   const movesPerPokemon = requiredMovesPerPokemon(session.config.movesPerPokemon);
   const remainingBuilderMoveSlots = MOVES_ASSIGNED_PER_POKEMON - movesPerPokemon;
   const appliedAbilityIds = useMemo(() => {
@@ -395,6 +403,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const stagedPokemon = useStagedGenerate(POKEMON_GENERATE_STEPS, handleGenerate);
 
   function handleGenerateAbilities() {
+    if (!canGenerateExtraPool(session, "ability")) {
+      return;
+    }
     if (!abilityBeforePokemon && !chosenBattlePokemonId) {
       return;
     }
@@ -409,6 +420,9 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   }
 
   function handleGenerateMoves() {
+    if (!canGenerateExtraPool(session, "move")) {
+      return;
+    }
     if (!moveBeforePokemon && !chosenBattlePokemonId) {
       return;
     }
@@ -422,7 +436,25 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
     }
   }
 
+  function handleClearAbilities() {
+    clearExtraErrors();
+    setSession(clearAbilityPool(session));
+  }
+
+  function handleClearMoves() {
+    clearExtraErrors();
+    setSession(clearMovePool(session));
+  }
+
+  function handleClearItems() {
+    clearExtraErrors();
+    setSession(clearItemPool(session));
+  }
+
   function handleGenerateItems() {
+    if (!canGenerateExtraPool(session, "item")) {
+      return;
+    }
     if (!itemBeforePokemon && !chosenBattlePokemonId) {
       return;
     }
@@ -634,8 +666,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             items={rolledItems}
             selectedItemId={session.draft.itemId}
             selectable={!itemBeforePokemon}
+            canGenerate={canGenerateItems}
+            canClear={canClearExtraPool(session, "item")}
             errorMessage={itemErrorMessage}
             onGenerate={handleGenerateItems}
+            onClear={handleClearItems}
             onSelect={(itemId) => setSession(selectRolledItem(session, itemId))}
             onReroll={handleRerollItem}
           />
@@ -695,8 +730,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             moves={rolledMoves}
             selectedMoveIds={session.draft.moveIds}
             selectable={!moveBeforePokemon}
+            canGenerate={canGenerateMoves}
+            canClear={canClearExtraPool(session, "move")}
             errorMessage={moveErrorMessage}
             onGenerate={handleGenerateMoves}
+            onClear={handleClearMoves}
             onSelect={(moveId) => setSession(selectRolledMove(session, moveId))}
             onReroll={handleRerollMove}
           />
@@ -757,8 +795,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             abilities={rolledAbilities}
             selectedAbilityId={session.draft.abilityId}
             selectable={!abilityBeforePokemon}
+            canGenerate={canGenerateAbilities}
+            canClear={canClearExtraPool(session, "ability")}
             errorMessage={abilityErrorMessage}
             onGenerate={handleGenerateAbilities}
+            onClear={handleClearAbilities}
             onSelect={(abilityId) => setSession(selectRolledAbility(session, abilityId))}
             onReroll={handleRerollAbility}
           />
@@ -905,8 +946,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                 abilities={rolledAbilities}
                 selectedAbilityId={undefined}
                 selectable={false}
+                canGenerate={canGenerateAbilities}
+                canClear={canClearExtraPool(session, "ability")}
                 errorMessage={abilityErrorMessage}
                 onGenerate={handleGenerateAbilities}
+                onClear={handleClearAbilities}
                 onSelect={() => undefined}
                 onReroll={handleRerollAbility}
               />
@@ -933,8 +977,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                 moves={rolledMoves}
                 selectedMoveIds={[]}
                 selectable={false}
+                canGenerate={canGenerateMoves}
+                canClear={canClearExtraPool(session, "move")}
                 errorMessage={moveErrorMessage}
                 onGenerate={handleGenerateMoves}
+                onClear={handleClearMoves}
                 onSelect={() => undefined}
                 onReroll={handleRerollMove}
               />
@@ -961,8 +1008,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                 items={rolledItems}
                 selectedItemId={undefined}
                 selectable={false}
+                canGenerate={canGenerateItems}
+                canClear={canClearExtraPool(session, "item")}
                 errorMessage={itemErrorMessage}
                 onGenerate={handleGenerateItems}
+                onClear={handleClearItems}
                 onSelect={() => undefined}
                 onReroll={handleRerollItem}
               />

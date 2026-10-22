@@ -312,9 +312,16 @@ test("move-first order lets the user apply a chosen number of moves then select 
   await expect(moveResults.getByRole("listitem")).toHaveCount(8);
   await expect(moveResults.getByText("In this pool")).toHaveCount(8);
   await expect(moveResults.getByRole("button", { name: /^Re-roll / })).toHaveCount(8);
+  await expect(page.getByRole("button", { name: "Generate moves" })).toHaveCount(0);
+  await expect(
+    page.getByText("These moves are already set. Re-roll one to replace it, or clear them to generate again."),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear generated moves" })).toBeVisible();
 
   await page.getByRole("button", { name: "Continue to Pokémon" }).click();
   await expect(page.getByRole("heading", { name: "Configure your roll", level: 1 })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Generate moves" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Clear generated moves" })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
@@ -403,9 +410,16 @@ test("item-first order lets the user apply items then select a Pokémon", async 
   await expect(itemResults.getByRole("listitem")).toHaveCount(3);
   await expect(itemResults.getByText("In this pool")).toHaveCount(3);
   await expect(itemResults.getByRole("button", { name: /^Re-roll / })).toHaveCount(3);
+  await expect(page.getByRole("button", { name: "Generate items" })).toHaveCount(0);
+  await expect(
+    page.getByText("These items are already set. Re-roll one to replace it, or clear them to generate again."),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear generated items" })).toBeVisible();
 
   await page.getByRole("button", { name: "Continue to Pokémon" }).click();
   await expect(page.getByRole("heading", { name: "Configure your roll", level: 1 })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Generate items" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Clear generated items" })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
@@ -472,10 +486,21 @@ test("ability-first order lets the user apply abilities then select a Pokémon",
   await expect(abilityResults.getByRole("listitem")).toHaveCount(3);
   await expect(abilityResults.getByText("In this pool")).toHaveCount(3);
   await expect(abilityResults.getByRole("button", { name: /^Re-roll / })).toHaveCount(3);
+  await expect(page.getByRole("button", { name: "Generate abilities" })).toHaveCount(0);
+  await expect(
+    page.getByText("These abilities are already set. Re-roll one to replace it, or clear them to generate again."),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Clear generated abilities" })).toBeVisible();
 
   await page.getByRole("button", { name: "Continue to Pokémon" }).click();
   await expect(page.getByRole("heading", { name: "Configure your roll", level: 1 })).toBeVisible();
   await expect(page.getByRole("button", { name: "Back to abilities" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Generate abilities" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Clear generated abilities" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Back to abilities" }).click();
+  await expect(page.getByRole("button", { name: "Clear generated abilities" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Continue to Pokémon" }).click();
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
