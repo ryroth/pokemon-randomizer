@@ -42,12 +42,24 @@
 
 - Recap: still artwork (shiny artwork for a shiny Pokémon, never regular colors), held-item icon, genus text, one export card per finalized set, a set with one move, Showdown text matches `exportShowdownSet`. Art: `pokemonImage` order, no animated URLs, every form has artwork and shiny artwork.
 - Teams: a new team leaves earlier teams unchanged, the next slot fills until 6, one slot can be removed or moved, clearing one team leaves the others, a team paste separates sets with a blank line, broken storage becomes an empty box, HOME sprites are preferred.
+- Draft team: one roster beside finished teams. Adding captures species, shiny, and randomizer locks. The next roll keeps settings and clears the roll. A seventh Pokémon is refused. Removing a slot is allowed until a slot is built. The sixth finished set becomes a normal team. A broken roster is dropped and the finished teams stay. The Builder for a drafted Pokémon uses those stored locks.
 - Playwright: after the builder fill-in, the recap shows that Pokémon and its Showdown text, Copy to Showdown writes the clipboard, save to a new team survives Next Randomizer, the team recap opens, and removing the slot empties it.
 - Polish: the header marks the current page, fits a 390px viewport without sideways scrolling, and an unknown URL shows Page not found. Type chip text meets a 4.5:1 contrast ratio.
 
+## Formats and the damage check
+
+- Presets stay valid and locked. Customizing one does not change the original. A user format can be saved, renamed, duplicated, restored to its previous save, and deleted. A stat budget is rejected when custom stats are off.
+- Custom types reject duplicates. Custom base stats reject non-integers and a total over the format budget.
+- OU allows a shiny set and rejects custom types. Open lab allows custom types. A format can forbid shinies without involving `shinyChance`.
+- Generation 9 damage: Flamethrower from a neutral level 100 Charizard into a neutral level 100 Venusaur is 210–248, Thunderbolt into a Ground type is 0, and two snapshots can type the same species differently.
+- The Showdown paste still writes `Shiny: Yes` and does not write custom types or base stats.
+- Playwright: Format Explorer search, customize a preset, see the diff, save, and the original preset still says species typing only.
+- A singles battle copies its fighters, the faster Pokémon moves first, a faint asks for a replacement, Choice Band locks a move until a switch, and Levitate, Huge Power, and Life Orb change the result. A critical hit is 1 in 24 and is announced only when that roll lands. Two battles do not share HP. A doubles format says doubles is not played.
+- Playwright: Pikachu's Thunderbolt into Sandshrew is immune, and Sandshrew's Scratch still lands.
+
 ## Upcoming
 
-- Learnset-only and competitive pool modes. A six-Pokémon randomizer is not started.
+- Learnset-only and competitive pool modes. A single Generate of six Pokémon is not started. Drafting one Pokémon at a time until a team has six, then building each slot, is covered above.
 
 ## Quality bar
 

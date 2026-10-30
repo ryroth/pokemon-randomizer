@@ -31,12 +31,13 @@ export function builderItemPool(
   session: RandomizerSession,
   items: readonly { id: string }[],
 ): Array<string | null> {
+  const buildingSavedSet = Boolean(session.editingTeamSlot || session.buildingDraft);
   const holdables =
-    !session.editingTeamSlot && session.config.randomizeItems
+    !buildingSavedSet && session.config.randomizeItems
       ? uniqueIds(session.itemOptions)
       : uniqueIds(items.map((item) => item.id));
   const current = session.draft.itemId;
-  if (session.editingTeamSlot && current && !holdables.includes(current)) {
+  if (buildingSavedSet && current && !holdables.includes(current)) {
     holdables.unshift(current);
   }
   return [null, ...holdables];

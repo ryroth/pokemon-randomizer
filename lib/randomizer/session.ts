@@ -54,6 +54,14 @@ export function startNextRandomizer(): RandomizerSession {
   return createInitialSession();
 }
 
+/**
+ * The next Pokémon for a draft team. Filters, enabled steps, and their order stay.
+ * The roll, the selection, and the extra pools start over.
+ */
+export function nextRollKeepingConfig(session: RandomizerSession): RandomizerSession {
+  return createInitialSession(session.config);
+}
+
 export function applyPokemonRoll(
   session: RandomizerSession,
   result: Omit<PokemonRandomizerResult, "shinyIds"> & { shinyIds?: readonly string[] },
@@ -83,6 +91,8 @@ export function applyPokemonRoll(
       selectedPokemonId,
       evolvedPokemonId,
       editingTeamSlot: undefined,
+      buildingDraft: undefined,
+      draftLocks: undefined,
       draft: freshTraining(
         {
           ...session.draft,
@@ -130,6 +140,8 @@ export function selectRolledPokemon(
       selectedPokemonId: pokemonId,
       evolvedPokemonId: pokemonId,
       editingTeamSlot: undefined,
+      buildingDraft: undefined,
+      draftLocks: undefined,
       draft: samePokemon
         ? {
             ...session.draft,
@@ -167,6 +179,8 @@ export function chooseEvolvedPokemon(
       ...session,
       evolvedPokemonId: nextBattlePokemonId,
       editingTeamSlot: undefined,
+      buildingDraft: undefined,
+      draftLocks: undefined,
       // The same Pokémon evolving stays shiny if it rolled shiny.
       draft: freshTraining(
         {
@@ -216,6 +230,8 @@ export function clearPokemonRolls(session: RandomizerSession): RandomizerSession
     selectedPokemonId: undefined,
     evolvedPokemonId: undefined,
     editingTeamSlot: undefined,
+    buildingDraft: undefined,
+    draftLocks: undefined,
     abilityOptions: keepAbilityPool ? [...session.abilityOptions] : [],
     moveOptions: keepMovePool ? [...session.moveOptions] : [],
     itemOptions: keepItemPool ? [...session.itemOptions] : [],
@@ -1406,6 +1422,8 @@ function freshTraining(draft: PokemonSetDraft, rolledShiny = false): PokemonSetD
   delete next.gender;
   delete next.shiny;
   delete next.nickname;
+  delete next.customTypes;
+  delete next.customBaseStats;
   if (rolledShiny) {
     next.shiny = true;
   }

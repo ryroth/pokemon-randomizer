@@ -117,6 +117,7 @@ export {
   clampViewedRollIndex,
   createInitialSession,
   startNextRandomizer,
+  nextRollKeepingConfig,
   filledMoveCount,
   isRolledShiny,
   itemChoicesForPokemon,

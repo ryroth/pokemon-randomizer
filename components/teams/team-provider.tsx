@@ -1,6 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  addDraftToRoster,
+  removeDraftFromRoster,
+  renameDraftRoster,
+  writeBuiltDraft,
+  type AddDraftResult,
+  type DraftRemoveResult,
+  type DraftWriteResult,
+} from "@/lib/teams/draftRoster";
 import { parseStoredTeams, TEAM_STORAGE_KEY } from "@/lib/teams/storage";
 import {
   clearTeam as clearTeamInBox,
@@ -23,7 +32,7 @@ import {
   type TeamRenameResult,
   type TeamSaveResult,
 } from "@/lib/teams/teams";
-import type { PokemonSet } from "@/lib/types/session";
+import type { DraftedPokemon, PokemonSet } from "@/lib/types/session";
 
 interface TeamContextValue {
   box: TeamBox;
@@ -39,6 +48,10 @@ interface TeamContextValue {
   clearTeam: (teamId: string) => TeamClearResult;
   replaceSet: (teamId: string, index: number, set: PokemonSet) => TeamSaveResult;
   importSets: (sets: readonly PokemonSet[], target: "active" | "new") => TeamImportResult;
+  addDraft: (pokemon: DraftedPokemon) => AddDraftResult;
+  removeDraft: (index: number) => DraftRemoveResult;
+  renameDraft: (name: string) => { ok: true; teamName: string } | { ok: false; message: string };
+  saveBuiltDraft: (rosterId: string, index: number, set: PokemonSet) => DraftWriteResult;
 }
 
 const TeamContext = createContext<TeamContextValue | null>(null);
@@ -140,6 +153,34 @@ export function TeamProvider({ children }: { children: ReactNode }) {
     },
     importSets: (sets, target) => {
       const result = importSetsToTeam(boxRef.current, sets, target);
+      if (result.ok) {
+        commit(result.box);
+      }
+      return result;
+    },
+    addDraft: (pokemon) => {
+      const result = addDraftToRoster(boxRef.current, pokemon);
+      if (result.ok) {
+        commit(result.box);
+      }
+      return result;
+    },
+    removeDraft: (index) => {
+      const result = removeDraftFromRoster(boxRef.current, index);
+      if (result.ok) {
+        commit(result.box);
+      }
+      return result;
+    },
+    renameDraft: (name) => {
+      const result = renameDraftRoster(boxRef.current, name);
+      if (result.ok) {
+        commit(result.box);
+      }
+      return result.ok ? { ok: true, teamName: result.teamName } : result;
+    },
+    saveBuiltDraft: (rosterId, index, set) => {
+      const result = writeBuiltDraft(boxRef.current, rosterId, index, set);
       if (result.ok) {
         commit(result.box);
       }

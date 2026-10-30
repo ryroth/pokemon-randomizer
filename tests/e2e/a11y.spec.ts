@@ -37,7 +37,7 @@ async function seedTeam(page: Page) {
   }, box);
 }
 
-const ROUTES = ["/", "/randomizer", "/builder", "/recap", "/teams"] as const;
+const ROUTES = ["/", "/randomizer", "/builder", "/recap", "/teams", "/formats", "/battle"] as const;
 
 test.describe("landmarks", () => {
   for (const route of ROUTES) {

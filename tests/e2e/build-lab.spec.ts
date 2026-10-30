@@ -48,10 +48,10 @@ test("IV spreads come from a dropdown, and the EV budget still clears", async ({
   await expect(bar).toHaveAttribute("aria-valuenow", "0");
 });
 
-test("the builder starts at level 50, with a Tera type dropdown and a quiet empty item", async ({ page }) => {
+test("the builder starts at level 100, with a Tera type dropdown and a quiet empty item", async ({ page }) => {
   await openBuilder(page);
 
-  await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("50");
+  await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("100");
   // One placeholder plus the nineteen Tera types.
   await expect(page.getByRole("combobox", { name: "Tera type" }).locator("option")).toHaveCount(20);
 

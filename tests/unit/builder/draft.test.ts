@@ -147,7 +147,7 @@ describe("builder draft", () => {
     expect(session.draft.natureId).toBeUndefined();
     expect(session.draft.teraType).toBeUndefined();
     expect(session.draft.gender).toBeUndefined();
-    expect(session.draft.level).toBe(50);
+    expect(session.draft.level).toBe(100);
     // Shiny starts at No. Nothing in the randomizer rolls shiny, so this is always the start.
     expect(session.draft.shiny).toBe(false);
   });
@@ -180,14 +180,14 @@ describe("builder draft", () => {
     expect(second.draft.shiny).toBe(false);
   });
 
-  it("keeps a level the user already chose instead of resetting it to 50", () => {
+  it("keeps a level the user already chose instead of resetting it to 100", () => {
     const opened = openBuilder({
       ...createInitialSession(),
       selectedPokemonId: "mudkip",
       evolvedPokemonId: "mudkip",
-      draft: { ...createInitialSession().draft, level: 100 },
+      draft: { ...createInitialSession().draft, level: 37 },
     });
-    expect(opened.draft.level).toBe(100);
+    expect(opened.draft.level).toBe(37);
   });
 
   it("keeps ability and move choices inside their pools and caps EV edits", () => {

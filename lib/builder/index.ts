@@ -1,5 +1,5 @@
-export { applyBuilderDefaults, applyDraftIvPreset, applySuggestedEvs, clearDraftEvs, finalizeBuilderSet, isCompleteSpread, isLegalEvSpread, openBuilder, setDraftAbility, setDraftEv, setDraftGender, setDraftHappiness, setDraftItem, setDraftIv, setDraftLevel, setDraftMove, setDraftNature, setDraftNickname, setDraftShiny, setDraftTeraType } from "@/lib/builder/draft";
-export { openSavedSetInBuilder } from "@/lib/builder/saved-set";
+export { applyBuilderDefaults, applyDraftIvPreset, applySuggestedEvs, clearDraftEvs, finalizeBuilderSet, isCompleteSpread, isLegalEvSpread, openBuilder, resetDraftCustomBaseStats, setDraftAbility, setDraftCustomBaseStat, setDraftCustomTypes, setDraftEv, setDraftGender, setDraftHappiness, setDraftItem, setDraftIv, setDraftLevel, setDraftMove, setDraftNature, setDraftNickname, setDraftShiny, setDraftTeraType } from "@/lib/builder/draft";
+export { openDraftInBuilder, openSavedSetInBuilder } from "@/lib/builder/saved-set";
 export { evBudgetPercent } from "@/lib/builder/evBudget";
 export { IV_PRESETS, ivPresetById, matchingIvPreset, type IvPreset, type IvPresetId } from "@/lib/builder/ivPresets";
 export { formatSuggestedSpread, suggestEvSpread, type EvSuggestionInput, type EvSuggestion, type SuggestMove } from "@/lib/builder/suggestEvs";

@@ -65,6 +65,23 @@ export function exportShowdownSet(set: PokemonSet, names: ExportNames): string {
   return `${lines.join("\n")}\n`;
 }
 
+/**
+ * Pokémon Showdown's team paste has no fields for a custom type or custom base stats.
+ * Those values stay on the saved set. This note is for the recap, not for the paste.
+ */
+export function customAttributeNote(
+  set: Pick<PokemonSet, "customTypes" | "customBaseStats">,
+): string | null {
+  if (!set.customTypes && !set.customBaseStats) {
+    return null;
+  }
+  const parts = [
+    set.customTypes ? "custom types" : null,
+    set.customBaseStats ? "custom base stats" : null,
+  ].filter((part): part is string => part !== null);
+  return `This Pokémon has ${parts.join(" and ")}. Pokémon Showdown's paste cannot store them, so they stay in this app and are left out of the paste.`;
+}
+
 /** Showdown imports a team as one set after another, with a blank line between them. */
 export function exportShowdownTeam(setTexts: readonly string[]): string {
   const blocks = setTexts.map((text) => text.replace(/\s+$/, ""));

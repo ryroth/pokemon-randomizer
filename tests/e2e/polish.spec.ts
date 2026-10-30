@@ -26,7 +26,7 @@ test("the header fits a phone width", async ({ page }) => {
   expect(box?.width).toBeGreaterThan(120);
 
   const nav = page.getByRole("navigation", { name: "Primary" });
-  for (const name of ["Randomizer", "Builder", "Recap", "Teams"]) {
+  for (const name of ["Randomizer", "Builder", "Teams", "Formats", "Battle"]) {
     await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
   }
 

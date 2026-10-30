@@ -12,6 +12,8 @@ describe("sceneForPath", () => {
     expect(sceneForPath("/builder")).toBe("builder");
     expect(sceneForPath("/recap")).toBe("recap");
     expect(sceneForPath("/teams")).toBe("teams");
+    expect(sceneForPath("/formats")).toBe("teams");
+    expect(sceneForPath("/battle")).toBe("builder");
   });
 
   it("ignores a trailing slash", () => {

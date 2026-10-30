@@ -1,3 +1,4 @@
+import { validateCustomBaseStats, validateCustomTypes } from "@/lib/pokemon/customAttributes";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { TeraType } from "@/lib/types/pokemon-type";
 import type { PokemonSet, PokemonSetDraft } from "@/lib/types/session";
@@ -64,8 +65,10 @@ export function validateSet(
   const shiny = validateShiny(draft.shiny);
   const happiness = validateHappiness(draft.happiness);
   const nickname = validateNickname(draft.nickname);
+  const customTypes = validateCustomTypes(draft.customTypes);
+  const customBaseStats = validateCustomBaseStats(draft.customBaseStats);
 
-  for (const result of [evs, ivs, nature, ability, item, moves, tera, gender, level, shiny, happiness, nickname]) {
+  for (const result of [evs, ivs, nature, ability, item, moves, tera, gender, level, shiny, happiness, nickname, customTypes, customBaseStats]) {
     if (!result.ok) {
       errors.push(...result.errors);
     }
@@ -87,7 +90,9 @@ export function validateSet(
     !level.ok ||
     !shiny.ok ||
     !happiness.ok ||
-    !nickname.ok
+    !nickname.ok ||
+    !customTypes.ok ||
+    !customBaseStats.ok
   ) {
     return fail(errors);
   }
@@ -106,6 +111,8 @@ export function validateSet(
     shiny: shiny.value,
     nickname: nickname.value,
     happiness: happiness.value,
+    ...(customTypes.value ? { customTypes: customTypes.value } : {}),
+    ...(customBaseStats.value ? { customBaseStats: customBaseStats.value } : {}),
   });
 }
 

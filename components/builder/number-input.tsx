@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 /**
- * A number box that can be emptied while typing. The stored value always has a default (level 50,
+ * A number box that can be emptied while typing. The stored value always has a default (level 100,
  * happiness 255), so a plain controlled input would snap straight back to it the moment the last
  * digit is deleted. This one keeps what the user typed until they leave the box, saves each
  * complete number as it is typed, and shows the saved value again on leave if the box is empty.
