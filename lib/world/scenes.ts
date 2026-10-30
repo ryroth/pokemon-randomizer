@@ -12,6 +12,8 @@ const SCENE_BY_PATH: Readonly<Record<string, SceneId>> = {
   "/builder": "builder",
   "/recap": "recap",
   "/teams": "teams",
+  "/formats": "teams",
+  "/battle": "builder",
 };
 
 /** Pages that are not part of the app (unknown URLs) get the "lost" scene. */

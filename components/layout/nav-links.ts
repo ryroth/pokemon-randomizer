@@ -1,6 +1,7 @@
 export const NAV_LINKS = [
   { href: "/randomizer", label: "Randomizer" },
   { href: "/builder", label: "Builder" },
-  { href: "/recap", label: "Recap" },
   { href: "/teams", label: "Teams" },
+  { href: "/formats", label: "Formats" },
+  { href: "/battle", label: "Battle" },
 ] as const;

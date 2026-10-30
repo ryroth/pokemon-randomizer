@@ -10,6 +10,9 @@ export function abilityLockedByRandomizer(session: RandomizerSession): boolean {
   if (session.editingTeamSlot) {
     return false;
   }
+  if (session.buildingDraft && session.draftLocks) {
+    return session.draftLocks.ability;
+  }
   return session.config.randomizeAbilities && Boolean(session.draft.abilityId);
 }
 
@@ -21,6 +24,9 @@ export function abilityLockedByRandomizer(session: RandomizerSession): boolean {
 export function moveSlotLockedByRandomizer(session: RandomizerSession, slot: number): boolean {
   if (session.editingTeamSlot) {
     return false;
+  }
+  if (session.buildingDraft && session.draftLocks) {
+    return Boolean(session.draftLocks.moveSlots[slot]);
   }
   const current = session.draft.moveIds[slot];
   if (!session.config.randomizeMoves || !current) {
@@ -76,6 +82,9 @@ export function itemLockedByRandomizer(session: RandomizerSession): boolean {
   if (session.editingTeamSlot) {
     return false;
   }
+  if (session.buildingDraft && session.draftLocks) {
+    return session.draftLocks.item;
+  }
   return session.config.randomizeItems && session.draft.itemId !== undefined;
 }
 
@@ -85,7 +94,7 @@ export function itemLockedByRandomizer(session: RandomizerSession): boolean {
  * them in the randomizer first, so a randomized part can not be swapped for a hand-picked one.
  */
 export function pendingRandomizerSteps(session: RandomizerSession): RandomizerTab[] {
-  if (session.editingTeamSlot) {
+  if (session.editingTeamSlot || session.buildingDraft) {
     return [];
   }
   return enabledRandomizerSteps(session.config).filter((step) => {

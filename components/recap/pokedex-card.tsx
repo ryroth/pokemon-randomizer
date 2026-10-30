@@ -92,6 +92,12 @@ export function PokedexCard({
                       </li>
                     ))}
                   </ul>
+                  {entry.customTyping ? (
+                    <p className="mt-1 text-xs text-[#d6e6ff]">Custom typing. The species types are unchanged.</p>
+                  ) : null}
+                  {entry.customStats ? (
+                    <p className="mt-1 text-xs text-[#d6e6ff]">Custom base stats. The battle stats below use them.</p>
+                  ) : null}
                 </dd>
                 <dt className="text-[#b7d4ff]">Tera type</dt>
                 <dd>
@@ -224,6 +230,7 @@ export function PokedexCard({
           >
             {entry.showdownText}
           </pre>
+          {entry.exportNote ? <p className="text-sm text-[#d6e6ff]">{entry.exportNote}</p> : null}
         </section>
       </div>
     </article>

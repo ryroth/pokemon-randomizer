@@ -1,4 +1,4 @@
-import type { PokemonSet } from "@/lib/types/session";
+import type { DraftedPokemon, PokemonSet } from "@/lib/types/session";
 import { STAT_IDS } from "@/lib/types/stats";
 
 export const TEAM_SIZE = 6;
@@ -10,9 +10,22 @@ export interface SavedTeam {
   sets: PokemonSet[];
 }
 
+export type DraftRosterSlot =
+  | { status: "draft"; pokemon: DraftedPokemon }
+  | { status: "built"; set: PokemonSet };
+
+/** Up to six Pokémon rolled before they are built. One roster at a time. */
+export interface DraftRoster {
+  id: string;
+  name: string;
+  slots: DraftRosterSlot[];
+}
+
 export interface TeamBox {
   activeTeamId: string | null;
   teams: SavedTeam[];
+  /** Present while a team is being drafted or built. Cleared once all six sets are finished. */
+  draftRoster?: DraftRoster;
 }
 
 export type TeamSaveResult =
@@ -52,7 +65,7 @@ export function saveSetToNewTeam(box: TeamBox, set: PokemonSet, name?: string): 
   };
   return {
     ok: true,
-    box: { activeTeamId: team.id, teams: [...box.teams, team] },
+    box: keepRoster(box, { activeTeamId: team.id, teams: [...box.teams, team] }),
     teamId: team.id,
     teamName: team.name,
     slot: 1,
@@ -91,10 +104,10 @@ export function saveSetToNextSlot(box: TeamBox, set: PokemonSet): TeamSaveResult
   const nextTeam: SavedTeam = { ...team, sets: [...team.sets, clonePokemonSet(set)] };
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: team.id,
       teams: box.teams.map((candidate) => (candidate.id === team.id ? nextTeam : candidate)),
-    },
+    }),
     teamId: team.id,
     teamName: team.name,
     slot,
@@ -116,10 +129,10 @@ export function removeSetFromTeam(box: TeamBox, teamId: string, slotIndex: numbe
   };
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: box.activeTeamId,
       teams: box.teams.map((candidate) => (candidate.id === team.id ? nextTeam : candidate)),
-    },
+    }),
     teamName: team.name,
     slot: slotIndex + 1,
   };
@@ -148,10 +161,10 @@ export function moveSetToSlot(box: TeamBox, teamId: string, fromIndex: number, t
   sets.splice(toIndex, 0, moved);
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: box.activeTeamId,
       teams: box.teams.map((candidate) => (candidate.id === team.id ? { ...team, sets } : candidate)),
-    },
+    }),
     teamName: team.name,
     fromSlot: fromIndex + 1,
     toSlot: toIndex + 1,
@@ -174,10 +187,10 @@ export function renameTeam(box: TeamBox, teamId: string, name: string): TeamRena
   }
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: box.activeTeamId,
       teams: box.teams.map((candidate) => (candidate.id === team.id ? { ...team, name: teamName } : candidate)),
-    },
+    }),
     teamName,
   };
 }
@@ -211,10 +224,10 @@ export function copySetToTeam(
   const nextTeam: SavedTeam = { ...to, sets: [...to.sets, clonePokemonSet(set)] };
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: box.activeTeamId,
       teams: box.teams.map((candidate) => (candidate.id === to.id ? nextTeam : candidate)),
-    },
+    }),
     teamId: to.id,
     teamName: to.name,
     slot,
@@ -233,10 +246,10 @@ export function replaceSetOnTeam(box: TeamBox, teamId: string, index: number, se
   };
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: box.activeTeamId,
       teams: box.teams.map((candidate) => (candidate.id === team.id ? nextTeam : candidate)),
-    },
+    }),
     teamId: team.id,
     teamName: team.name,
     slot: index + 1,
@@ -257,8 +270,33 @@ export function pokemonSetsEqual(left: PokemonSet, right: PokemonSet): boolean {
     left.shiny === right.shiny &&
     left.happiness === right.happiness &&
     (left.nickname ?? "") === (right.nickname ?? "") &&
-    STAT_IDS.every((stat) => left.evs[stat] === right.evs[stat] && left.ivs[stat] === right.ivs[stat])
+    STAT_IDS.every((stat) => left.evs[stat] === right.evs[stat] && left.ivs[stat] === right.ivs[stat]) &&
+    sameTypes(left.customTypes, right.customTypes) &&
+    sameOptionalStats(left.customBaseStats, right.customBaseStats)
   );
+}
+
+function sameTypes(left: readonly string[] | undefined, right: readonly string[] | undefined): boolean {
+  if (!left && !right) {
+    return true;
+  }
+  if (!left || !right || left.length !== right.length) {
+    return false;
+  }
+  return left.every((type, index) => type === right[index]);
+}
+
+function sameOptionalStats(
+  left: PokemonSet["customBaseStats"],
+  right: PokemonSet["customBaseStats"],
+): boolean {
+  if (!left && !right) {
+    return true;
+  }
+  if (!left || !right) {
+    return false;
+  }
+  return STAT_IDS.every((stat) => left[stat] === right[stat]);
 }
 
 export function normalizeTeamName(name: string): string {
@@ -295,7 +333,7 @@ export function importSetsToTeam(
     const team: SavedTeam = { id: createTeamId(), name: `Team ${box.teams.length + 1}`, sets: cloned };
     return {
       ok: true,
-      box: { activeTeamId: team.id, teams: [...box.teams, team] },
+      box: keepRoster(box, { activeTeamId: team.id, teams: [...box.teams, team] }),
       teamId: team.id,
       teamName: team.name,
       added: cloned.length,
@@ -319,10 +357,10 @@ export function importSetsToTeam(
   const nextTeam: SavedTeam = { ...team, sets: [...team.sets, ...cloned] };
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: team.id,
       teams: box.teams.map((candidate) => (candidate.id === team.id ? nextTeam : candidate)),
-    },
+    }),
     teamId: team.id,
     teamName: team.name,
     added: cloned.length,
@@ -363,10 +401,10 @@ export function clearTeam(box: TeamBox, teamId: string): TeamClearResult {
   const teams = box.teams.filter((candidate) => candidate.id !== team.id);
   return {
     ok: true,
-    box: {
+    box: keepRoster(box, {
       activeTeamId: box.activeTeamId === team.id ? (teams[0]?.id ?? null) : box.activeTeamId,
       teams,
-    },
+    }),
     teamName: team.name,
   };
 }
@@ -378,9 +416,22 @@ export function clonePokemonSet(set: PokemonSet): PokemonSet {
     evs: { ...set.evs },
     ivs: { ...set.ivs },
     nickname: set.nickname,
+    customTypes: set.customTypes ? [...set.customTypes] : undefined,
+    customBaseStats: set.customBaseStats ? { ...set.customBaseStats } : undefined,
   };
 }
 
-function createTeamId(): string {
+export function createTeamId(): string {
   return crypto.randomUUID();
+}
+
+/** Team edits keep the in-progress draft roster. Promoting that roster omits it on purpose. */
+function keepRoster(
+  box: TeamBox,
+  next: { activeTeamId: string | null; teams: SavedTeam[] },
+): TeamBox {
+  if (!box.draftRoster) {
+    return next;
+  }
+  return { ...next, draftRoster: box.draftRoster };
 }

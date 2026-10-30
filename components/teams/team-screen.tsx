@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, type DragEvent } from "react";
 import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
+import { openDraftInBuilder, openSavedSetInBuilder } from "@/lib/builder";
 import { savedSetEditAccess } from "@/lib/builder/locks";
-import { openSavedSetInBuilder } from "@/lib/builder/saved-set";
+import { firstUnbuiltIndex } from "@/lib/teams/draftRoster";
+import { TEAM_SIZE, type DraftRoster } from "@/lib/teams/teams";
 import { MoveSlotControl, slotLabel } from "@/components/recap/save-to-team";
 import { PokedexCard } from "@/components/recap/pokedex-card";
 import { NextRandomizerButton } from "@/components/session/next-randomizer-button";
@@ -16,13 +18,14 @@ import { TeamSlotSprite } from "@/components/teams/team-slot-sprite";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { buildRecapEntry, type RecapCatalog } from "@/lib/recap/entries";
 import { teamShowdownText } from "@/lib/teams/export";
-import { slotIndexAfterMove, TEAM_SIZE, type SavedTeam } from "@/lib/teams/teams";
+import { slotIndexAfterMove, type SavedTeam } from "@/lib/teams/teams";
 import { cn } from "@/lib/utils";
 
 export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
   const router = useRouter();
   const { session, setSession } = useRandomizerSession();
-  const { box, ready, chooseTeam, removeFromTeam, moveWithinTeam, clearTeam, rename, copyToTeam } = useTeams();
+  const { box, ready, chooseTeam, removeFromTeam, moveWithinTeam, clearTeam, rename, copyToTeam, removeDraft, renameDraft } =
+    useTeams();
   const [clearedMessage, setClearedMessage] = useState<string | null>(null);
 
   function editMember(teamId: string, index: number, target?: string) {
@@ -60,16 +63,40 @@ export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
         </p>
       ) : null}
 
-      {box.teams.length === 0 ? (
+      {box.draftRoster ? (
+        <DraftTeamCard
+          roster={box.draftRoster}
+          catalog={catalog}
+          onRename={(name) => renameDraft(name)}
+          onRemove={(index) => removeDraft(index)}
+          onBuildNext={() => {
+            const roster = box.draftRoster;
+            if (!roster) {
+              return;
+            }
+            const index = firstUnbuiltIndex(roster);
+            const slot = roster.slots[index];
+            if (!slot || slot.status !== "draft") {
+              return;
+            }
+            setSession(openDraftInBuilder(session, roster.id, slot.pokemon, index));
+            router.push("/builder");
+          }}
+        />
+      ) : null}
+
+      {box.teams.length === 0 && !box.draftRoster ? (
         <div className="space-y-4">
           <p className="text-base leading-7 text-muted-foreground">
-            Finish a Pokémon and save it from the recap to start a team.
+            Finish a Pokémon and save it from the recap to start a team. Or add randomized Pokémon from the randomizer until a team has 6, then build each one.
           </p>
           <Link href="/recap" className={cn(buttonVariants({ size: "lg" }), "w-fit")}>
             Go to the recap
           </Link>
         </div>
-      ) : (
+      ) : null}
+
+      {box.teams.length > 0 ? (
         <div className="flex flex-col gap-6">
           {box.teams.map((team) => (
             <TeamCard
@@ -94,8 +121,126 @@ export function TeamScreen({ catalog }: { catalog: RecapCatalog }) {
             />
           ))}
         </div>
-      )}
+      ) : null}
     </PageFrame>
+  );
+}
+
+function DraftTeamCard({
+  roster,
+  catalog,
+  onRename,
+  onRemove,
+  onBuildNext,
+}: {
+  roster: DraftRoster;
+  catalog: RecapCatalog;
+  onRename: (name: string) => { ok: true; teamName: string } | { ok: false; message: string };
+  onRemove: (index: number) => { ok: boolean; message?: string; slot?: number };
+  onBuildNext: () => void;
+}) {
+  const [nameDraft, setNameDraft] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const started = roster.slots.some((slot) => slot.status === "built");
+  const nextIndex = firstUnbuiltIndex(roster);
+  const canBuild = roster.slots.length === TEAM_SIZE && nextIndex >= 0;
+  const nameValue = nameDraft ?? roster.name;
+
+  function commitName() {
+    if (nameDraft === null || nameDraft.trim() === roster.name) {
+      setNameDraft(null);
+      return;
+    }
+    const result = onRename(nameDraft);
+    setMessage(result.ok ? null : result.message);
+    setNameDraft(null);
+  }
+
+  return (
+    <section aria-labelledby={`${roster.id}-heading`} className="space-y-4 rounded-2xl border border-border bg-card p-5">
+      <div className="space-y-2">
+        <h2 id={`${roster.id}-heading`} className="text-xl font-semibold">
+          {roster.name}
+        </h2>
+        <label className="block max-w-xs space-y-1 text-sm font-medium">
+          Team name
+          <input
+            className="h-9 w-full rounded-lg border border-input bg-background px-2.5 text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            value={nameValue}
+            maxLength={24}
+            onChange={(event) => setNameDraft(event.target.value)}
+            onBlur={commitName}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.currentTarget.blur();
+              }
+            }}
+          />
+        </label>
+        <p className="text-sm text-muted-foreground">
+          <span className="font-mono tabular-nums">{roster.slots.length}</span> of{" "}
+          <span className="font-mono tabular-nums">{TEAM_SIZE}</span> Pokémon. Building starts when this team has 6.
+        </p>
+      </div>
+      {message ? (
+        <p role="status" className="text-sm">
+          {message}
+        </p>
+      ) : null}
+      <ol aria-label={`${roster.name} slots`} className="grid gap-2 sm:grid-cols-2">
+        {Array.from({ length: TEAM_SIZE }, (_, index) => {
+          const slot = roster.slots[index];
+          if (!slot) {
+            return (
+              <li key={index} className="rounded-lg border border-dashed border-border px-3 py-2 text-sm text-muted-foreground">
+                {index + 1}. Empty slot
+              </li>
+            );
+          }
+          const pokemonId = slot.status === "draft" ? slot.pokemon.draft.pokemonId : slot.set.pokemonId;
+          const form = catalog.pokemon.find((pokemon) => pokemon.id === pokemonId);
+          const shiny = slot.status === "draft" ? Boolean(slot.pokemon.draft.shiny) : slot.set.shiny;
+          const species = form?.displayName ?? "Pokémon";
+          const nickname = slot.status === "built" ? slot.set.nickname?.trim() : "";
+          const name = nickname ? `${nickname} (${species})` : species;
+          return (
+            <li key={index} className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2">
+              <div className="flex min-w-0 items-center gap-2">
+                {form ? <TeamSlotSprite sprites={form.sprites} shiny={shiny} name={form.displayName} /> : null}
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">
+                    Slot {index + 1}. {name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{slot.status === "draft" ? "Not built yet" : "Built"}</p>
+                </div>
+              </div>
+              {!started && slot.status === "draft" ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-label={`Remove ${name} from the team`}
+                  onClick={() => {
+                    const result = onRemove(index);
+                    setMessage(result.ok ? `Removed the Pokémon from slot ${result.slot}.` : (result.message ?? ""));
+                  }}
+                >
+                  Remove
+                </Button>
+              ) : null}
+            </li>
+          );
+        })}
+      </ol>
+      {canBuild ? (
+        <Button type="button" size="lg" onClick={onBuildNext}>
+          {started ? "Build the next Pokémon" : "Start building"}
+        </Button>
+      ) : roster.slots.length < TEAM_SIZE ? (
+        <Link href="/randomizer" className={cn(buttonVariants({ size: "lg" }), "w-fit")}>
+          Roll the next Pokémon
+        </Link>
+      ) : null}
+    </section>
   );
 }
 

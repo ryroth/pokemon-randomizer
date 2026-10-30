@@ -1,5 +1,6 @@
 "use server";
 
+import { effectiveTypes } from "@/lib/pokemon/customAttributes";
 import type { TeamMemberInput } from "@/lib/analysis/teamAnalysis";
 import { loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import { previewShowdownImport, type ImportPreview } from "@/lib/showdown/importTeam";
@@ -38,7 +39,7 @@ export async function loadTeamDetails(sets: PokemonSet[]): Promise<TeamDetails> 
       const nickname = typeof set.nickname === "string" ? set.nickname.trim() : "";
       members.push({
         label: nickname ? `${nickname} (${pokemon.displayName})` : pokemon.displayName,
-        types: pokemon.types,
+        types: effectiveTypes(pokemon.types, set.customTypes),
         moves: moves.flatMap((move) => (move ? [{ name: move.showdownName, type: move.type, category: move.category }] : [])),
       });
     }

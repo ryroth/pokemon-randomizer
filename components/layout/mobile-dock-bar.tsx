@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
-import { Hammer, ScrollText, Shuffle, Users } from "lucide-react";
+import { BookOpen, Hammer, Shuffle, Swords, Users } from "lucide-react";
 import { NAV_LINKS } from "@/components/layout/nav-links";
 import { TeamRoster } from "@/components/teams/team-dock";
 import { useTeams } from "@/components/teams/team-provider";
@@ -13,8 +13,9 @@ import { cn } from "@/lib/utils";
 const NAV_ICONS = {
   "/randomizer": Shuffle,
   "/builder": Hammer,
-  "/recap": ScrollText,
   "/teams": Users,
+  "/formats": BookOpen,
+  "/battle": Swords,
 } as const;
 
 /**
@@ -28,17 +29,18 @@ export function MobileDockBar() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
   const active = box.teams.find((team) => team.id === box.activeTeamId) ?? null;
+  const teamCount = box.draftRoster?.slots.length ?? active?.sets.length ?? 0;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)] lg:hidden">
       <div className="flex items-stretch">
-        <nav aria-label="Primary" className="min-w-0 flex-1 sm:hidden">
-          <ul className="grid grid-cols-4">
+        <nav aria-label="Primary" className="min-w-0 flex-1 overflow-x-auto sm:hidden">
+          <ul className="flex">
             {NAV_LINKS.map((link) => {
               const current = pathname === link.href;
               const Icon = NAV_ICONS[link.href];
               return (
-                <li key={link.href}>
+                <li key={link.href} className="min-w-[4.5rem] shrink-0">
                   <Link
                     href={link.href}
                     aria-current={current ? "page" : undefined}
@@ -69,7 +71,7 @@ export function MobileDockBar() {
           <span>
             Team{" "}
             <span className="font-mono tabular-nums">
-              {active?.sets.length ?? 0}/{TEAM_SIZE}
+              {teamCount}/{TEAM_SIZE}
             </span>
           </span>
         </button>

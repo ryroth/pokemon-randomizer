@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Shuffle } from "lucide-react";
@@ -25,6 +25,7 @@ import {
 import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
 import { useRandomizerSession } from "@/components/session/session-provider";
+import { AddToDraftTeam } from "@/components/randomizer/add-to-team-button";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { openBuilder } from "@/lib/builder";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1168,8 +1169,9 @@ function ContinueControl({
   const { session, setSession } = useRandomizerSession();
   const label = continueLabel(next, battlePokemon, selectedPokemon);
 
+  let control: ReactNode;
   if (ready && next === "builder") {
-    return (
+    control = (
       <Link
         href="/builder"
         className={cn(buttonVariants({ size: "lg" }), "w-fit")}
@@ -1178,23 +1180,32 @@ function ContinueControl({
         {label}
       </Link>
     );
-  }
-
-  if (ready && next !== "builder") {
-    return (
+  } else if (ready && next !== "builder") {
+    control = (
       <Button type="button" size="lg" className="w-fit" onClick={() => onOpenTab(next)}>
         {label}
       </Button>
     );
+  } else {
+    control = (
+      <span
+        className={cn(buttonVariants({ size: "lg" }), "w-fit cursor-not-allowed opacity-50")}
+        aria-disabled="true"
+      >
+        {label}
+      </span>
+    );
+  }
+
+  if (next !== "builder") {
+    return control;
   }
 
   return (
-    <span
-      className={cn(buttonVariants({ size: "lg" }), "w-fit cursor-not-allowed opacity-50")}
-      aria-disabled="true"
-    >
-      {label}
-    </span>
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+      {control}
+      <AddToDraftTeam ready={ready} />
+    </div>
   );
 }
 

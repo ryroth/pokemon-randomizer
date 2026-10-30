@@ -6,6 +6,8 @@ const SCENES = [
   { route: "/builder", scene: "builder" },
   { route: "/recap", scene: "recap" },
   { route: "/teams", scene: "teams" },
+  { route: "/formats", scene: "teams" },
+  { route: "/battle", scene: "builder" },
 ] as const;
 
 test.describe("world backdrops", () => {

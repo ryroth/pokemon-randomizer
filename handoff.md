@@ -19,16 +19,16 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 
 | Item | Value |
 | --- | --- |
-| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), **tester feedback part 2** (PR #14), **form learnsets and required held items** (PR #15), then **battle-only forms and restored moves** (PR #16) |
-| Current work | None. Later features only if the user asks |
-| Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts) |
+| Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), **tester feedback part 2** (PR #14), **form learnsets and required held items** (PR #15), **battle-only forms and restored moves** (PR #16), **Hidden Power typecheck** (PR #17), then two direct commits: **Struggle stays out of move pools** (`b49faff`) and **before-Pokémon pools generate once** (`2d7edc2`), then the **draft team of six**, **level 100**, **custom typing and base stats**, the **Format Explorer**, the **damage check**, and the **minimal singles battle** |
+| Current work | None. Those features are on `master`. See Draft team of six, and Formats, custom Pokémon, and the damage check, below |
+| Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts, weather, status, stat stages, AI, online play, doubles) |
 | Current branch locally | `master` |
-| Latest on `master` | The merge of pull request #16 (battle-only forms and restored moves). Run `git log -1` for the hash |
+| Latest on `master` | The draft-team merge. Run `git log -1` to confirm |
 | Remote | https://github.com/ryroth/pokemon-randomizer |
 | Merged PRs | [#1](https://github.com/ryroth/pokemon-randomizer/pull/1) Phase 1, [#2](https://github.com/ryroth/pokemon-randomizer/pull/2) Phase 2, [#3](https://github.com/ryroth/pokemon-randomizer/pull/3) Phase 3, [#4](https://github.com/ryroth/pokemon-randomizer/pull/4) Phase 4/5, [#5](https://github.com/ryroth/pokemon-randomizer/pull/5) Phase 6, [#6](https://github.com/ryroth/pokemon-randomizer/pull/6) Phase 7, [#7](https://github.com/ryroth/pokemon-randomizer/pull/7) Phase 8, [#8](https://github.com/ryroth/pokemon-randomizer/pull/8) Battle Laboratory overhaul, [#9](https://github.com/ryroth/pokemon-randomizer/pull/9) Pokémon world theme, [#10](https://github.com/ryroth/pokemon-randomizer/pull/10) Tester feedback (builder, recap links, still art, locks, evolution stages), [#11](https://github.com/ryroth/pokemon-randomizer/pull/11) scroll, evolution stages, and lock scope, [#12](https://github.com/ryroth/pokemon-randomizer/pull/12) drop moves removed from the games, [#13](https://github.com/ryroth/pokemon-randomizer/pull/13) Ditto tab icon, [#14](https://github.com/ryroth/pokemon-randomizer/pull/14) Tester feedback part 2, [#15](https://github.com/ryroth/pokemon-randomizer/pull/15) Form learnsets and required held items, [#16](https://github.com/ryroth/pokemon-randomizer/pull/16) Battle-only forms and restored moves |
 | Rename `master` → `main` | Still pending |
 
-Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the tester feedback round (PR #10) through the Ditto tab icon (PR #13), tester feedback part 2 (PR #14), form learnsets with required held items (PR #15), and battle-only forms with restored moves (PR #16) are on `master`. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless the user asks.
+Phases 1–8, the Battle Laboratory overhaul, the Pokémon world theme, the tester feedback round (PR #10) through the Ditto tab icon (PR #13), tester feedback part 2 (PR #14), form learnsets with required held items (PR #15), battle-only forms with restored moves (PR #16), and the Hidden Power production-build fix (PR #17) are on `master`. Two later commits are also on `master`: Struggle stays out of the move randomizer (`b49faff`), and a before-Pokémon ability, move, or item pool is generated once and can be cleared only before the user leaves that step (`2d7edc2`). The draft team of six, level 100, custom typing and base stats, the Format Explorer, the damage check, and the minimal singles battle are on `master` as well. Do **not** rebuild them. Do **not** start learnset-only pools, competitive pools, accounts, a six-Pokémon randomizer, weather, status, stat stages, AI, online play, or doubles unless the user asks.
 
 Start the next feature from up-to-date `master` on a new branch.
 
@@ -39,8 +39,9 @@ Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`,
 ## First action for the next agent
 
 1. Read this file and `AGENTS.md`. Stay on `master` until a new branch is asked for. Do **not** recreate or rebuild Phases 1–8 or the Battle Laboratory overhaul.
-2. Phase 8 and the overhaul are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless asked.
-3. Saved teams are in scope. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
+2. Phase 8 and the overhaul are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer (one Generate that returns six) unless asked. Drafting one Pokémon at a time onto a team of six, then building each slot, is implemented.
+3. Saved teams are in scope, including that draft roster. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
+4. A minimal generation 9 damage check and singles battle are already on `master`. Do not expand them unless the user asks. `reference/pokemon-showdown/` is a local reference clone. Do not import it.
 
 Do not commit unless asked. Do not push unless asked.
 
@@ -52,14 +53,18 @@ Consumer web app: randomize **one** Pokémon, build a Showdown-compatible set by
 
 Flow: Configure → generate unique Pokémon → select one → optional evolve → optional ability / move / item randomizers → Build → Validate → Recap → Copy to Showdown and/or save to a team → Next Randomizer for another Pokémon.
 
-Custom order can put Ability, Move, or Item **before** Pokémon. Then generate that extra pool first, apply extras to generated Pokémon (user choice, unique), then select. Ability-before requires an applied ability. Move-before uses a chosen 1–4 moves per Pokémon (default 4); empty slots are filled later in the Builder. Item-before requires one applied item, including None.
+Alternate path: on the last randomizer step, **Add to the team and roll the next** saves that Pokémon onto one draft roster (species, form, shiny roll, and any locked ability, moves, or item) and keeps the randomizer settings for the next roll. The sixth Pokémon opens the Builder at slot 1. Each finished set is written onto that slot. After slot 6 the roster becomes a normal team. **Continue to builder** still builds one Pokémon and does not add it to the roster. **Next Randomizer** on the recap still resets settings to the defaults. A draft slot can be removed until the first one is built.
+
+The Builder shows the typing picker and the base-stat picker only after the user turns that change on for the Pokémon being built. Turning it off clears the override. A set that already has custom types or custom base stats opens with that picker on. The species catalog is not edited. A format decides whether a battle may use those overrides.
+
+Custom order can put Ability, Move, or Item **before** Pokémon. Then generate that extra pool first, apply extras to generated Pokémon (user choice, unique), then select. That before-Pokémon pool is generated once: a later Generate does not replace it. Re-roll still replaces one result. Clear generated abilities, moves, or items removes that pool only while the user is still on that step. Moving to a later randomizer or the builder records the step in `passedExtras`, and Clear stays unavailable if they go back. A step that runs after Pokémon can be generated again for the current Pokémon. Ability-before requires an applied ability. Move-before uses a chosen 1–4 moves per Pokémon (default 4); empty slots are filled later in the Builder. Item-before requires one applied item, including None.
 
 - Pokémon: always randomized
 - Abilities / moves / items: independently optional
-- EVs and Nature are not auto-assigned. Tera type and gender may be left blank: blank Tera becomes the primary type and blank gender is a 50/50 roll when continuing to the recap (`finalizeBuilderSet`, `lib/randomizer/gender.ts`, written back to the draft so it does not re-roll). A set needs one to four moves (`MIN_MOVE_COUNT`, `MAX_MOVE_COUNT`). Shiny starts at No (`applyBuilderDefaults`) unless the Pokémon rolled shiny (see Shiny rolls below), in which case it starts at Yes. Applying the suggested spread is the exception: it fills those EVs and that Nature. Level starts at 50 (`DEFAULT_LEVEL`) and can be changed. IVs default to 31. Happiness defaults to 255 (0–255). Nickname is optional.
+- EVs and Nature are not auto-assigned. Tera type and gender may be left blank: blank Tera becomes the primary type and blank gender is a 50/50 roll when continuing to the recap (`finalizeBuilderSet`, `lib/randomizer/gender.ts`, written back to the draft so it does not re-roll). A set needs one to four moves (`MIN_MOVE_COUNT`, `MAX_MOVE_COUNT`). Shiny starts at No (`applyBuilderDefaults`) unless the Pokémon rolled shiny (see Shiny rolls below), in which case it starts at Yes. Applying the suggested spread is the exception: it fills those EVs and that Nature. Level starts at 100 (`DEFAULT_LEVEL`) and can be changed. IVs default to 31. Happiness defaults to 255 (0–255). Nickname is optional.
 - A new Pokémon roll, a different selected Pokémon, or an evolution clears EVs, Nature, Tera type, gender, shiny, and nickname (`freshTraining` in `lib/randomizer/session.ts`), so the next build starts at the defaults. IVs stay at 31.
 
-Out of scope until explicitly requested: accounts, share URLs, public seeds, learnset-only or competitive-only pools, and a database. A six-Pokémon **randomizer** is still out of scope. Saving finished builds onto local teams is implemented.
+Out of scope until explicitly requested: accounts, share URLs, public seeds, learnset-only or competitive-only pools, and a database. A six-Pokémon **randomizer** (one Generate that returns six Pokémon) is still out of scope. The draft-then-build team rolls one Pokémon at a time. Saving finished builds onto local teams is implemented.
 
 ---
 
@@ -97,6 +102,23 @@ Importer flags: `--fresh` (ignore HTTP cache), `--offline` (fail if cache miss),
 
 ---
 
+## Pokémon Showdown reference checkout
+
+Local only, gitignored, not a dependency. Snapshot `7244fe8e28fa8bc4d0809ae30d183c608b62bb2b` (2026-10-16, “Add Peat Block and PLA plates”) of https://github.com/smogon/pokemon-showdown at `reference/pokemon-showdown/`. MIT license, copyright 2011–2026 Guangcong Luo and contributors. Read it when building our own battle simulator. Do not import it, npm-install `pokemon-showdown`, or copy it into `app/` or `lib/`. Write our own code. If a substantial portion is copied, keep the MIT copyright and permission notice with it.
+
+| Path | What it is |
+| --- | --- |
+| `sim/battle.ts`, `side.ts`, `pokemon.ts`, `field.ts`, `battle-actions.ts`, `battle-queue.ts` | Battle engine |
+| `sim/SIMULATOR.md`, `sim/SIM-PROTOCOL.md` | How a battle runs, and the battle message protocol |
+| `sim/team-validator.ts`, `sim/TEAMS.md` | Team validation |
+| `sim/dex.ts` and `sim/dex-*.ts` | Dex access |
+| `data/pokedex.ts`, `moves.ts`, `abilities.ts`, `items.ts`, `typechart.ts`, `learnsets.ts`, `natures.ts` | Game data |
+| `ARCHITECTURE.md`, `PROTOCOL.md` | Server, client, and login split; client/server messages |
+
+The client is a different repo (`smogon/pokemon-showdown-client`) and is not cloned. Refresh this checkout only when asked: `git -C reference/pokemon-showdown pull`.
+
+---
+
 ## Locked design decisions
 
 Do not silently reverse these.
@@ -123,8 +145,9 @@ Do not silently reverse these.
 | Count | 1–12 Pokémon, default 6. Ability 1–12, default 3. Moves 4–12, default 8. Move-before `movesPerPokemon` 1–4, default 4. Items 1–12, default 3 |
 | Insufficient pools | Typed error + user-facing explanation; never a silent short list |
 | RNG | `lib/randomizer/randomUtils.ts` only. No `Math.random()` in product code |
-| Re-roll | Replaces **one** option in the **viewed** generation. Not a new Generate. No Previous/Next history. None is not re-rollable |
-| Tera / gender / level / shiny | In V1 UI, validation, recap, and export. Shiny is not auto-filled. A blank Tera type uses the primary type and a blank gender is rolled at random. Level defaults to 50 (the user can change it, 1–100) |
+| Re-roll | Replaces **one** option in the **viewed** generation. Not a new Generate. No Previous/Next history. None is not re-rollable. This is how one result in a before-Pokémon pool changes after the first Generate |
+| Before-Pokémon extra pool | Generated once (`canGenerateExtraPool`). Clear (`clearAbilityPool`, `clearMovePool`, `clearItemPool`) only while the user is still on that step. `passReachedRandomizer` writes `passedExtras` when they open a later step or the builder, and going back does not restore Clear. After-Pokémon extras can be generated again for the current Pokémon |
+| Tera / gender / level / shiny | In V1 UI, validation, recap, and export. Shiny is not auto-filled. A blank Tera type uses the primary type and a blank gender is rolled at random. Level defaults to 100 (the user can change it, 1–100) |
 | Nickname | Optional, above the Pokémon, at most 18 characters. Spaces count. Blank uses the species name |
 | Happiness | 0–255, default 255. Frustration is strongest at 0. Return is strongest at 255 |
 | EVs | Blank slots count as 0 and the user does not type 0. Total cannot pass 508. Per-stat cap is 252. Sliders are always scaled 0–252 and still clamp to the remaining total. There is no EV confirmation checkbox, and the old EV preset buttons are gone. Four moves show a Showdown-style suggested spread; applying it sets those EVs and that Nature. |
@@ -245,10 +268,10 @@ Enable extras on the **Randomizer order** list, not the Pokémon tab. Typical or
 | Extra | After Pokémon | Before Pokémon | Pool |
 | --- | --- | --- | --- |
 | Ability | Generate, pick one for `battlePokemonId` | Generate a pool; user applies unique abilities; select requires an applied ability | All 310 catalog abilities |
-| Move | Generate, pick **four** unique moves | Generate a pool; apply `movesPerPokemon` (1–4, default 4); leftover unused; empty slots stay empty for the Builder | 850 standard moves, then Physical/Special/Status and 18 types |
+| Move | Generate, pick **four** unique moves | Generate a pool once; apply `movesPerPokemon` (1–4, default 4); leftover unused; empty slots stay empty for the Builder | 849 learnable moves (Struggle stays in the catalog and is excluded by `isLearnableMove`), then Physical/Special/Status and 18 types |
 | Item | Generate, pick one or None | Generate a pool; apply unique items (None allowed); select requires an applied item | 507 holdables by Showdown teambuilder category; None is extra, not RNG |
 
-Do not auto-assign extras onto Pokémon in generate order. `builderAbilityPool` returns usual `abilityIds` when Ability is off, or rolled `abilityOptions` when on.
+Do not auto-assign extras onto Pokémon in generate order. A before-Pokémon Generate is hidden after the first pool. The ghost button “Clear generated abilities”, “Clear generated moves”, or “Clear generated items” shows only on that step. After the user moves on, the copy is “These abilities/moves/items are already set. Re-roll one to replace it.” `builderAbilityPool` returns usual `abilityIds` when Ability is off, or rolled `abilityOptions` when on.
 
 Move cards show type, category, **Power**, then **Accuracy** (`Accuracy 90%`, or Can't miss). Item cards show Showdown teambuilder category. Ability/move/item descriptions include numeric mechanics when a source has them (Punk Rock 1.3×, Metal Coat 20%).
 
@@ -265,6 +288,11 @@ Reuse these. Do not rewrite the select / evolve / clear / re-roll path.
 | `applyAbilityToRolledPokemon` / `applyMoveToRolledPokemon` / `applyItemToRolledPokemon` | Unique apply on a viewed-roll Pokémon |
 | `replaceRolledPokemon` / `replaceRolledAbility` / `replaceRolledMove` / `replaceRolledItem` | In-place re-roll of the viewed generation |
 | `clearPokemonRolls` | Drops Pokémon rolls; keeps pre-Pokémon extra pools |
+| `canGenerateExtraPool` | Before Pokémon: true only when that options array is empty. After Pokémon: true even when a pool exists |
+| `applyAbilityRoll` / `applyMoveRoll` / `applyItemRoll` | Return the same session when a before-Pokémon pool already exists, so a second Generate cannot replace it |
+| `clearAbilityPool` / `clearMovePool` / `clearItemPool` | No-op unless `canClearExtraPool`. Before Pokémon: drop the pool, applied ids, and the draft field, then unselect a Pokémon that no longer qualifies. After Pokémon: empty that pool and draft field only. Item clears call `withRequiredFormItem` |
+| `passReachedRandomizer` | Seals every enabled extra strictly before the furthest of the current tab and the destination. `"builder"` is after every step. `openRandomizerTab` and `openBuilder` both call it |
+| `passedExtras` | Optional on `RandomizerSession` so older `sessionStorage` still parses. New sessions set `[]`. Listed steps cannot be cleared, including after going back |
 
 `draft.itemId === null` means None. `undefined` on applied extras means not applied. `NONE_ITEM_SELECT_VALUE` (`__none__`) is UI-only.
 
@@ -281,7 +309,7 @@ Continue to builder opens `/builder` with the same session. The battle Pokémon,
 - Item: a categorized scrollable list matching the item randomizer (Popular items, Items, Pokémon-specific items, Usually useless items, Useless items), with search. Explicit None stays available. A randomizer-chosen item, including None, is locked and its effect stays visible.
 - Stats: six rows like the Showdown teambuilder (base bar, EVs, slider, IVs, calculated stat). Formula is official Gen 3+ in `lib/stats/battleStat.ts`. Blank EVs preview as 0. Missing IVs preview as 31. Unset level previews at 100. Shedinja's base HP of 1 stays 1.
 - A suggested spread appears once four moves are chosen (Ditto, Unown, and Last Resort can suggest sooner). `suggestEvSpread` in `lib/builder/suggestEvs.ts` follows the Pokémon Showdown teambuilder stat guesser (`BattleStatGuesser`) for Gen 9 with normal EV limits. The role comes from move categories and base stats, plus the ability, item, level, and IVs. It is not a published Smogon set. `data/smogon/gen9-analyses.json` is gone. "Use this spread" fills those EVs and the Nature that matches the plus and minus stats, and does not confirm.
-- EVs, Nature, and shiny stay unset until the user sets them, except the suggested spread above. Tera type and mixed gender may stay blank (primary type, random gender). Level starts at 50. A new roll, a different Pokémon, or an evolution clears EVs and Nature. IVs start at 31, with a Showdown IV spreads dropdown. Happiness starts at 255 (0–255). Nickname is optional, max 18 including spaces, and sits above the Pokémon. Spaces stay while typing and count toward 18. A nickname of only spaces is blank. Leading and trailing spaces are removed when the set is saved. Internal spaces stay in the saved set and in the Showdown paste.
+- EVs, Nature, and shiny stay unset until the user sets them, except the suggested spread above. Tera type and mixed gender may stay blank (primary type, random gender). Level starts at 100. A new roll, a different Pokémon, or an evolution clears EVs and Nature. IVs start at 31, with a Showdown IV spreads dropdown. Happiness starts at 255 (0–255). Nickname is optional, max 18 including spaces, and sits above the Pokémon. Spaces stay while typing and count toward 18. A nickname of only spaces is blank. Leading and trailing spaces are removed when the set is saved. Internal spaces stay in the saved set and in the Showdown paste.
 - Gender-locked and genderless species do not ask for a gender. `validateSet` fills the only legal gender.
 - Live issues come from `validateSet`. Continue to recap stays disabled until the set is valid, then stores `finalizedSet`.
 
@@ -340,7 +368,7 @@ Source: `Downloads/Final Master Design Overhaul Prompt.md`. Decisions: one phase
   - **Randomizer filters:** collapsible `FilterDropdown`s again (`components/randomizer/filter-dropdown.tsx`, native `<details>`), with `FilterToolbar`, `ToggleChip`, and `toggleFilterValue`. `openFilter` in `tests/e2e/helpers.ts` opens one.
   - **Pokéball reveal:** `lib/randomizer/ball.ts` (`ballForPokemon`): Master Ball for Restricted Legendary, Sub-Legendary, Mythical, Paradox, and Ultra Beast; Luxury Ball for pseudo-legendaries; otherwise BST ≥ 500 Ultra, ≥ 400 Great, else Poké Ball. `components/randomizer/pokeball.tsx` (`PokeballReveal`, `BallBadge`) plays a CSS-only throw, wiggle, and release (about 2 s per card, 70 ms stagger), once per card key (`playedKeys`), with the card `inert` until it opens. Reduced motion shows cards at once. Each card shows its BST and ball.
   - **Pokédex generations:** `npm run import:dex-entries` writes `data/generated/dex-entries.json` (`Record<speciesId, [generation, versions[], text][]>`). `loadDexEntries` (`lib/data/dexTools.ts`, a Server Function) feeds `useDexEntries`, and `components/dex/dex-entry-cycler.tsx` steps older/newer and jumps by generation. Used on randomizer cards and the recap card.
-  - **Builder:** Abilities / Hidden Ability group headers are darker and bolder. Tera type is a dropdown. EV presets and the EV confirmation checkbox were removed (`evsConfirmed` no longer exists). The IV spreads dropdown matches Showdown. Level defaults to 50. The item picker's empty-item icon is fixed. The move picker is in columns with a learn-method filter (see Phase 6).
+  - **Builder:** Abilities / Hidden Ability group headers are darker and bolder. Tera type is a dropdown. EV presets and the EV confirmation checkbox were removed (`evsConfirmed` no longer exists). The IV spreads dropdown matches Showdown. Level defaults to 100. The item picker's empty-item icon is fixed. The move picker is in columns with a learn-method filter (see Phase 6).
   - **Recap artwork (replaced):** the 3D model and its still artwork were removed. The recap always shows still artwork.
   - **Shiny rolls:** `RandomizerConfig.shinyChance` is a percent from 0 to 100 (default 1, `MIN/MAX/DEFAULT_SHINY_CHANCE` in `defaults.ts`, a "Shiny chance" box in the Pokémon filters, restored to 1 by Reset filters). `rollShinyIds` (`lib/randomizer/shiny.ts`) rolls each Pokémon on its own, using a separate seeded stream (`${seed}:shiny`), so it never changes which Pokémon are picked. `randomizePokemon` and `rerollPokemon` return `shinyIds`. The roll is stored as `PokemonRoll.shinyPokemonIds` (missing in old sessions means not shiny), and `replaceRolledPokemon(session, prev, next, nextIsShiny)` re-rolls it for a replaced card. A shiny card shows the shiny artwork and a "Shiny" badge with a sparkle icon. Selecting it, evolving it, or keeping it selected through a new roll starts the draft with `shiny: true` (`freshTraining(draft, rolledShiny)`); the user can still change it in the builder. An out-of-range chance shows an inline alert, and `InvalidShinyChanceError` carries a plain-language message. `parseStoredSession` fills in defaults for config keys missing from an older saved session.
   - **Teams page:** has the same Next Randomizer button as the recap (`components/session/next-randomizer-button.tsx`).
@@ -381,12 +409,13 @@ Look-and-feel only. No behavior, data, or route changed.
 - Continue to builder writes the session before leaving `/randomizer`. Continue to recap writes `finalizedSet` before leaving `/builder`.
 - Editing a draft field clears `finalizedSet`. Do not toggle shiny on a finished set unless the user submits the builder again.
 - Untracked `public/*.svg` leftovers from create-next-app should not be committed. `.next/` must not be committed.
-- Do not add the full `pokemon-showdown` simulator package to the client.
+- Do not add the full `pokemon-showdown` simulator package to the client. The gitignored clone in `reference/pokemon-showdown/` is the reference copy.
 - Natures have `pokeApiSlug` (dual-write rule). Do not remove it.
 - Next.js 16 may rewrite the `<!-- BEGIN:nextjs-agent-rules -->` block at the top of `AGENTS.md`. Keep the Pokémon Randomizer rules below that block.
 - `data/cache/pokeapi/` is gitignored. Safe to keep locally; do not commit.
 - `node_modules.bak` (if present) is a leftover Vite install; gitignored; safe to delete.
-- PowerShell: chain commands with `;`, not `&&`.
+- PowerShell: chain commands with `;`, not `&&`. A git commit message cannot use a bash heredoc here; write a message file and use `git commit -F`.
+- The fixed Team button on the mobile dock can cover Generate, Continue, and the randomizer tabs. Scroll the control into view before clicking it.
 
 ---
 
@@ -408,7 +437,7 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8, the Battle Laboratory overhaul, tester feedback through part 2, form learnsets with required held items, and battle-only forms with restored moves are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8, the Battle Laboratory overhaul, tester feedback through part 2, form learnsets with required held items, battle-only forms with restored moves, the Struggle exclusion, and the before-Pokémon pool lock are on `master`. The format, custom-type, and singles-battle work is still uncommitted. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer unless I ask. Do not commit unless I ask.
 
 ## Tester feedback round (merged in PR #10)
 
@@ -464,3 +493,55 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 - **Not generated:** `isGeneratablePokemon` (`lib/data/generatableForms.ts`) is applied inside `filterPokemonForms`, so the match count and the roll use the same pool. The forms stay in the catalog. A roll never returns Cosplay Pikachu or a Pikachu with a cap (including the Alola cap), Castform Sunny, Rainy, or Snowy, Darmanitan Zen Mode, Galarian Darmanitan Zen Mode, Meloetta Pirouette, Wishiwashi School, Mimikyu Busted, Cramorant Gorging, Cramorant Gulping, Eiscue Noice, Morpeko Hangry, Eternatus Eternamax, or Palafin Hero. The base form still can be rolled. Zen Mode, Relic Song, Hunger Switch, Zero to Hero, Forecast, Schooling, Disguise, Gulp Missile, and Ice Face still change that Pokémon during a battle. Vivillon rolls are Meadow, Fancy, and Poké Ball. Other Vivillon patterns are cosmetic and are already left out of the catalog; any other Vivillon id is blocked too. Pikachu, Pikachu-Gmax, and Alolan Raichu still roll.
 - **Past moves:** `isCatalogMove` keeps moves Showdown marks `Past` (removed from the current games). Catalog version **2.5.0** has 850 moves. Z-Moves, Max moves, CAP, Custom, Future, and Let's Go moves stay out. Hidden Power's type entries share Showdown's id `hiddenpower`, so each catalog id is the name (`hiddenpowerfire`) and `showdownName` stays `Hidden Power Fire`. A Pokémon that learns Hidden Power also gets each type on its learnset, with the same learn methods. Unown's learnset is Hidden Power. The type entries have no English effect text, so their description is empty; type, power, accuracy, and PP come from Showdown. After changing this filter, run `npm run import:data` then `npm run import:learnsets`.
+
+## Struggle and before-Pokémon pools (on `master`)
+
+Direct commits after pull request #17. Do not rebuild them. The same rules are in `AGENTS.md` and `DATA_MODEL.md`.
+
+### Struggle (`b49faff`)
+
+Struggle stays in `catalog.json` (`id` `struggle`). `isLearnableMove` (`lib/filters/moves.ts`) keeps it out of the move randomizer, All Moves, and each Pokémon's moveset. `builderMovePool` and `validateMoves` use that check. The validation code is `moves.struggle`, and the message is “Struggle is used when a Pokémon is out of PP. It cannot be one of its moves.” The default move pool is 849. The catalog count stays 850. `{ kind: "struggle" }` in `lib/battle/singles.ts` is the choice used when a Pokémon is out of PP. Leave that choice in place.
+
+### Generate once, then clear only on that step (`2d7edc2`)
+
+If Ability, Move, or Item runs before Pokémon, the first Generate creates the pool and later Generate does not replace it. `canGenerateExtraPool` (`lib/randomizer/flow.ts`) is true for a before-Pokémon step only when that options array is empty. `applyAbilityRoll`, `applyMoveRoll`, and `applyItemRoll` return the same session when that pool already exists. Re-roll still replaces one result through `replaceRolledAbility`, `replaceRolledMove`, and `replaceRolledItem`. A step that runs after Pokémon can be generated again for the current Pokémon.
+
+“Clear generated abilities”, “Clear generated moves”, and “Clear generated items” match “Clear generated Pokémon”, and they appear on the step’s own tab and on the copy embedded in the Pokémon page. `canClearExtraPool` is false when `passedExtras` already lists the step, when the step is disabled, when that step comes before the current tab, or when the pool is empty. `passReachedRandomizer` seals every enabled extra strictly before the furthest of the current tab and the destination. `openRandomizerTab` calls it, then sets the tab. Opening the same tab, or a tab that cannot be opened, returns the original session and does not seal anything. `openBuilder` (`lib/builder/draft.ts`) calls it with `"builder"`, which counts as after every step, so every enabled extra is sealed. Going back does not restore Clear. “Clear generated Pokémon” is unchanged and still keeps before-Pokémon pools.
+
+Clearing a before-Pokémon pool drops that options array, clears the applied ids on stored rolls, clears the matching draft field, and unselects a Pokémon that required those extras (`withSelectionMatchingAppliedAbility`, `withSelectionMatchingAppliedMoves`, `withSelectionMatchingAppliedItem`). Unselecting for a missing ability also clears the draft item. Unselecting for missing moves also clears the draft ability and item. The item matcher clears the selection and the draft item. Clearing an after-Pokémon pool empties that options array and draft field only, and the selected Pokémon stays. Item clears go through `withRequiredFormItem`.
+
+`passedExtras` is an optional `Array<Exclude<RandomizerTab, "pokemon">>` on `RandomizerSession`, so a session saved before this field existed still loads. `createInitialSession` sets `passedExtras: []`. The storage key is still `pokemon-randomizer.session.v1`.
+
+`AbilityResults`, `MoveResults`, and `ItemResults` take `canGenerate`, `canClear`, and `onClear`. While the pool is set and Clear is still allowed, the message says the results are already set and mentions Clear. After the user has moved on, Generate and Clear are both hidden and the message is “These abilities/moves/items are already set. Re-roll one to replace it.” The Generate handlers also return early when `canGenerateExtraPool` is false.
+
+Tests: `tests/unit/randomizer/flow.test.ts`, `tests/unit/randomizer/session.test.ts`, and the ability-first, move-first, and item-first cases in `tests/e2e/randomizer.spec.ts`. Struggle is covered in `tests/unit/filters/moves.test.ts`, `tests/unit/builder/draft.test.ts`, `tests/unit/randomizer/moves-catalog.test.ts`, and `tests/unit/validation/set.test.ts`.
+
+## Draft team of six
+
+One roster lives on `TeamBox.draftRoster` in the same `pokemon-randomizer.teams.v1` save. It is not part of `SavedTeam.sets`, because export, the battle lab, and team analysis need a finished `PokemonSet`. Each slot is a `DraftedPokemon` (the snapshot plus the lock record from the moment it was added) or a finished set. When all six slots are finished sets, the roster is promoted to a normal team with the same id and name, and `draftRoster` is removed. Invalid roster data is dropped. Finished teams in the same save are kept.
+
+`draftedPokemonFromSession` refuses the add when there is no battle Pokémon or `pendingRandomizerSteps` is not empty. It stores the species, the ability if one is set, the item including explicit none, shiny only when true, four move slots, and the lock flags. `addDraftToRoster` refuses a seventh Pokémon and refuses an add after any slot is already built. The team name is the first unused `Team N`. `removeDraftFromRoster` works only while every slot is still a draft. `writeBuiltDraft` replaces one slot. If the roster is already gone, a later save goes through `replaceSetOnTeam`.
+
+`RandomizerSession.buildingDraft` points at the open slot. `draftLocks` is the stored lock record. `pendingRandomizerSteps` returns nothing while `buildingDraft` is set, so a missing ability does not look unfinished if abilities were turned on later. `openDraftInBuilder` clears rolls and option pools, loads the snapshot, and applies builder defaults. `editingTeamSlot` is a different path: editing a finished saved set still turns locks off. Opening the builder for a new one-off build, rolling a new Pokémon, or opening a saved set clears `buildingDraft` and `draftLocks`.
+
+`nextRollKeepingConfig` keeps filters, enabled steps, order, and shiny chance, and clears the roll. Recap **Next Randomizer** still calls `startNextRandomizer()` and resets settings. Duplicate species are allowed. Evolution-path uniqueness stays per roll.
+
+The phone Team button counts roster slots while a roster exists. The dock shows the roster until the user pins a finished team. Any roster change drops that pin. Copy uses the built slots only.
+
+Tests: `tests/unit/teams/draftRoster.test.ts` and `tests/e2e/draft-team.spec.ts`.
+
+## Formats, custom Pokémon, and the damage check
+
+This is on `master` with the draft team and the level-100 default. The Randomizer flow is unchanged. `/formats` explains presets transcribed from Showdown `config/formats.ts` and `data/rulesets.ts` at snapshot `7244fe8e28fa8bc4d0809ae30d183c608b62bb2b`. `/battle` edits a copy and previews one hit. Presets are locked. User formats are in `localStorage` (`pokemon-randomizer.formats.v1`).
+
+Custom types and custom base stats live on `PokemonSet`. The catalog species is not edited. A battle snapshot copies the effective values, so two checks can disagree about the same species. The format allows or rejects those overrides. It does not rewrite them.
+
+Shiny is still cosmetic. `shinyChance` only affects rolls. The Builder can mark any set shiny. A format's shiny policy is a separate allow or forbid. The Builder hides the typing picker and the base-stat picker until the user turns that change on for the Pokémon being built. A set that already has custom types or custom base stats opens with that picker on. Turning it off clears the override.
+
+The damage check follows Showdown's generation 9 order for base damage, the 85–100 roll, the 4096 same-type modifier, and type effectiveness. Immunity stays 0. That preview still omits abilities and items.
+
+`/battle` can also play a generation 9 singles battle from those same copied stats. Turns, switching, fainting, Choice lock, Levitate, Huge Power, Pure Power, Choice Band, Choice Specs, Choice Scarf, and Life Orb are applied. A critical hit is 1 in 24 and uses Showdown's `trunc(base * 1.5)` before the damage roll. The damage preview still leaves critical hits out. Moves that crit more often in the games use the same 1-in-24 rate, because the catalog does not store a critical-hit ratio. Weather, status, stat stages, other abilities and items, AI, online play, replays, banlists, and doubles are not. The log says which of a Pokémon's abilities and items were left out.
+
+Showdown's paste has no fields for custom types or base stats. `exportShowdownSet` leaves them out. `customAttributeNote` explains that on the recap.
+
+Do not import `reference/pokemon-showdown`. Do not describe this singles battle as a full simulator.

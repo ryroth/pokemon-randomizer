@@ -26,8 +26,13 @@ import {
   setDraftNature,
   setDraftNickname,
   setDraftShiny,
+  setDraftCustomTypes,
+  setDraftCustomBaseStat,
+  resetDraftCustomBaseStats,
   setDraftTeraType,
 } from "@/lib/builder";
+import { BaseStatEditor } from "@/components/builder/base-stat-editor";
+import { TypeEditor } from "@/components/builder/type-editor";
 import { PokemonPortrait } from "@/components/builder/pokemon-portrait";
 import { PageFrame } from "@/components/layout/page-frame";
 import { RouteNotice } from "@/components/layout/route-notice";
@@ -57,6 +62,7 @@ import type { PokemonForm } from "@/lib/types/pokemon";
 import type { RandomizerTab } from "@/lib/types/randomizer";
 import { pokemonSetsEqual } from "@/lib/teams/teams";
 import { defaultTeraType } from "@/lib/validation/set";
+import { showCustomStatPicker, showCustomTypePicker } from "@/lib/pokemon/customAttributes";
 import { DEFAULT_HAPPINESS, DEFAULT_LEVEL, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, MAX_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
 import { cn } from "@/lib/utils";
 
@@ -74,9 +80,12 @@ interface SetBuilderProps {
 export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBuilderProps) {
   const router = useRouter();
   const { session, setSession, ready } = useRandomizerSession();
-  const { box, ready: teamsReady, replaceSet } = useTeams();
+  const { box, ready: teamsReady, replaceSet, saveBuiltDraft } = useTeams();
   const [moveList, setMoveList] = useState<BuilderMoveList>("all");
   const [learnMethods, setLearnMethods] = useState<LearnMethod[]>([]);
+  const [draftSaveMessage, setDraftSaveMessage] = useState<string | null>(null);
+  const [typingChoice, setTypingChoice] = useState<{ id: string | null; on: boolean }>({ id: null, on: false });
+  const [statsChoice, setStatsChoice] = useState<{ id: string | null; on: boolean }>({ id: null, on: false });
 
   const pokemonById = useMemo(() => new Map(pokemon.map((form) => [form.id, form])), [pokemon]);
   const battleId = battlePokemonId(session);
@@ -182,6 +191,12 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           to use {battlePokemon.displayName}&apos;s primary type, and Gender blank to have one picked at
           random. Level starts at {DEFAULT_LEVEL} and IVs at 31. A set needs at least one move.
         </p>
+        {session.buildingDraft ? (
+          <p className="text-sm leading-6 text-muted-foreground">
+            This is slot {session.buildingDraft.index + 1} of 6. Parts the randomizer already chose stay
+            locked.
+          </p>
+        ) : null}
       </header>
 
       <form
@@ -189,12 +204,37 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         onSubmit={(event) => {
           event.preventDefault();
           const next = finalizeBuilderSet(session, battlePokemon);
-          setSession(next);
-          if (next.finalizedSet) {
-            router.push("/recap");
+          if (!next.finalizedSet) {
+            setSession(next);
+            return;
           }
+          if (session.buildingDraft) {
+            if (!teamsReady) {
+              setDraftSaveMessage("Loading your team…");
+              return;
+            }
+            const written = saveBuiltDraft(
+              session.buildingDraft.rosterId,
+              session.buildingDraft.index,
+              next.finalizedSet,
+            );
+            if (!written.ok) {
+              setDraftSaveMessage(written.message);
+              setSession(next);
+              return;
+            }
+          }
+          setDraftSaveMessage(null);
+          setSession(next);
+          router.push("/recap");
         }}
       >
+        {draftSaveMessage ? (
+          <p role="status" className="text-sm">
+            {draftSaveMessage}
+          </p>
+        ) : null}
+
         {pending.length > 0 ? (
           <div
             role="status"
@@ -241,12 +281,44 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
           <div className="min-w-0 space-y-1">
             <p className="font-medium">{battlePokemon.displayName}</p>
             <p className="flex flex-wrap gap-1.5">
-              {battlePokemon.types.map((type) => (
+              {(session.draft.customTypes ?? battlePokemon.types).map((type) => (
                 <TypeBadge key={type} type={type} />
               ))}
             </p>
+            {session.draft.shiny ? <p className="text-sm font-medium">Shiny</p> : null}
           </div>
         </div>
+
+        <TypeEditor
+          namePrefix="builder"
+          speciesTypes={battlePokemon.types}
+          customTypes={session.draft.customTypes}
+          changing={showCustomTypePicker(typingChoice.id === battleId && typingChoice.on, session.draft.customTypes)}
+          onChanging={(enabled) => {
+            setTypingChoice({ id: battleId ?? null, on: enabled });
+            if (!enabled) {
+              setSession(setDraftCustomTypes(session, undefined));
+            }
+          }}
+          onChange={(types) => setSession(setDraftCustomTypes(session, types))}
+        />
+
+        <BaseStatEditor
+          idPrefix="builder"
+          species={battlePokemon.baseStats}
+          custom={session.draft.customBaseStats}
+          changing={showCustomStatPicker(statsChoice.id === battleId && statsChoice.on, session.draft.customBaseStats)}
+          onChanging={(enabled) => {
+            setStatsChoice({ id: battleId ?? null, on: enabled });
+            if (!enabled) {
+              setSession(resetDraftCustomBaseStats(session));
+            }
+          }}
+          onChange={(stat, value) =>
+            setSession(setDraftCustomBaseStat(session, battlePokemon.baseStats, stat, value))
+          }
+          onReset={() => setSession(resetDraftCustomBaseStats(session))}
+        />
 
         <section id="ability" tabIndex={-1} className="scroll-mt-24 space-y-3 outline-none">
           <h2 className="text-lg font-medium">Ability</h2>
@@ -326,7 +398,7 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
               poolIds={movePool}
               selectedIds={session.draft.moveIds}
               lockedSlots={moveLocks}
-              pokemonTypes={battlePokemon.types}
+              pokemonTypes={session.draft.customTypes ?? battlePokemon.types}
               learnFilter={
                 moveList === "learnset"
                   ? {
@@ -579,6 +651,10 @@ function ShinyField({
           No
         </label>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Shiny changes the artwork only. You can mark any Pokémon shiny here, including one the
+        randomizer did not roll as shiny. The shiny chance on the Randomizer page only affects new rolls.
+      </p>
     </fieldset>
   );
 }

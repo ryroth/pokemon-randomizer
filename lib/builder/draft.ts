@@ -1,4 +1,10 @@
 import { ivPresetById } from "@/lib/builder/ivPresets";
+import {
+  sameStatSpread,
+  validateCustomBaseStats,
+  validateCustomTypes,
+  withBaseStat,
+} from "@/lib/pokemon/customAttributes";
 import { rollGender } from "@/lib/randomizer/gender";
 import { createSeed } from "@/lib/randomizer/randomUtils";
 import { requiredFormItemId } from "@/lib/data/formItems";
@@ -11,7 +17,7 @@ import {
 } from "@/lib/builder/locks";
 import type { Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
-import { TERA_TYPES, type TeraType } from "@/lib/types/pokemon-type";
+import { TERA_TYPES, type PokemonType, type TeraType } from "@/lib/types/pokemon-type";
 import type { PokemonSetDraft, RandomizerSession } from "@/lib/types/session";
 import { PERFECT_IVS, STAT_IDS, type StatId, type StatSpread } from "@/lib/types/stats";
 import type { Gender, GenderRule } from "@/lib/types/taxonomy";
@@ -54,6 +60,8 @@ export function openBuilder(session: RandomizerSession): RandomizerSession {
   return applyBuilderDefaults({
     ...passReachedRandomizer(session, "builder"),
     step: "builder",
+    buildingDraft: undefined,
+    draftLocks: undefined,
     draft: {
       ...session.draft,
       pokemonId,
@@ -63,7 +71,7 @@ export function openBuilder(session: RandomizerSession): RandomizerSession {
 }
 
 /**
- * IVs start at 31, happiness at 255, level at 50, and shiny at No. Existing choices are kept.
+ * IVs start at 31, happiness at 255, level at 100, and shiny at No. Existing choices are kept.
  * Tera type and gender stay blank on the draft. A blank Tera type becomes the primary type and a
  * blank gender is rolled when the set is finished (`finalizeBuilderSet`).
  */
@@ -321,6 +329,42 @@ export function setDraftShiny(
   shiny: boolean | undefined,
 ): RandomizerSession {
   return replaceDraft(session, { shiny });
+}
+
+/** `undefined` restores the species typing. An invalid combination leaves the draft unchanged. */
+export function setDraftCustomTypes(
+  session: RandomizerSession,
+  types: readonly PokemonType[] | undefined,
+): RandomizerSession {
+  const result = validateCustomTypes(types);
+  if (!result.ok) {
+    return session;
+  }
+  return replaceDraft(session, { customTypes: result.value });
+}
+
+/**
+ * Sets one custom base stat, starting from the species stats when the set has no override yet.
+ * A spread that matches the species clears the override. An out-of-range value is ignored.
+ */
+export function setDraftCustomBaseStat(
+  session: RandomizerSession,
+  species: StatSpread,
+  stat: StatId,
+  value: number,
+): RandomizerSession {
+  const next = withBaseStat(session.draft.customBaseStats ?? species, stat, value);
+  const result = validateCustomBaseStats(next);
+  if (!result.ok || !result.value) {
+    return session;
+  }
+  return replaceDraft(session, {
+    customBaseStats: sameStatSpread(result.value, species) ? undefined : result.value,
+  });
+}
+
+export function resetDraftCustomBaseStats(session: RandomizerSession): RandomizerSession {
+  return replaceDraft(session, { customBaseStats: undefined });
 }
 
 /**

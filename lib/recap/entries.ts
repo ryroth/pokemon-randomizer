@@ -1,6 +1,7 @@
 import { speciesGenus } from "@/lib/data/genera";
 import { pokemonImage } from "@/lib/art/pokemonImage";
-import { exportShowdownSet } from "@/lib/showdown/exportSet";
+import { customAttributeNote, exportShowdownSet } from "@/lib/showdown/exportSet";
+import { effectiveBaseStats, effectiveTypes } from "@/lib/pokemon/customAttributes";
 import { calculateBattleStats, type CalculatedStat } from "@/lib/stats/battleStat";
 import type { MoveCategory } from "@/lib/types/catalog-entities";
 import type { PokemonType, TeraType } from "@/lib/types/pokemon-type";
@@ -86,6 +87,12 @@ export interface RecapEntry {
   nickname: string | null;
   dexNumber: string;
   types: PokemonType[];
+  /** True when the set replaces the species typing. */
+  customTyping: boolean;
+  /** True when the set replaces the species base stats. */
+  customStats: boolean;
+  /** Shown when the paste cannot carry a custom field. Null when the set uses species data. */
+  exportNote: string | null;
   dexText: string | null;
   /** The still picture: official artwork in the matching regular or shiny colors. */
   imageUrl: string | null;
@@ -163,7 +170,10 @@ export function buildRecapEntry(
     genus: speciesGenus(pokemon.speciesId),
     nickname,
     dexNumber: formatDexNumber(pokemon.nationalDexNumber),
-    types: pokemon.types,
+    types: effectiveTypes(pokemon.types, set.customTypes),
+    customTyping: Boolean(set.customTypes),
+    customStats: Boolean(set.customBaseStats),
+    exportNote: customAttributeNote(set),
     dexText,
     imageUrl: pokemonImage(pokemon, set.shiny),
     abilityName: ability.showdownName,
@@ -175,7 +185,7 @@ export function buildRecapEntry(
     teraType: set.teraType,
     moves: moveViews.map(toMoveView),
     stats: calculateBattleStats({
-      base: pokemon.baseStats,
+      base: effectiveBaseStats(pokemon.baseStats, set.customBaseStats),
       ivs: set.ivs,
       evs: set.evs,
       level: set.level,

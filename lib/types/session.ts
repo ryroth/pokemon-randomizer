@@ -1,5 +1,5 @@
 import type { Gender } from "@/lib/types/taxonomy";
-import type { TeraType } from "@/lib/types/pokemon-type";
+import type { PokemonType, TeraType } from "@/lib/types/pokemon-type";
 import type { StatSpread } from "@/lib/types/stats";
 import type { RandomizerConfig, RandomizerTab } from "@/lib/types/randomizer";
 
@@ -23,6 +23,30 @@ export interface PokemonSetDraft {
   nickname?: string;
   /** 0–255. Defaults to 255 when the builder opens. */
   happiness?: number;
+  /** When set, replaces the species typing for this set only. One or two different types. */
+  customTypes?: PokemonType[];
+  /** When set, replaces the species base stats for this set only. */
+  customBaseStats?: StatSpread;
+}
+
+/** Parts a randomizer already chose for one drafted Pokémon. A form's required item is not stored here. */
+export interface DraftLocks {
+  ability: boolean;
+  item: boolean;
+  /** Four slots. True when the move randomizer filled that slot. */
+  moveSlots: boolean[];
+}
+
+/** A Pokémon saved onto the draft team before EVs, Nature, and the rest of the build. */
+export interface DraftedPokemon {
+  draft: PokemonSetDraft;
+  locks: DraftLocks;
+}
+
+/** The builder is finishing this slot of the draft team. Locks come from `draftLocks`. */
+export interface BuildingDraft {
+  rosterId: string;
+  index: number;
 }
 
 export interface PokemonSet {
@@ -40,6 +64,10 @@ export interface PokemonSet {
   shiny: boolean;
   nickname?: string;
   happiness: number;
+  /** Absent means the species typing. Never written onto the catalog. */
+  customTypes?: PokemonType[];
+  /** Absent means the species base stats. Never written onto the catalog. */
+  customBaseStats?: StatSpread;
 }
 
 export type AppStep = "configure" | "results" | "builder" | "recap";
@@ -78,4 +106,8 @@ export interface RandomizerSession {
    * draft is written back onto that slot.
    */
   editingTeamSlot?: { teamId: string; index: number };
+  /** The builder is finishing one slot of the in-progress draft team. */
+  buildingDraft?: BuildingDraft;
+  /** Lock record for `buildingDraft`, captured when that Pokémon was added. */
+  draftLocks?: DraftLocks;
 }

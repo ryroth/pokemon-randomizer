@@ -11,20 +11,22 @@ import { cn } from "@/lib/utils";
 
 const steps = [
   {
-    title: "Configure",
-    body: "Pick generations, types, forms, and optional ability, move, and item randomizers.",
+    title: "Build a Pokémon",
+    body: "Roll one Pokémon or open the builder and finish the set by hand, including shiny, types, and base stats.",
+    href: "/randomizer",
+    label: "Start randomizing",
   },
   {
-    title: "Generate",
-    body: "Roll a unique set of Pokémon. If the pool is too small, the app explains why.",
+    title: "Read the rules",
+    body: "See what a format allows before you use it, then save a copy if you want to change it.",
+    href: "/formats",
+    label: "Browse formats",
   },
   {
-    title: "Build",
-    body: "Choose ability, moves, item, EVs, Nature, Tera type, gender, level, shiny, and happiness. IVs start at 31.",
-  },
-  {
-    title: "Export",
-    body: "Copy one Pokémon Showdown set, or save it onto a team and copy the whole team.",
+    title: "Check a hit or play",
+    body: "Preview one attack, or play a generation 9 singles battle on one screen. Custom types and base stats stay inside that fight.",
+    href: "/battle",
+    label: "Open the battle lab",
   },
 ];
 
@@ -33,44 +35,43 @@ export default function HomePage() {
     <PageFrame className="gap-12">
       <section className="hero-panel max-w-2xl space-y-5">
         <p className="text-sm font-medium uppercase tracking-[0.18em] text-primary">
-          Single Pokémon builder
+          Build, rules, and a singles battle
         </p>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           Pokémon Randomizer
         </h1>
         <p className="text-lg leading-8 text-muted-foreground">
-          Generate a unique Pokémon, shape a complete set by hand, then copy it
-          straight into Pokémon Showdown. Abilities, moves, and items can be
-          randomized or chosen normally. EVs, Nature, Tera type, gender, level,
-          and shiny are yours to set. IVs start at 31. Happiness starts at 255.
+          Generate a Pokémon, finish its set, and read the rules before you preview a hit or play
+          singles. Shiny, custom types, and custom base stats stay on that Pokémon. A format decides
+          whether a battle is allowed to use them.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link href="/randomizer" className={cn(buttonVariants({ size: "lg" }))}>
             Start randomizing
           </Link>
           <Link
-            href="/builder"
+            href="/formats"
             className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
           >
-            Preview the builder
+            Browse formats
           </Link>
         </div>
       </section>
 
-      <section aria-labelledby="flow-heading" className="grid gap-4 sm:grid-cols-2">
+      <section aria-labelledby="flow-heading" className="grid gap-4 sm:grid-cols-3">
         <h2 id="flow-heading" className="sr-only">
           How it works
         </h2>
-        {steps.map((step, index) => (
+        {steps.map((step) => (
           <Card key={step.title}>
             <CardHeader>
-              <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                Step {index + 1}
-              </p>
               <CardTitle>
                 <h3 className="contents">{step.title}</h3>
               </CardTitle>
               <CardDescription>{step.body}</CardDescription>
+              <Link href={step.href} className={cn(buttonVariants({ variant: "outline" }), "mt-2 w-fit")}>
+                {step.label}
+              </Link>
             </CardHeader>
           </Card>
         ))}

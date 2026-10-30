@@ -19,7 +19,19 @@ test("builder keeps the selected Pokémon and leaves unset fields empty", async 
   await expect(page.getByRole("slider", { name: "Happiness" })).toHaveValue("255");
   await expect(page.getByRole("combobox", { name: "Nature" })).toHaveValue("");
   await expect(page.getByRole("combobox", { name: "Tera type" })).toHaveValue("");
-  await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("50");
+  await expect(page.getByRole("spinbutton", { name: "Level" })).toHaveValue("100");
+  await expect(page.getByRole("checkbox", { name: "Change this Pokémon's typing" })).not.toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "Change this Pokémon's base stats" })).not.toBeChecked();
+  await expect(page.getByRole("button", { name: "Use species typing" })).toHaveCount(0);
+  await expect(page.getByRole("spinbutton", { name: "HP base stat" })).toHaveCount(0);
+  await page.getByRole("checkbox", { name: "Change this Pokémon's typing" }).check();
+  await expect(page.getByRole("button", { name: "Use species typing" })).toBeVisible();
+  await page.getByRole("checkbox", { name: "Change this Pokémon's typing" }).uncheck();
+  await expect(page.getByRole("button", { name: "Use species typing" })).toHaveCount(0);
+  await page.getByRole("checkbox", { name: "Change this Pokémon's base stats" }).check();
+  await expect(page.getByRole("spinbutton", { name: "HP base stat" })).toBeVisible();
+  await page.getByRole("checkbox", { name: "Change this Pokémon's base stats" }).uncheck();
+  await expect(page.getByRole("spinbutton", { name: "HP base stat" })).toHaveCount(0);
   await expect(page.getByRole("radio", { name: "Yes", exact: true })).not.toBeChecked();
   // Shiny starts at No, since the randomizer never rolls a shiny.
   await expect(page.getByRole("radio", { name: "No", exact: true })).toBeChecked();
