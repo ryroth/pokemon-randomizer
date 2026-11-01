@@ -15,6 +15,26 @@ async function moveRandomizerEarlier(page: Page, label: string, steps: number) {
   await page.keyboard.press("Space");
 }
 
+test("letter and base stat total filters narrow the match count", async ({ page }) => {
+  await page.goto("/randomizer");
+  const summary = page.getByText(/Pokémon match these filters/);
+  const before = Number((await summary.textContent())?.match(/(\d+) Pokémon match/)?.[1]);
+  expect(before).toBeGreaterThan(100);
+
+  await openFilter(page, "More filters");
+  await page.getByRole("button", { name: "Clear letters" }).click();
+  await page.getByRole("checkbox", { name: "S", exact: true }).click();
+
+  await page.getByRole("tab", { name: "Stats" }).click();
+  await page.getByRole("spinbutton", { name: "Base stat total at most" }).fill("400");
+
+  await expect.poll(async () => Number((await summary.textContent())?.match(/(\d+) Pokémon match/)?.[1])).toBeLessThan(before);
+  await expect.poll(async () => Number((await summary.textContent())?.match(/(\d+) Pokémon match/)?.[1])).toBeGreaterThan(0);
+
+  await page.getByRole("spinbutton", { name: "Base stat total at least" }).fill("500");
+  await expect(page.getByRole("alert").filter({ hasText: "lowest base stat total" })).toBeVisible();
+});
+
 test("randomizer pages through previous generations and explains an empty pool", async ({
   page,
 }) => {

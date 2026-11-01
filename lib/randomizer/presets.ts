@@ -1,3 +1,4 @@
+import { applyStoredCardFacts } from "@/lib/randomizer/cardFacts";
 import { cloneRandomizerConfig, DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import type { RandomizerConfig } from "@/lib/types/randomizer";
 
@@ -64,7 +65,7 @@ export function configForPreset(config: RandomizerConfig): RandomizerConfig {
     ...config,
   });
   delete next.seed;
-  return next;
+  return applyStoredCardFacts(next, config);
 }
 
 export function normalizePresetName(name: string): string {

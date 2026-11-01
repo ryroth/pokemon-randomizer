@@ -30,6 +30,10 @@ export interface PokeApiPokemon {
   types: Array<{ slot: number; type: NamedAPIResource }>;
   abilities: Array<{ is_hidden: boolean; slot: number; ability: NamedAPIResource }>;
   stats: Array<{ base_stat: number; stat: NamedAPIResource }>;
+  /** Decimeters. Missing on a cached record that predates this field. */
+  height?: number;
+  /** Hectograms. Missing on a cached record that predates this field. */
+  weight?: number;
   sprites: {
     front_default: string | null;
     front_shiny: string | null;
@@ -51,6 +55,8 @@ export interface PokeApiSpecies {
   is_mythical: boolean;
   generation: NamedAPIResource;
   evolution_chain: { url: string };
+  color?: NamedAPIResource;
+  shape?: NamedAPIResource | null;
   names: NameEntry[];
   flavor_text_entries: FlavorTextEntry[];
 }

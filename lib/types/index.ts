@@ -15,18 +15,39 @@ export {
 } from "@/lib/types/pokemon-type";
 
 export type {
+  EggGroup,
+  EvolutionProgress,
   EvolutionStage,
   FormType,
   Gender,
   GenderRule,
   Generation,
+  MeasurementSystem,
+  NameInitial,
+  PokedexColor,
+  PokedexShape,
+  TypeCountFilter,
 } from "@/lib/types/taxonomy";
 export {
+  EGG_GROUPS,
+  EVOLUTION_PROGRESSES,
+  EVOLUTION_PROGRESS_LABELS,
   EVOLUTION_STAGES,
   EVOLUTION_STAGE_LABELS,
   FORM_TYPES,
   FORM_TYPE_LABELS,
+  GENDER_RULES,
+  GENDER_RULE_LABELS,
   GENERATIONS,
+  MEASUREMENT_SYSTEMS,
+  MEASUREMENT_SYSTEM_LABELS,
+  NAME_INITIALS,
+  POKEDEX_COLORS,
+  POKEDEX_COLOR_LABELS,
+  POKEDEX_SHAPES,
+  POKEDEX_SHAPE_LABELS,
+  TYPE_COUNT_FILTERS,
+  TYPE_COUNT_LABELS,
 } from "@/lib/types/taxonomy";
 
 export type { PokemonSpecies } from "@/lib/types/species";
@@ -51,6 +72,8 @@ export {
   MOVE_CATEGORY_LABELS,
 } from "@/lib/types/catalog-entities";
 export type { Catalog } from "@/lib/types/catalog";
+export type { CardFact } from "@/lib/types/card-facts";
+export { CARD_FACTS, CARD_FACT_LABELS } from "@/lib/types/card-facts";
 export type {
   AbilityPoolMode,
   MovePoolMode,

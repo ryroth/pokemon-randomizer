@@ -7,17 +7,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RerollButton } from "@/components/randomizer/reroll-button";
 import { TypeBadge } from "@/components/recap/type-badge";
 import { DexEntryCycler } from "@/components/dex/dex-entry-cycler";
+import { BaseStatLine } from "@/components/randomizer/base-stat-line";
 import { BallBadge, PokeballReveal } from "@/components/randomizer/pokeball";
 import { typeGlow } from "@/components/type-colors";
-import { BaseStatLine } from "@/components/randomizer/base-stat-line";
-import { baseStatTotal, ballForPokemon } from "@/lib/randomizer/ball";
+import { GuessDexEntry } from "@/components/randomizer/guess-dex-entry";
+import { PokemonFacts } from "@/components/randomizer/pokemon-facts";
+import { baseStatTotal, ballOnCard } from "@/lib/randomizer/ball";
+import {
+  extremeStatLabels,
+  showsCardFact,
+  showsSpeciesCardFacts,
+  typesToShow,
+  usesFullGeneratedCard,
+} from "@/lib/randomizer/cardFacts";
 import { MOVES_ASSIGNED_PER_POKEMON, requiredMovesPerPokemon } from "@/lib/randomizer/applyExtras";
 import { NONE_ITEM_ID, NONE_ITEM_SELECT_VALUE } from "@/lib/randomizer/items";
 import { filledMoveCount } from "@/lib/randomizer/session";
 import { pokemonImage } from "@/lib/art/pokemonImage";
 import type { Ability, Item, Move } from "@/lib/types/catalog-entities";
+import { CARD_FACTS, type CardFact } from "@/lib/types/card-facts";
 import type { PokemonForm } from "@/lib/types/pokemon";
-import { FORM_TYPE_LABELS } from "@/lib/types/taxonomy";
+import { FORM_TYPE_LABELS, type MeasurementSystem } from "@/lib/types/taxonomy";
 import { cn } from "@/lib/utils";
 
 interface PokemonResultsProps {
@@ -35,7 +45,8 @@ interface PokemonResultsProps {
   requiredFormItems?: Readonly<Record<string, Item>>;
   unusedItems?: readonly Item[];
   movesPerPokemon?: number;
-  showPokedexEntry: boolean;
+  shownCardFacts: readonly CardFact[];
+  measurementSystem: MeasurementSystem;
   generationNumber: number;
   generationCount: number;
   /** Cards that were just rolled come out of a ball. Maps a Pokémon to the roll that revealed it. */
@@ -65,7 +76,8 @@ export function PokemonResults({
   requiredFormItems,
   unusedItems,
   movesPerPokemon = MOVES_ASSIGNED_PER_POKEMON,
-  showPokedexEntry,
+  shownCardFacts = CARD_FACTS,
+  measurementSystem,
   generationNumber,
   generationCount,
   revealTokens,
@@ -162,8 +174,11 @@ export function PokemonResults({
       >
         {pokemon.map((form, position) => {
           const selected = form.id === selectedPokemonId;
+          const generationRevealed = pokemon.some((entry) => entry.id === selectedPokemonId);
+          const fullCard = usesFullGeneratedCard(shownCardFacts, generationRevealed);
+          const facts = fullCard ? CARD_FACTS : shownCardFacts;
           const dexText = form.dexEntries[0]?.text;
-          const ball = ballForPokemon(form);
+          const ball = ballOnCard(form, fullCard);
           const revealToken = revealTokens?.get(form.id);
           const playKey = revealToken === undefined ? undefined : `${revealToken}:${form.id}`;
           const shiny = shinyIds?.includes(form.id) ?? false;
@@ -187,6 +202,28 @@ export function PokemonResults({
           const choices = abilityChoicesByPokemon?.[form.id] ?? [];
           const moveSlotChoices = moveChoicesByPokemonSlot?.[form.id] ?? [];
           const itemChoices = itemChoicesByPokemon?.[form.id] ?? [];
+          const showName = fullCard;
+          const showPicture = fullCard;
+          const showDexNumber = showsCardFact(facts, "dexNumber");
+          const showGeneration = showsCardFact(facts, "generation");
+          const showBst = showsCardFact(facts, "bst");
+          const visibleTypes = typesToShow(form.types, facts);
+          const spokenName = showName ? form.displayName : "this Pokémon";
+          const headerBits: string[] = [];
+          if (showDexNumber) {
+            headerBits.push(`#${String(form.nationalDexNumber).padStart(4, "0")}`);
+          }
+          if (showGeneration) {
+            headerBits.push(`Gen ${form.generation}`);
+          }
+          const showBall = showDexNumber && showGeneration && showBst;
+          const showTypeRow =
+            visibleTypes.length > 0 ||
+            (fullCard && form.formType !== "base") ||
+            Boolean(appliedAbility) ||
+            appliedItemId === NONE_ITEM_ID ||
+            Boolean(appliedItem) ||
+            appliedMoves.some((moveId) => Boolean(moveId));
 
           return (
             <li key={playKey ?? form.id}>
@@ -196,7 +233,11 @@ export function PokemonResults({
                   "flex h-full flex-col",
                   selected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
                 )}
-                style={{ backgroundImage: typeGlow(form.types) }}
+                style={
+                  visibleTypes.length === form.types.length
+                    ? { backgroundImage: typeGlow(form.types) }
+                    : undefined
+                }
               >
                 <button
                   type="button"
@@ -206,33 +247,51 @@ export function PokemonResults({
                   onClick={() => onSelect(form.id)}
                 >
                   <CardHeader>
-                    <div className="relative mx-auto aspect-square w-full max-w-[180px]">
-                      {imageSrc ? (
-                        <Image
-                          src={imageSrc}
-                          alt=""
-                          fill
-                          sizes="180px"
-                          className="object-contain"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border text-2xl text-muted-foreground">
-                          {form.displayName.slice(0, 1)}
-                        </div>
-                      )}
-                    </div>
-                    <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                      <span>
-                        #{String(form.nationalDexNumber).padStart(4, "0")} · Gen {form.generation}
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span className="font-mono tabular-nums">BST {baseStatTotal(form.baseStats)}</span>
-                      <BallBadge kind={ball} />
-                    </p>
-                    <CardTitle>
-                      <h3 className="contents">{form.displayName}</h3>
-                    </CardTitle>
-                    <BaseStatLine stats={form.baseStats} />
+                    {showPicture ? (
+                      <div className="relative mx-auto aspect-square w-full max-w-[180px]">
+                        {imageSrc ? (
+                          <Image
+                            src={imageSrc}
+                            alt=""
+                            fill
+                            sizes="180px"
+                            className="object-contain"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border text-2xl text-muted-foreground">
+                            {showName ? form.displayName.slice(0, 1) : null}
+                          </div>
+                        )}
+                      </div>
+                    ) : null}
+                    {headerBits.length > 0 || showBst || showBall ? (
+                      <p className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                        {headerBits.length > 0 ? <span>{headerBits.join(" · ")}</span> : null}
+                        {headerBits.length > 0 && showBst ? <span aria-hidden="true">·</span> : null}
+                        {showBst ? (
+                          <span className="font-mono tabular-nums">
+                            BST {baseStatTotal(form.baseStats)}
+                          </span>
+                        ) : null}
+                        {showBall ? <BallBadge kind={ball} /> : null}
+                      </p>
+                    ) : null}
+                    {showName ? (
+                      <CardTitle>
+                        <h3 className="contents">{form.displayName}</h3>
+                      </CardTitle>
+                    ) : null}
+                    {fullCard ? <BaseStatLine stats={form.baseStats} /> : null}
+                    {!fullCard && showsCardFact(facts, "highestStat") ? (
+                      <p className="text-sm">
+                        Highest: {extremeStatLabels(form.baseStats, "high")}
+                      </p>
+                    ) : null}
+                    {!fullCard && showsCardFact(facts, "lowestStat") ? (
+                      <p className="text-sm">
+                        Lowest: {extremeStatLabels(form.baseStats, "low")}
+                      </p>
+                    ) : null}
                     {shiny ? (
                       <p className="inline-flex w-fit items-center gap-1 rounded-full border border-amber-500 bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-950 dark:border-amber-400 dark:bg-amber-950 dark:text-amber-100">
                         <Sparkles aria-hidden="true" className="size-3.5" />
@@ -254,11 +313,12 @@ export function PokemonResults({
                     )}
                   </CardHeader>
                   <CardContent className="space-y-3">
+                    {showTypeRow ? (
                     <p className="flex flex-wrap gap-1.5">
-                      {form.types.map((type) => (
+                      {visibleTypes.map((type) => (
                         <TypeBadge key={type} type={type} />
                       ))}
-                      {form.formType !== "base" ? (
+                      {fullCard && form.formType !== "base" ? (
                         <span className="rounded-full border border-border px-2 py-0.5 text-xs">
                           {FORM_TYPE_LABELS[form.formType]}
                         </span>
@@ -293,25 +353,45 @@ export function PokemonResults({
                           </span>
                         ))}
                     </p>
+                    ) : null}
                   </CardContent>
                 </button>
-                {showPokedexEntry ? (
+                {showsSpeciesCardFacts(facts) ? (
                   <div className="px-6 pb-4">
-                    <DexEntryCycler
-                      speciesId={form.speciesId}
-                      name={form.displayName}
-                      fallbackText={dexText ?? null}
+                    <PokemonFacts
+                      form={form}
+                      measurementSystem={measurementSystem}
+                      facts={facts}
+                      cryName={spokenName}
+                      showBothMeasurements={fullCard}
                     />
+                  </div>
+                ) : null}
+                {showsCardFact(facts, "pokedexEntry") ? (
+                  <div className="px-6 pb-4">
+                    {showName ? (
+                      <DexEntryCycler
+                        speciesId={form.speciesId}
+                        name={form.displayName}
+                        fallbackText={dexText ?? null}
+                      />
+                    ) : (
+                      <GuessDexEntry
+                        speciesId={form.speciesId}
+                        displayName={form.displayName}
+                        fallbackText={dexText ?? null}
+                      />
+                    )}
                   </div>
                 ) : null}
                 {onApplyAbility ? (
                   <div className="border-t border-border px-6 py-4">
                     <label className="block space-y-1 text-sm">
-                      <span className="font-medium">Ability for {form.displayName}</span>
+                      <span className="font-medium">Ability for {spokenName}</span>
                       <select
                         className="h-9 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                         value={appliedAbilityId ?? ""}
-                        aria-label={`Ability for ${form.displayName}`}
+                        aria-label={`Ability for ${spokenName}`}
                         onChange={(event) => {
                           const next = event.target.value;
                           onApplyAbility(form.id, next === "" ? undefined : next);
@@ -327,7 +407,7 @@ export function PokemonResults({
                     </label>
                   </div>
                 ) : null}
-                {requiredItem ? (
+                {fullCard && requiredItem ? (
                   <p className="border-t border-border px-6 py-4 text-sm text-muted-foreground">
                     Holds {requiredItem.name}. This form needs that item.
                   </p>
@@ -335,7 +415,7 @@ export function PokemonResults({
                 {onApplyItem && !requiredItem ? (
                   <div className="border-t border-border px-6 py-4">
                     <label className="block space-y-1 text-sm">
-                      <span className="font-medium">Item for {form.displayName}</span>
+                      <span className="font-medium">Item for {spokenName}</span>
                       <select
                         className="h-9 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                         value={
@@ -343,7 +423,7 @@ export function PokemonResults({
                             ? NONE_ITEM_SELECT_VALUE
                             : (appliedItemId ?? "")
                         }
-                        aria-label={`Item for ${form.displayName}`}
+                        aria-label={`Item for ${spokenName}`}
                         onChange={(event) => {
                           const next = event.target.value;
                           if (next === "") {
@@ -370,7 +450,7 @@ export function PokemonResults({
                 ) : null}
                 {onApplyMove ? (
                   <div className="space-y-3 border-t border-border px-6 py-4">
-                    <p className="text-sm font-medium">Moves for {form.displayName}</p>
+                    <p className="text-sm font-medium">Moves for {spokenName}</p>
                     <p className="text-sm text-muted-foreground">
                       {applyMoveSlotsHelp(applySlotCount, remainingBuilderSlots)}
                     </p>
@@ -380,12 +460,12 @@ export function PokemonResults({
                       return (
                         <label key={slotIndex} className="block space-y-1 text-sm">
                           <span className="font-medium">
-                            Move {slotIndex + 1} for {form.displayName}
+                            Move {slotIndex + 1} for {spokenName}
                           </span>
                           <select
                             className="h-9 w-full rounded-lg border border-input bg-background px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                             value={appliedMoveId ?? ""}
-                            aria-label={`Move ${slotIndex + 1} for ${form.displayName}`}
+                            aria-label={`Move ${slotIndex + 1} for ${spokenName}`}
                             onChange={(event) => {
                               const next = event.target.value;
                               onApplyMove(form.id, slotIndex, next === "" ? undefined : next);
@@ -403,7 +483,7 @@ export function PokemonResults({
                     })}
                   </div>
                 ) : null}
-                <RerollButton name={form.displayName} onClick={() => onReroll(form.id)} />
+                <RerollButton name={spokenName} onClick={() => onReroll(form.id)} />
               </Card>
               </PokeballReveal>
             </li>

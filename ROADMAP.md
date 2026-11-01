@@ -51,13 +51,13 @@ Accessibility, responsive layout, loading and error pages, and visual consistenc
 
 ## Phase 9 — Formats, custom Pokémon, and a damage check
 
-In progress on the working tree. The Randomizer, Builder, Recap, and Teams flows stay. New routes: `/formats` and `/battle`.
+Complete on `master` (PR #18). The Randomizer, Builder, Recap, and Teams flows stay. New routes: `/formats` and `/battle`.
 
 Done in this slice:
 
 - Format Explorer for the transcribed Showdown presets plus the app preset Open lab. Cards show generation, structure, audience, clauses, and the banlist, and they say which of those this app actually checks.
 - A format copy can change shiny availability, typing policy, base-stat policy, team size, clauses this app checks, and an optional base-stat budget. Saving writes a new format. Reset restores a field or the whole preset. One previous save can be restored. Presets stay locked.
-- Builder fields for custom typing and custom base stats. They are stored on the set. The species catalog is not edited. Showdown paste omits them and the recap says so.
+- Builder fields for custom typing and custom base stats. They stay hidden until the player turns that change on for the Pokémon being built. They are stored on the set. The species catalog is not edited. Showdown paste omits them and the recap says so. New sets start at level 100.
 - Shiny can be chosen on any set. `shinyChance` only affects new rolls. A format may forbid shinies.
 - A generation 9 single-target damage check. Custom types affect same-type bonus, weaknesses, and immunities. Custom base stats go through Showdown's stat formula. Each check copies those values onto its own snapshot.
 
@@ -71,7 +71,7 @@ Not in this slice, and not claimed in the UI:
 
 ## Phase 10 — A minimal singles battle
 
-In progress on the working tree. It uses the Phase 9 snapshot. Both players choose on one screen.
+Complete on `master` (PR #18). It uses the Phase 9 snapshot. Both players choose on one screen.
 
 Done in this slice:
 

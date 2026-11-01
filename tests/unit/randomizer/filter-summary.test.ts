@@ -8,6 +8,7 @@ import {
   describeEvolutionStageFilter,
   describeFormTypeFilter,
   describeGenerationFilter,
+  describeMoreFilters,
   describeSpecialFilter,
   describeTypeFilter,
 } from "@/components/randomizer/pokemon-filter-summary";
@@ -68,5 +69,34 @@ describe("Pokémon filter dropdown summaries", () => {
     expect(describeMoveCategoryFilter(config)).toBe("No categories");
     expect(describeMoveTypeFilter(config)).toBe("No types");
     expect(describeItemCategoryFilter(config)).toBe("No categories");
+  });
+
+  it("describes extra filters on one line", () => {
+    expect(describeMoreFilters(DEFAULT_RANDOMIZER_CONFIG)).toBe("Any");
+    expect(
+      describeMoreFilters({
+        ...DEFAULT_RANDOMIZER_CONFIG,
+        nameInitials: ["S"],
+        bstMax: 400,
+        genusQuery: "  Mouse Pokémon ",
+        lowestStats: ["atk"],
+      }),
+    ).toBe("Starts with S · BST at most 400 · Lowest Attack · Mouse Pokémon");
+    expect(describeMoreFilters({ ...DEFAULT_RANDOMIZER_CONFIG, nameInitials: [] })).toBe("No letters");
+    expect(
+      describeMoreFilters({
+        ...DEFAULT_RANDOMIZER_CONFIG,
+        heightMinM: 0.7,
+        weightMinKg: 6.9,
+      }),
+    ).toBe("At least 2 ft 4 in · At least 15.2 lb");
+    expect(
+      describeMoreFilters({
+        ...DEFAULT_RANDOMIZER_CONFIG,
+        measurementSystem: "metric",
+        heightMinM: 0.7,
+        weightMinKg: 6.9,
+      }),
+    ).toBe("At least 0.7 m · At least 6.9 kg · Metric");
   });
 });

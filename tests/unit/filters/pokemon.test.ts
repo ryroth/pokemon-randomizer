@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { filterPokemonForms, matchesPokemonFilters } from "@/lib/filters/pokemon";
+import {
+  BASE_STAT_RANGE_ERROR,
+  filterPokemonForms,
+  matchesPokemonFilters,
+} from "@/lib/filters/pokemon";
 import { DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
+import { InvalidPokemonFilterError, randomizePokemon } from "@/lib/randomizer/pokemon";
+import { baseStatTotal } from "@/lib/randomizer/ball";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { PokemonFilterConfig } from "@/lib/filters/pokemon";
+import type { RandomizerConfig } from "@/lib/types/randomizer";
 import { EMPTY_EVS } from "@/lib/types/stats";
 
 function makeForm(overrides: Partial<PokemonForm> & Pick<PokemonForm, "id">): PokemonForm {
@@ -32,6 +39,11 @@ function makeForm(overrides: Partial<PokemonForm> & Pick<PokemonForm, "id">): Po
     sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
+    pokedexColor: null,
+    shape: null,
+    heightM: null,
+    weightKg: null,
+    eggGroups: [],
     evolutionTargetIds: [],
     ...overrides,
     evolutionStage,
@@ -43,7 +55,7 @@ function makeForm(overrides: Partial<PokemonForm> & Pick<PokemonForm, "id">): Po
 
 function filterConfig(
   overrides: Partial<PokemonFilterConfig> = {},
-): PokemonFilterConfig {
+): RandomizerConfig {
   return {
     ...DEFAULT_RANDOMIZER_CONFIG,
     ...overrides,
@@ -262,5 +274,151 @@ describe("matchesPokemonFilters", () => {
 
     expect(matchesPokemonFilters(zen, DEFAULT_RANDOMIZER_CONFIG)).toBe(false);
     expect(matchesPokemonFilters(darmanitan, DEFAULT_RANDOMIZER_CONFIG)).toBe(true);
+  });
+});
+
+describe("extra Pokémon filters", () => {
+  const sandy = makeForm({
+    id: "sandshrew",
+    displayName: "Sandshrew",
+    speciesId: "pikachu",
+    types: ["ground"],
+    baseStats: { hp: 50, atk: 75, def: 85, spa: 20, spd: 30, spe: 40 },
+    genderRule: "mixed",
+    pokedexColor: "yellow",
+    shape: "upright",
+    heightM: 0.6,
+    weightKg: 12,
+    eggGroups: ["Field"],
+    evolutionTargetIds: ["sandslash"],
+  });
+  const bulky = makeForm({
+    id: "snorlax",
+    displayName: "Snorlax",
+    types: ["normal"],
+    baseStats: { hp: 160, atk: 110, def: 65, spa: 65, spd: 110, spe: 30 },
+    genderRule: "mixed",
+    pokedexColor: "black",
+    shape: "humanoid",
+    heightM: 2.1,
+    weightKg: 460,
+    eggGroups: ["Monster"],
+  });
+  const unknown = makeForm({
+    id: "unknown",
+    displayName: "???",
+    speciesId: "not-a-real-species",
+    pokedexColor: null,
+    shape: null,
+    heightM: null,
+    weightKg: null,
+    eggGroups: [],
+  });
+
+  it("keeps a form that is missing the new fields when every choice is selected", () => {
+    expect(matchesPokemonFilters(unknown, DEFAULT_RANDOMIZER_CONFIG)).toBe(true);
+  });
+
+  it("matches the first letter, including a name that starts with a word", () => {
+    const mime = makeForm({ id: "mrmime", displayName: "Mr. Mime" });
+    expect(ids(filterPokemonForms([sandy, mime], filterConfig({ nameInitials: ["S"] })))).toEqual([
+      "sandshrew",
+    ]);
+    expect(ids(filterPokemonForms([sandy, mime], filterConfig({ nameInitials: ["M"] })))).toEqual([
+      "mrmime",
+    ]);
+    expect(filterPokemonForms([sandy], filterConfig({ nameInitials: [] }))).toEqual([]);
+  });
+
+  it("uses inclusive base stat totals and each form's own total", () => {
+    expect(baseStatTotal(sandy.baseStats)).toBe(300);
+    const mega = makeForm({
+      id: "sandshrewmega",
+      displayName: "Sandshrew-Mega",
+      formType: "mega",
+      baseStats: { hp: 50, atk: 150, def: 85, spa: 20, spd: 30, spe: 40 },
+    });
+    expect(
+      ids(filterPokemonForms([sandy, mega], filterConfig({ formTypes: ["base", "mega"], bstMax: 300 }))),
+    ).toEqual(["sandshrew"]);
+    expect(ids(filterPokemonForms([sandy, bulky], filterConfig({ bstMin: 300, bstMax: 300 })))).toEqual([
+      "sandshrew",
+    ]);
+  });
+
+  it("filters typing, evolution, and a tied highest or lowest stat", () => {
+    const tied = makeForm({
+      id: "tied",
+      displayName: "Tied",
+      types: ["fire", "flying"],
+      baseStats: { hp: 10, atk: 80, def: 10, spa: 80, spd: 10, spe: 10 },
+    });
+    expect(ids(filterPokemonForms([sandy, tied], filterConfig({ typeCount: "dual" })))).toEqual(["tied"]);
+    expect(ids(filterPokemonForms([sandy, bulky], filterConfig({ typeCount: "single" })))).toEqual([
+      "sandshrew",
+      "snorlax",
+    ]);
+    expect(
+      ids(filterPokemonForms([sandy, bulky], filterConfig({ evolutionProgress: "can-evolve" }))),
+    ).toEqual(["sandshrew"]);
+    expect(
+      ids(filterPokemonForms([sandy, bulky], filterConfig({ evolutionProgress: "fully-evolved" }))),
+    ).toEqual(["snorlax"]);
+    expect(ids(filterPokemonForms([tied, sandy], filterConfig({ highestStats: ["atk"] })))).toEqual([
+      "tied",
+    ]);
+    expect(ids(filterPokemonForms([tied], filterConfig({ highestStats: ["spa"] })))).toEqual(["tied"]);
+    expect(filterPokemonForms([tied], filterConfig({ highestStats: [] }))).toEqual([]);
+    expect(ids(filterPokemonForms([sandy, tied], filterConfig({ lowestStats: ["spa"] })))).toEqual([
+      "sandshrew",
+    ]);
+    expect(ids(filterPokemonForms([tied], filterConfig({ lowestStats: ["hp"] })))).toEqual(["tied"]);
+    expect(ids(filterPokemonForms([tied], filterConfig({ lowestStats: ["def"] })))).toEqual(["tied"]);
+    expect(filterPokemonForms([tied], filterConfig({ lowestStats: [] }))).toEqual([]);
+  });
+
+  it("matches one official species line and refuses a partial word", () => {
+    expect(filterPokemonForms([sandy, bulky], filterConfig({ genusQuery: "mouse" }))).toEqual([]);
+    expect(ids(filterPokemonForms([sandy], filterConfig({ genusQuery: "  Mouse Pokémon " })))).toEqual([
+      "sandshrew",
+    ]);
+    expect(filterPokemonForms([unknown], filterConfig({ genusQuery: "Mouse Pokémon" }))).toEqual([]);
+    expect(matchesPokemonFilters(unknown, filterConfig({ genusQuery: "   " }))).toBe(true);
+  });
+
+  it("matches color, shape, size, and either egg group", () => {
+    const both = makeForm({
+      id: "both",
+      displayName: "Both",
+      eggGroups: ["Field", "Dragon"],
+      pokedexColor: "red",
+      shape: "wings",
+      heightM: 1,
+      weightKg: 20,
+    });
+    expect(ids(filterPokemonForms([sandy, both], filterConfig({ pokedexColors: ["red"] })))).toEqual([
+      "both",
+    ]);
+    expect(filterPokemonForms([unknown], filterConfig({ pokedexColors: ["red"] }))).toEqual([]);
+    expect(ids(filterPokemonForms([sandy, both], filterConfig({ shapes: ["wings"] })))).toEqual(["both"]);
+    expect(ids(filterPokemonForms([sandy, both], filterConfig({ heightMinM: 0.6, heightMaxM: 0.6 })))).toEqual([
+      "sandshrew",
+    ]);
+    expect(filterPokemonForms([unknown], filterConfig({ weightMinKg: 1 }))).toEqual([]);
+    expect(ids(filterPokemonForms([sandy, both], filterConfig({ eggGroups: ["Dragon"] })))).toEqual([
+      "both",
+    ]);
+    expect(ids(filterPokemonForms([sandy, both], filterConfig({ eggGroups: ["Field"] })))).toEqual([
+      "sandshrew",
+      "both",
+    ]);
+    expect(filterPokemonForms([both], filterConfig({ eggGroups: [] }))).toEqual([]);
+  });
+
+  it("refuses an inverted range before it generates", () => {
+    const config = filterConfig({ bstMin: 500, bstMax: 100 });
+    expect(filterPokemonForms([sandy], config)).toEqual([]);
+    expect(() => randomizePokemon([sandy], config, "seed")).toThrow(InvalidPokemonFilterError);
+    expect(() => randomizePokemon([sandy], config, "seed")).toThrow(BASE_STAT_RANGE_ERROR);
   });
 });

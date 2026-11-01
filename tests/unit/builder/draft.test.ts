@@ -70,6 +70,11 @@ function makeForm(id: string, genderRule: PokemonForm["genderRule"] = "mixed"): 
     sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule,
+    pokedexColor: null,
+    shape: null,
+    heightM: null,
+    weightKg: null,
+    eggGroups: [],
     evolutionTargetIds: [],
   };
 }

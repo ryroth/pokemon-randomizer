@@ -38,7 +38,9 @@ export function FilterDropdown({
         <span className="flex items-center justify-between gap-3">
           <span className="min-w-0 text-left">
             <span className="block text-sm font-medium">{label}</span>
-            <span className="mt-1 block truncate text-sm text-muted-foreground">{summary}</span>
+            <span title={summary} className="mt-1 block truncate text-sm text-muted-foreground">
+              {summary}
+            </span>
           </span>
           <ChevronDown
             aria-hidden="true"
@@ -88,17 +90,27 @@ export function ToggleChip({
   checked,
   onChange,
   type,
+  compact = false,
+  swatch,
+  className,
 }: {
   label: string;
   checked: boolean;
   onChange: () => void;
   type?: TeraType;
+  /** A tighter chip for a long row, such as the alphabet. */
+  compact?: boolean;
+  /** A decorative color dot. The text label stays, so the chip is not color alone. */
+  swatch?: string;
+  className?: string;
 }) {
   const colors = type ? typeColors(type) : null;
   return (
     <label
       className={cn(
-        "relative inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full border-2 px-3 text-sm font-medium transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/60",
+        "relative inline-flex cursor-pointer items-center gap-1.5 rounded-full border-2 text-sm font-medium transition-colors has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/60",
+        compact ? "min-h-8 px-2" : "min-h-9 px-3",
+        className,
         checked
           ? colors
             ? "border-foreground"
@@ -114,6 +126,13 @@ export function ToggleChip({
         checked={checked}
         onChange={onChange}
       />
+      {swatch ? (
+        <span
+          aria-hidden="true"
+          className="size-2.5 shrink-0 rounded-full border border-foreground/25"
+          style={{ backgroundColor: swatch }}
+        />
+      ) : null}
       {checked ? (
         <Check aria-hidden="true" className="size-3.5 shrink-0" />
       ) : colors ? (

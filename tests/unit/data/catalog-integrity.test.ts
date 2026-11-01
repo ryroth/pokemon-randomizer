@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { formCry } from "@/lib/data/cries";
 import { evolutionConflictContext, evolutionFormsConflict } from "@/lib/data/evolution";
 import { generatedCatalogPath, loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import type { PokemonForm } from "@/lib/types/pokemon";
@@ -28,6 +29,7 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
   }
 
   it("contains the required collections and dual ids", () => {
+    expect(catalog.version).toBe("2.6.1");
     expect(catalog.pokemon.length).toBeGreaterThan(1000);
     expect(catalog.species.length).toBeGreaterThan(900);
     expect(catalog.abilities.length).toBeGreaterThan(200);
@@ -129,7 +131,23 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
     expect(alolanRaichu.speciesId).toBe("raichu");
     expect(alolanRaichu.sprites.artwork).toBeTruthy();
 
+    const bulbasaur = byPokeApiSlug("bulbasaur");
+    expect(bulbasaur.pokedexColor).toBe("green");
+    expect(bulbasaur.shape).toBe("quadruped");
+    expect(bulbasaur.heightM).toBeCloseTo(0.7);
+    expect(bulbasaur.weightKg).toBeCloseTo(6.9);
+    expect(bulbasaur.eggGroups).toEqual(expect.arrayContaining(["Monster", "Grass"]));
+
+    const raichu = byPokeApiSlug("raichu");
+    expect(alolanRaichu.pokedexColor).toBe(raichu.pokedexColor);
+    expect(alolanRaichu.shape).toBe(raichu.shape);
+
+    const venusaur = byPokeApiSlug("venusaur");
     const megaVenusaur = byPokeApiSlug("venusaur-mega");
+    expect(venusaur.heightM).toBeCloseTo(2);
+    expect(venusaur.weightKg).toBeCloseTo(100);
+    expect(megaVenusaur.heightM).toBeCloseTo(2.4);
+    expect(megaVenusaur.weightKg).toBeCloseTo(155.5);
     expect(megaVenusaur.showdownName).toBe("Venusaur-Mega");
     expect(megaVenusaur.formType).toBe("mega");
     expect(byId("meganium").formType).toBe("base");
@@ -170,6 +188,28 @@ describe.skipIf(!catalogAvailable)("generated catalog integrity", () => {
     expect(evolutionFormsConflict(cascoon, dustox, context)).toBe(true);
     expect(evolutionFormsConflict(cascoon, silcoon, context)).toBe(false);
     expect(evolutionFormsConflict(cascoon, beautifly, context)).toBe(false);
+  });
+
+  it("gives plate, memory, and drive forms the base Pokémon's body", () => {
+    for (const [formId, baseId] of [
+      ["arceusbug", "arceus"],
+      ["silvallyfire", "silvally"],
+      ["genesectburn", "genesect"],
+    ] as const) {
+      const form = byId(formId);
+      const base = byId(baseId);
+      expect(form.heightM).toBe(base.heightM);
+      expect(form.weightKg).toBe(base.weightKg);
+      expect(form.eggGroups).toEqual(base.eggGroups);
+    }
+    expect(byId("arceusbug").types).toEqual(["bug"]);
+    expect(byId("silvallyfire").types).toEqual(["fire"]);
+    expect(byId("dialgaorigin").heightM).not.toBe(byId("dialga").heightM);
+    expect(byId("ogerponhearthflame").heightM).toBe(byId("ogerpon").heightM);
+    expect(formCry("arceusbug")).toBe(formCry("arceus"));
+    expect(formCry("silvallyfire")).toBe(formCry("silvally"));
+    expect(formCry("genesectburn")).toBe(formCry("genesect"));
+    expect(formCry("dialgaorigin")).not.toBe(formCry("dialga"));
   });
 
   it("stores numeric ability, move, and item effects, and latest Pokédex flavor", () => {

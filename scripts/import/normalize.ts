@@ -17,7 +17,17 @@ import type { DexEntry, PokemonForm } from "../../lib/types/pokemon";
 import type { PokemonType } from "../../lib/types/pokemon-type";
 import type { PokemonSpecies } from "../../lib/types/species";
 import type { StatSpread } from "../../lib/types/stats";
-import type { EvolutionStage, FormType, GenderRule } from "../../lib/types/taxonomy";
+import {
+  EGG_GROUPS,
+  POKEDEX_COLORS,
+  POKEDEX_SHAPES,
+  type EggGroup,
+  type EvolutionStage,
+  type FormType,
+  type GenderRule,
+  type PokedexColor,
+  type PokedexShape,
+} from "../../lib/types/taxonomy";
 import type { CatalogJoinReport, MythicalMismatch, UnmatchedJoin } from "./joinReport";
 import { sortUnmatched } from "./joinReport";
 import {
@@ -31,6 +41,7 @@ import {
   toShowdownId,
 } from "./mapping";
 import { resourceIdFromUrl } from "./pokeapi";
+import { inheritTypeChangeFormBodies, isTypeChangeHeldItem } from "../../lib/data/typeItemForms";
 import { applyEvolutionTargetsToPokemon } from "./evolutionTargets";
 import type { PokeApiChainLink, PokeApiPokemon, PokeApiSnapshot, PokeApiSpecies } from "./pokeapi-types";
 import {
@@ -90,6 +101,7 @@ export function buildCatalog(
   const evolutionStages = evolutionStageMap(snapshot);
   const speciesById = new Map<string, PokemonSpecies>();
   const pokemon: PokemonForm[] = [];
+  const typeChangeItems = new Map<string, string>();
   const mythicalMismatches: MythicalMismatch[] = [];
   const joinedPokeApiPokemon = new Set<string>();
   const unmatchedShowdownPokemon: string[] = [];
@@ -121,6 +133,11 @@ export function buildCatalog(
       });
     }
 
+    const typeChangeItem = typeChangeItemId(showdownSpecies);
+    if (typeChangeItem) {
+      typeChangeItems.set(showdownSpecies.id, typeChangeItem);
+    }
+
     try {
       pokemon.push(
         buildPokemonForm({
@@ -138,9 +155,14 @@ export function buildCatalog(
   }
 
   const catalog: Catalog = {
-    version: "2.5.0",
+    version: "2.6.1",
     generatedAt: new Date().toISOString(),
-    pokemon: sortById(applyEvolutionTargetsToPokemon(pokemon, sources.species)),
+    pokemon: sortById(
+      applyEvolutionTargetsToPokemon(
+        inheritTypeChangeFormBodies(pokemon, (id) => typeChangeItems.get(id)),
+        sources.species,
+      ),
+    ),
     species: sortById([...speciesById.values()]),
     abilities: sortById(abilities),
     moves: sortById(moves),
@@ -381,8 +403,72 @@ function buildPokemonForm(input: {
     },
     baseStats: statsForForm(showdownSpecies, poke),
     genderRule: genderRuleFromShowdown(showdownSpecies),
+    pokedexColor: pokedexColorFor(pokeSpecies),
+    shape: shapeFor(pokeSpecies),
+    heightM: metersFromDecimeters(poke?.height),
+    weightKg: kilogramsFromHectograms(poke?.weight),
+    eggGroups: eggGroupsFor(showdownSpecies),
     evolutionTargetIds: [],
   };
+}
+
+function typeChangeItemId(species: ShowdownSpecies): string | undefined {
+  const names = [...(species.requiredItems ?? [])];
+  if (species.requiredItem) {
+    names.push(species.requiredItem);
+  }
+  for (const name of names) {
+    const id = toShowdownId(name);
+    if (isTypeChangeHeldItem(id)) {
+      return id;
+    }
+  }
+  return undefined;
+}
+
+function officialName<T extends string>(
+  value: string | undefined,
+  allowed: readonly T[],
+): T | null {
+  if (!value || !allowed.includes(value as T)) {
+    return null;
+  }
+  return value as T;
+}
+
+function pokedexColorFor(pokeSpecies: PokeApiSpecies | undefined): PokedexColor | null {
+  return officialName(pokeSpecies?.color?.name, POKEDEX_COLORS);
+}
+
+function shapeFor(pokeSpecies: PokeApiSpecies | undefined): PokedexShape | null {
+  return officialName(pokeSpecies?.shape?.name, POKEDEX_SHAPES);
+}
+
+/** PokéAPI height is decimeters. 7 becomes 0.7 meters. */
+function metersFromDecimeters(decimeters: number | undefined): number | null {
+  if (typeof decimeters !== "number" || !Number.isFinite(decimeters) || decimeters < 0) {
+    return null;
+  }
+  return decimeters / 10;
+}
+
+/** PokéAPI weight is hectograms. 69 becomes 6.9 kilograms. */
+function kilogramsFromHectograms(hectograms: number | undefined): number | null {
+  if (typeof hectograms !== "number" || !Number.isFinite(hectograms) || hectograms < 0) {
+    return null;
+  }
+  return hectograms / 10;
+}
+
+function eggGroupsFor(showdownSpecies: ShowdownSpecies): EggGroup[] {
+  const groups: EggGroup[] = [];
+  for (const group of showdownSpecies.eggGroups) {
+    const official = officialName(group, EGG_GROUPS);
+    if (official && !groups.includes(official)) {
+      groups.push(official);
+    }
+  }
+  return groups;
 }
 
 function typesForForm(showdownSpecies: ShowdownSpecies, poke: PokeApiPokemon | undefined): PokemonType[] {
