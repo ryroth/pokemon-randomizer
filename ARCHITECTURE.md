@@ -47,7 +47,7 @@ The UI never owns pool logic, classification, or validation. Session state is a 
 
 ## Defaults
 
-- Pokémon count 1–12, default 6.
+- Pokémon count 1–12, default 3.
 - Type match mode OR (form has at least one selected type). AND requires every selected type.
 - Form types: base on; Mega, regional, Primal, Gmax, and other off.
 - All special classifications allowed.

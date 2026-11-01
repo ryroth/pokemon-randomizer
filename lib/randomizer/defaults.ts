@@ -21,7 +21,7 @@ export const TYPICAL_RANDOMIZER_ORDER: RandomizerTab[] = [
 
 export const MIN_POKEMON_COUNT = 1;
 export const MAX_POKEMON_COUNT = 12;
-export const DEFAULT_POKEMON_COUNT = 6;
+export const DEFAULT_POKEMON_COUNT = 3;
 
 /** Percent chance that each rolled Pokémon is shiny. 0 turns shiny rolls off. */
 export const MIN_SHINY_CHANCE = 0;

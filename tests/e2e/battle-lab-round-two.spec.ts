@@ -68,10 +68,10 @@ test.describe("pokeball reveal", () => {
     await generate.click();
 
     const results = page.getByRole("list", { name: "Current generation" });
-    await expect(results.getByRole("listitem")).toHaveCount(6);
+    await expect(results.getByRole("listitem")).toHaveCount(3);
     // While the balls play, every card is held back and cannot be clicked.
     const reveals = page.locator("[data-pokeball-reveal]");
-    await expect(reveals).toHaveCount(6);
+    await expect(reveals).toHaveCount(3);
     await expect(reveals.first().locator("[inert]")).toHaveCount(1);
     await expect(reveals.first().locator(".ball-flight")).toBeVisible();
 
@@ -88,7 +88,7 @@ test.describe("pokeball reveal", () => {
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
 
     const results = page.getByRole("list", { name: "Current generation" });
-    await expect(results.getByRole("listitem")).toHaveCount(6);
+    await expect(results.getByRole("listitem")).toHaveCount(3);
     const cards = await results.getByRole("listitem").all();
     for (const card of cards) {
       await expect(card.getByText(/^BST \d+$/)).toBeVisible();
@@ -103,7 +103,7 @@ test.describe("pokeball reveal", () => {
     await waitForHydration(page.getByRole("button", { name: "Generate Pokémon" }));
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
 
-    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(3);
     await expect(page.locator("[data-pokeball-reveal]")).toHaveCount(0);
     await expect(page.locator("[inert]")).toHaveCount(0);
     await context.close();
@@ -117,7 +117,7 @@ test.describe("Pokédex entries from every generation", () => {
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
 
     const results = page.getByRole("list", { name: "Current generation" });
-    await expect(results.getByRole("listitem")).toHaveCount(6);
+    await expect(results.getByRole("listitem")).toHaveCount(3);
     // Species that first appeared in the newest games may have only one entry, so look for a card that has several.
     const cycler = results.getByRole("group", { name: /^Pokédex entries for / }).first();
     await expect(cycler).toBeVisible({ timeout: 15_000 });
@@ -189,8 +189,8 @@ test.describe("shiny chance", () => {
     await chance.fill("100");
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
     const results = page.getByRole("list", { name: "Current generation" });
-    await expect(results.getByRole("listitem")).toHaveCount(6);
-    await expect(results.getByText("Shiny", { exact: true })).toHaveCount(6);
+    await expect(results.getByRole("listitem")).toHaveCount(3);
+    await expect(results.getByText("Shiny", { exact: true })).toHaveCount(3);
 
     const name = (await results.getByRole("heading", { level: 3 }).first().textContent())?.trim();
     await results.getByRole("listitem").first().getByRole("button").first().click();
@@ -206,7 +206,7 @@ test.describe("shiny chance", () => {
     await page.getByRole("spinbutton", { name: "Shiny chance in percent" }).fill("0");
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
     const results = page.getByRole("list", { name: "Current generation" });
-    await expect(results.getByRole("listitem")).toHaveCount(6);
+    await expect(results.getByRole("listitem")).toHaveCount(3);
     await expect(results.getByText("Shiny", { exact: true })).toHaveCount(0);
 
     await results.getByRole("listitem").first().getByRole("button").first().click();
@@ -230,6 +230,6 @@ test.describe("shiny chance", () => {
     await chance.fill("5");
     await expect(page.getByRole("alert").filter({ hasText: "between 0% and 100%" })).toHaveCount(0);
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
-    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(3);
   });
 });

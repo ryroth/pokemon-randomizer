@@ -8,6 +8,7 @@ import {
 describe("DEFAULT_RANDOMIZER_CONFIG", () => {
   it("enables base, regional, and other forms by default", () => {
     expect(DEFAULT_RANDOMIZER_CONFIG.formTypes).toEqual(["base", "regional", "other"]);
+    expect(DEFAULT_RANDOMIZER_CONFIG.pokemonCount).toBe(3);
   });
 });
 
@@ -82,7 +83,7 @@ describe("resetPokemonFilters", () => {
       abilityCount: 5,
     });
 
-    expect(reset.pokemonCount).toBe(6);
+    expect(reset.pokemonCount).toBe(3);
     expect(reset.generations).toEqual(DEFAULT_RANDOMIZER_CONFIG.generations);
     expect(reset.formTypes).toEqual(["base", "regional", "other"]);
     expect(reset.allowLegendary).toBe(true);

@@ -16,12 +16,12 @@ describe.skipIf(!catalogAvailable)("catalog Pokémon randomizer", () => {
     const result = randomizePokemon(catalog.pokemon, DEFAULT_RANDOMIZER_CONFIG, "catalog-seed");
     const ids = result.pokemon.map((form) => form.id);
 
-    expect(ids).toHaveLength(6);
-    expect(new Set(ids).size).toBe(6);
+    expect(ids).toHaveLength(3);
+    expect(new Set(ids).size).toBe(3);
     expect(
       result.pokemon.every((form) => ["base", "regional", "other"].includes(form.formType)),
     ).toBe(true);
-    expect(result.poolSize).toBeGreaterThanOrEqual(6);
+    expect(result.poolSize).toBeGreaterThanOrEqual(3);
     expect(matchingPokemonFormCount(catalog.pokemon, DEFAULT_RANDOMIZER_CONFIG)).toBeGreaterThan(1000);
 
     const again = randomizePokemon(catalog.pokemon, DEFAULT_RANDOMIZER_CONFIG, "catalog-seed");

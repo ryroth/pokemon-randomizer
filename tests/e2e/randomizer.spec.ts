@@ -49,10 +49,10 @@ test("randomizer pages through previous generations and explains an empty pool",
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
-  await expect(results.getByRole("listitem")).toHaveCount(6);
+  await expect(results.getByRole("listitem")).toHaveCount(3);
 
   const firstNames = await results.getByRole("heading", { level: 3 }).allTextContents();
-  expect(new Set(firstNames).size).toBe(6);
+  expect(new Set(firstNames).size).toBe(3);
 
   await results.getByRole("button").first().click();
   await expect(page.getByText("Selected", { exact: true }).first()).toBeVisible();
@@ -68,7 +68,7 @@ test("randomizer pages through previous generations and explains an empty pool",
 
   await page.getByRole("button", { name: "Previous generated Pokémon" }).click();
   const earlier = page.getByRole("list", { name: "Generation 1" });
-  await expect(earlier.getByRole("listitem")).toHaveCount(6);
+  await expect(earlier.getByRole("listitem")).toHaveCount(3);
   await expect(earlier.getByRole("heading", { name: firstNames[0], level: 3 })).toBeVisible();
 
   await page.getByRole("button", { name: "Next generated Pokémon" }).click();
@@ -184,7 +184,7 @@ test("ability randomizer runs on its own tab after continue", async ({ page }) =
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
-  await expect(results.getByRole("listitem")).toHaveCount(6);
+  await expect(results.getByRole("listitem")).toHaveCount(3);
 
   await expect(page.getByRole("button", { name: "Generate abilities" })).toHaveCount(0);
 
@@ -221,7 +221,7 @@ test("move randomizer runs after abilities on the typical path", async ({ page }
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
-  await expect(results.getByRole("listitem")).toHaveCount(6);
+  await expect(results.getByRole("listitem")).toHaveCount(3);
 
   await results.getByRole("button").first().click();
   await expect(page.getByRole("heading", { name: "Evolution", level: 2 })).toBeVisible();
@@ -371,7 +371,7 @@ test("item randomizer runs after moves on the typical path", async ({ page }) =>
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
-  await expect(results.getByRole("listitem")).toHaveCount(6);
+  await expect(results.getByRole("listitem")).toHaveCount(3);
 
   await results.getByRole("button").first().click();
   await expect(page.getByRole("heading", { name: "Evolution", level: 2 })).toBeVisible();
@@ -546,21 +546,21 @@ test("any generated option can be re-rolled in place any number of times", async
 
   await page.getByRole("button", { name: "Generate Pokémon" }).click();
   const results = page.getByRole("list", { name: "Current generation" });
-  await expect(results.getByRole("listitem")).toHaveCount(6);
-  await expect(results.getByRole("button", { name: /^Re-roll / })).toHaveCount(6);
+  await expect(results.getByRole("listitem")).toHaveCount(3);
+  await expect(results.getByRole("button", { name: /^Re-roll / })).toHaveCount(3);
 
   const firstNames = await results.getByRole("heading", { level: 3 }).allTextContents();
   await results.getByRole("button", { name: `Re-roll ${firstNames[0]}` }).click();
   await expect(results.getByRole("heading", { name: firstNames[0], level: 3, exact: true })).toHaveCount(0);
   const afterFirstReroll = await results.getByRole("heading", { level: 3 }).allTextContents();
   expect(afterFirstReroll.slice(1)).toEqual(firstNames.slice(1));
-  expect(new Set(afterFirstReroll).size).toBe(6);
+  expect(new Set(afterFirstReroll).size).toBe(3);
 
   await results.getByRole("button", { name: `Re-roll ${afterFirstReroll[0]}` }).click();
   await expect(results.getByRole("heading", { name: afterFirstReroll[0], level: 3, exact: true })).toHaveCount(0);
   const afterSecondReroll = await results.getByRole("heading", { level: 3 }).allTextContents();
   expect(afterSecondReroll.slice(1)).toEqual(firstNames.slice(1));
-  expect(new Set(afterSecondReroll).size).toBe(6);
+  expect(new Set(afterSecondReroll).size).toBe(3);
 
   await clickRolledOption(results);
 
@@ -701,7 +701,7 @@ test.describe("staged generation feedback", () => {
     await generate.click();
 
     const results = page.getByRole("list", { name: "Current generation" });
-    await expect(results.getByRole("listitem")).toHaveCount(6);
+    await expect(results.getByRole("listitem")).toHaveCount(3);
     const seen = await page.evaluate(
       () => (window as unknown as { __generateSeen: { status: string[]; busy: boolean } }).__generateSeen,
     );
@@ -718,7 +718,7 @@ test.describe("staged generation feedback", () => {
     const generate = page.getByRole("button", { name: "Generate Pokémon" });
     await waitForHydration(generate);
     await generate.dblclick();
-    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(3);
     await expect(page.getByRole("button", { name: "Previous generated Pokémon" })).toBeDisabled();
   });
 });
@@ -729,7 +729,7 @@ test.describe("reduced motion", () => {
 
     await waitForHydration(page.getByRole("button", { name: "Generate Pokémon" }));
     await page.getByRole("button", { name: "Generate Pokémon" }).click();
-    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(6);
+    await expect(page.getByRole("list", { name: "Current generation" }).getByRole("listitem")).toHaveCount(3);
     await expect(page.getByRole("status").filter({ hasText: "Scanning" })).toHaveCount(0);
   });
 });
