@@ -1,8 +1,16 @@
-import { GENERATIONS } from "@/lib/types/taxonomy";
-import type { RandomizerConfig, RandomizerTab } from "@/lib/types/randomizer";
-import { EVOLUTION_STAGES } from "@/lib/types/taxonomy";
-import { POKEMON_TYPES } from "@/lib/types/pokemon-type";
 import { ITEM_CATEGORIES, MOVE_CATEGORIES } from "@/lib/types/catalog-entities";
+import { CARD_FACTS } from "@/lib/types/card-facts";
+import { POKEMON_TYPES } from "@/lib/types/pokemon-type";
+import type { RandomizerConfig, RandomizerTab } from "@/lib/types/randomizer";
+import { STAT_IDS } from "@/lib/types/stats";
+import {
+  EGG_GROUPS,
+  EVOLUTION_STAGES,
+  GENERATIONS,
+  NAME_INITIALS,
+  POKEDEX_COLORS,
+  POKEDEX_SHAPES,
+} from "@/lib/types/taxonomy";
 
 export const TYPICAL_RANDOMIZER_ORDER: RandomizerTab[] = [
   "pokemon",
@@ -50,6 +58,23 @@ export const DEFAULT_RANDOMIZER_CONFIG: RandomizerConfig = {
   allowMythical: true,
   allowParadox: true,
   allowUltraBeast: true,
+  nameInitials: [...NAME_INITIALS],
+  bstMin: null,
+  bstMax: null,
+  typeCount: "any",
+  evolutionProgress: "any",
+  highestStats: [...STAT_IDS],
+  lowestStats: [...STAT_IDS],
+  genusQuery: "",
+  measurementSystem: "imperial",
+  pokedexColors: [...POKEDEX_COLORS],
+  heightMinM: null,
+  heightMaxM: null,
+  weightMinKg: null,
+  weightMaxKg: null,
+  shapes: [...POKEDEX_SHAPES],
+  eggGroups: [...EGG_GROUPS],
+  shownCardFacts: [...CARD_FACTS],
   showPokedexEntry: true,
   randomizeAbilities: false,
   abilityCount: DEFAULT_ABILITY_COUNT,
@@ -73,6 +98,13 @@ export function cloneRandomizerConfig(config: RandomizerConfig): RandomizerConfi
     types: [...config.types],
     formTypes: [...config.formTypes],
     evolutionStages: [...config.evolutionStages],
+    nameInitials: [...config.nameInitials],
+    highestStats: [...config.highestStats],
+    lowestStats: [...config.lowestStats],
+    pokedexColors: [...config.pokedexColors],
+    shapes: [...config.shapes],
+    eggGroups: [...config.eggGroups],
+    shownCardFacts: [...config.shownCardFacts],
     moveCategories: [...config.moveCategories],
     moveTypes: [...config.moveTypes],
     itemCategories: [...config.itemCategories],
@@ -103,6 +135,22 @@ export function resetPokemonFilters(config: RandomizerConfig): RandomizerConfig 
     allowMythical: DEFAULT_RANDOMIZER_CONFIG.allowMythical,
     allowParadox: DEFAULT_RANDOMIZER_CONFIG.allowParadox,
     allowUltraBeast: DEFAULT_RANDOMIZER_CONFIG.allowUltraBeast,
+    nameInitials: DEFAULT_RANDOMIZER_CONFIG.nameInitials,
+    bstMin: DEFAULT_RANDOMIZER_CONFIG.bstMin,
+    bstMax: DEFAULT_RANDOMIZER_CONFIG.bstMax,
+    typeCount: DEFAULT_RANDOMIZER_CONFIG.typeCount,
+    evolutionProgress: DEFAULT_RANDOMIZER_CONFIG.evolutionProgress,
+    highestStats: DEFAULT_RANDOMIZER_CONFIG.highestStats,
+    lowestStats: DEFAULT_RANDOMIZER_CONFIG.lowestStats,
+    genusQuery: DEFAULT_RANDOMIZER_CONFIG.genusQuery,
+    pokedexColors: DEFAULT_RANDOMIZER_CONFIG.pokedexColors,
+    heightMinM: DEFAULT_RANDOMIZER_CONFIG.heightMinM,
+    heightMaxM: DEFAULT_RANDOMIZER_CONFIG.heightMaxM,
+    weightMinKg: DEFAULT_RANDOMIZER_CONFIG.weightMinKg,
+    weightMaxKg: DEFAULT_RANDOMIZER_CONFIG.weightMaxKg,
+    shapes: DEFAULT_RANDOMIZER_CONFIG.shapes,
+    eggGroups: DEFAULT_RANDOMIZER_CONFIG.eggGroups,
+    shownCardFacts: DEFAULT_RANDOMIZER_CONFIG.shownCardFacts,
     showPokedexEntry: DEFAULT_RANDOMIZER_CONFIG.showPokedexEntry,
   });
 }

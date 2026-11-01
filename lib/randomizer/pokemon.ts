@@ -4,7 +4,7 @@ import {
   maximumCompatiblePokemonCount,
   type EvolutionConflictContext,
 } from "@/lib/data/evolution";
-import { filterPokemonForms } from "@/lib/filters/pokemon";
+import { filterPokemonForms, pokemonFilterRangeError } from "@/lib/filters/pokemon";
 import {
   MAX_POKEMON_COUNT,
   MIN_POKEMON_COUNT,
@@ -21,6 +21,13 @@ import {
 } from "@/lib/randomizer/randomUtils";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { RandomizerConfig } from "@/lib/types/randomizer";
+
+export class InvalidPokemonFilterError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "InvalidPokemonFilterError";
+  }
+}
 
 export class InvalidPokemonCountError extends Error {
   readonly requestedCount: number;
@@ -75,6 +82,7 @@ export function randomizePokemon(
 ): PokemonRandomizerResult {
   assertPokemonCount(config.pokemonCount);
   assertShinyChance(config.shinyChance);
+  assertPokemonFilterRanges(config);
 
   const context = evolutionConflictContext(pokemon);
   const pool = filterPokemonForms(pokemon, config);
@@ -98,6 +106,7 @@ export function rerollPokemon(
 ): PokemonRandomizerResult {
   assertPokemonCount(config.pokemonCount);
   assertShinyChance(config.shinyChance);
+  assertPokemonFilterRanges(config);
 
   const context = evolutionConflictContext(pokemon);
   const pool = filterPokemonForms(pokemon, config);
@@ -129,6 +138,13 @@ export function rerollPokemon(
     pokemon: [replacement],
     shinyIds: rollShinyIds([replacement], config.shinyChance, seed),
   };
+}
+
+function assertPokemonFilterRanges(config: RandomizerConfig): void {
+  const message = pokemonFilterRangeError(config);
+  if (message) {
+    throw new InvalidPokemonFilterError(message);
+  }
 }
 
 function pickCompatiblePokemon(
@@ -178,6 +194,7 @@ function pickCompatiblePokemon(
 export function userFacingRandomizerMessage(error: unknown): string {
   if (
     error instanceof InvalidPokemonCountError ||
+    error instanceof InvalidPokemonFilterError ||
     error instanceof InvalidShinyChanceError ||
     error instanceof InvalidAbilityCountError ||
     error instanceof InvalidItemCountError ||

@@ -50,6 +50,11 @@ function makeForm(
     sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "genderless",
+    pokedexColor: null,
+    shape: null,
+    heightM: null,
+    weightKg: null,
+    eggGroups: [],
     evolutionTargetIds: [],
     ...overrides,
   };

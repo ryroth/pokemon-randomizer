@@ -42,6 +42,11 @@ function makeForm(id: string, evolutionStage: EvolutionStage, evolutionTargetIds
     sprites: { sprite: null, spriteShiny: null, artwork: null, artworkShiny: null },
     baseStats: EMPTY_EVS,
     genderRule: "mixed",
+    pokedexColor: null,
+    shape: null,
+    heightM: null,
+    weightKg: null,
+    eggGroups: [],
     evolutionTargetIds,
   };
 }

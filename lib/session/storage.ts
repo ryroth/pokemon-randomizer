@@ -1,3 +1,4 @@
+import { applyStoredCardFacts } from "@/lib/randomizer/cardFacts";
 import { cloneRandomizerConfig, DEFAULT_RANDOMIZER_CONFIG } from "@/lib/randomizer/defaults";
 import { MAX_MOVE_COUNT } from "@/lib/validation/moves";
 import type { BuildingDraft, DraftLocks, RandomizerSession } from "@/lib/types/session";
@@ -13,7 +14,10 @@ export function parseStoredSession(raw: string): RandomizerSession | null {
     // Sessions saved before a setting existed get that setting's default.
     return sanitizeDraftBuild({
       ...value,
-      config: { ...cloneRandomizerConfig(DEFAULT_RANDOMIZER_CONFIG), ...value.config },
+      config: applyStoredCardFacts(
+        { ...cloneRandomizerConfig(DEFAULT_RANDOMIZER_CONFIG), ...value.config },
+        value.config,
+      ),
     });
   } catch {
     return null;

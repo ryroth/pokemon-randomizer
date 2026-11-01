@@ -29,6 +29,14 @@ function hashSeed(seed: string): number {
   return hash >>> 0;
 }
 
+/** The same seed and length always pick the same slot. Used for a clue that must not change on redraw. */
+export function stableIndex(seed: string, length: number): number {
+  if (length <= 1) {
+    return 0;
+  }
+  return hashSeed(seed) % length;
+}
+
 export function createSeed(): string {
   const bytes = new Uint8Array(8);
   crypto.getRandomValues(bytes);

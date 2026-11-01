@@ -1039,7 +1039,8 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               itemChoicesByPokemon={assignItemsBefore ? itemChoicesByPokemon : undefined}
               requiredFormItems={requiredFormItemByPokemon}
               unusedItems={assignItemsBefore ? unusedItems : undefined}
-              showPokedexEntry={session.config.showPokedexEntry}
+              shownCardFacts={session.config.shownCardFacts}
+              measurementSystem={session.config.measurementSystem}
               generationNumber={generationNumber}
               generationCount={generationCount}
               revealTokens={revealTokens}

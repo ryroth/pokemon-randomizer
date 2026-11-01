@@ -7,8 +7,10 @@ import type { StatSpread } from "@/lib/types/stats";
  * - Master Ball: Restricted Legendary, Sub-Legendary, Mythical, Paradox, and Ultra Beast.
  * - Luxury Ball: Pseudo-legendary, which is a special group but not a rare one.
  * - Everything else goes by base stat total: Poké Ball, Great Ball, then Ultra Ball.
+ * A guessing card uses a Premier Ball until that generation is revealed. That choice is
+ * `ballOnCard`, not this function.
  */
-export type BallKind = "poke" | "great" | "ultra" | "master" | "luxury";
+export type BallKind = "poke" | "great" | "ultra" | "master" | "luxury" | "premier";
 
 /** A base stat total at or above this is a Great Ball. */
 export const GREAT_BALL_MIN_BST = 400;
@@ -21,6 +23,7 @@ export const BALL_LABELS: Record<BallKind, string> = {
   ultra: "Ultra Ball",
   master: "Master Ball",
   luxury: "Luxury Ball",
+  premier: "Premier Ball",
 };
 
 export type BallInput = Pick<
@@ -59,4 +62,9 @@ export function ballForPokemon(form: BallInput): BallKind {
     return "great";
   }
   return "poke";
+}
+
+/** Premier Ball while the card is still a guessing card. The real ball once the generation is open. */
+export function ballOnCard(form: BallInput, fullCard: boolean): BallKind {
+  return fullCard ? ballForPokemon(form) : "premier";
 }

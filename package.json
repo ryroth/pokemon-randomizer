@@ -16,11 +16,13 @@
     "import:form-items": "tsx scripts/import/form-items.ts",
     "import:hidden-abilities": "tsx scripts/import/hidden-abilities.ts",
     "import:genera": "tsx scripts/import/genera.ts",
+    "import:cries": "tsx scripts/import/cries.ts",
     "import:dex-entries": "tsx scripts/import/dex-entries.ts",
     "import:type-chart": "tsx scripts/import/type-chart.ts",
     "import:world-art": "tsx scripts/import/world-art.ts",
     "import:art": "tsx scripts/import/art.ts",
-    "import:ditto-icon": "tsx scripts/import/ditto-icon.ts"
+    "import:ditto-icon": "tsx scripts/import/ditto-icon.ts",
+    "import:body-shapes": "tsx scripts/import/body-shapes.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

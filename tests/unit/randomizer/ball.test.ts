@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   ballForPokemon,
+  ballOnCard,
   baseStatTotal,
   GREAT_BALL_MIN_BST,
   ULTRA_BALL_MIN_BST,
@@ -58,6 +59,13 @@ describe("ballForPokemon", () => {
 
   it("keeps a Master Ball when a Pokémon is both special and pseudo-legendary", () => {
     expect(ballForPokemon(input(600, { isPseudoLegendary: true, isMythical: true }))).toBe("master");
+  });
+
+  it("uses a Premier Ball on a hidden guessing card and the real ball once that card is open", () => {
+    const mythical = input(300, { isMythical: true });
+    expect(ballOnCard(mythical, false)).toBe("premier");
+    expect(ballOnCard(mythical, true)).toBe("master");
+    expect(ballForPokemon(mythical)).toBe("master");
   });
 });
 

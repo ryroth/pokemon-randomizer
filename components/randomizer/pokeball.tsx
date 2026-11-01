@@ -14,6 +14,7 @@ const TOPS: Record<BallKind, string> = {
   ultra: "#2a2a30",
   master: "#7b3fb4",
   luxury: "#1c1c20",
+  premier: "#f7f7f7",
 };
 const BOTTOMS: Record<BallKind, string> = {
   poke: CREAM,
@@ -21,6 +22,7 @@ const BOTTOMS: Record<BallKind, string> = {
   ultra: CREAM,
   master: CREAM,
   luxury: "#8a1c2b",
+  premier: "#f7f7f7",
 };
 
 /** A flat drawing of one ball. Decorative; pair it with a text label where the ball matters. */
@@ -56,8 +58,9 @@ export function PokeballIcon({ kind, className }: { kind: BallKind; className?: 
           <path d="M4 58h92" stroke="#e0a82e" strokeWidth="4" />
         </>
       ) : null}
+      {kind === "premier" ? <path d="M8 45h84v10H8Z" fill="#e23b3b" /> : null}
       <circle cx="50" cy="50" r="46" fill="none" stroke={OUTLINE} strokeWidth="5" />
-      <path d="M4 50h30M66 50h30" stroke={OUTLINE} strokeWidth="6" />
+      {kind === "premier" ? null : <path d="M4 50h30M66 50h30" stroke={OUTLINE} strokeWidth="6" />}
       <circle cx="50" cy="50" r="14" fill={CREAM} stroke={OUTLINE} strokeWidth="6" />
       <circle cx="50" cy="50" r="6" fill={kind === "luxury" ? "#e0a82e" : "#d4d4d8"} stroke={OUTLINE} strokeWidth="2" />
       <ellipse cx="30" cy="26" rx="10" ry="6" fill="#fff" opacity="0.28" transform="rotate(-35 30 26)" />
