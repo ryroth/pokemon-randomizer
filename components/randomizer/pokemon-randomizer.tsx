@@ -13,7 +13,10 @@ import { MoveConfigForm } from "@/components/randomizer/move-config";
 import { MoveResults } from "@/components/randomizer/move-results";
 import { PokemonEvolutionPicker } from "@/components/randomizer/pokemon-evolution";
 import { PokemonFilterForm } from "@/components/randomizer/pokemon-filter-form";
+import { BaseStatLine } from "@/components/randomizer/base-stat-line";
 import { PokemonResults } from "@/components/randomizer/pokemon-results";
+import { PokemonSetDetails } from "@/components/randomizer/pokemon-set-details";
+import { TypeBadge } from "@/components/recap/type-badge";
 import { RandomizerFlowList } from "@/components/randomizer/randomizer-flow";
 import { RandomizerPresets } from "@/components/randomizer/randomizer-presets";
 import { RandomizerTabs } from "@/components/randomizer/randomizer-tabs";
@@ -95,9 +98,10 @@ import {
   viewedPokemonRoll,
   visibleRandomizerTabs,
 } from "@/lib/randomizer";
+import { setSoFar, type SetSoFar } from "@/lib/randomizer/setSoFar";
 import type { Ability, Item, Move } from "@/lib/types/catalog-entities";
-import { TYPE_LABELS } from "@/lib/types/pokemon-type";
 import type { PokemonForm } from "@/lib/types/pokemon";
+import { FORM_TYPE_LABELS } from "@/lib/types/taxonomy";
 import type { RandomizerDestination } from "@/lib/randomizer/flow";
 import type { RandomizerTab } from "@/lib/types/randomizer";
 import { cn } from "@/lib/utils";
@@ -195,6 +199,24 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
   const requiredBattleItem = chosenBattlePokemon
     ? requiredFormItemByPokemon[chosenBattlePokemon.id]
     : undefined;
+  const battleSet = chosenBattlePokemon
+    ? setSoFar({
+        speciesAbilityIds: chosenBattlePokemon.abilityIds,
+        randomizingAbilities: session.config.randomizeAbilities,
+        abilityId: session.draft.abilityId,
+        moveIds: session.draft.moveIds,
+        itemId: session.draft.itemId,
+        requiredItemId: requiredBattleItem?.id,
+        abilitiesById,
+        movesById,
+        itemsById,
+      })
+    : undefined;
+  const battleShiny = chosenBattlePokemon
+    ? Boolean(
+        viewedRoll?.shinyPokemonIds?.includes(chosenBattlePokemon.id) || session.draft.shiny,
+      )
+    : false;
   const rolledAbilities = session.abilityOptions.flatMap((id) => {
     const ability = abilitiesById.get(id);
     return ability ? [ability] : [];
@@ -630,7 +652,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             />
           ) : null}
           {!itemBeforePokemon && chosenBattlePokemon ? (
-            <BattlePokemonSummary pokemon={chosenBattlePokemon} />
+            <BattlePokemonSummary
+              pokemon={chosenBattlePokemon}
+              shiny={battleShiny}
+              parts={battleSet}
+            />
           ) : null}
           {!itemBeforePokemon && requiredBattleItem ? (
             <Card>
@@ -710,7 +736,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             />
           ) : null}
           {!moveBeforePokemon && chosenBattlePokemon ? (
-            <BattlePokemonSummary pokemon={chosenBattlePokemon} />
+            <BattlePokemonSummary
+              pokemon={chosenBattlePokemon}
+              shiny={battleShiny}
+              parts={battleSet}
+            />
           ) : null}
           <Card>
             <CardHeader>
@@ -775,7 +805,11 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
             />
           ) : null}
           {!abilityBeforePokemon && chosenBattlePokemon ? (
-            <BattlePokemonSummary pokemon={chosenBattlePokemon} />
+            <BattlePokemonSummary
+              pokemon={chosenBattlePokemon}
+              shiny={battleShiny}
+              parts={battleSet}
+            />
           ) : null}
           <Card>
             <CardHeader>
@@ -1039,6 +1073,10 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
               itemChoicesByPokemon={assignItemsBefore ? itemChoicesByPokemon : undefined}
               requiredFormItems={requiredFormItemByPokemon}
               unusedItems={assignItemsBefore ? unusedItems : undefined}
+              abilitiesById={abilitiesById}
+              movesById={movesById}
+              itemsById={itemsById}
+              randomizingAbilities={session.config.randomizeAbilities}
               shownCardFacts={session.config.shownCardFacts}
               measurementSystem={session.config.measurementSystem}
               generationNumber={generationNumber}
@@ -1239,31 +1277,67 @@ function continueLabel(
   return "Continue to builder";
 }
 
-function BattlePokemonSummary({ pokemon }: { pokemon: PokemonForm }) {
-  const imageSrc = pokemonImage(pokemon, false);
+function BattlePokemonSummary({
+  pokemon,
+  shiny,
+  parts,
+}: {
+  pokemon: PokemonForm;
+  shiny: boolean;
+  parts: SetSoFar | undefined;
+}) {
+  const imageSrc = pokemonImage(pokemon, shiny);
+  const hasParts = Boolean(
+    parts &&
+      (parts.chosenAbility ||
+        parts.speciesAbilities.length > 0 ||
+        parts.moves.length > 0 ||
+        parts.item ||
+        parts.itemIsNone),
+  );
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
-      <div className="relative size-20 shrink-0">
-        {imageSrc ? (
-          <Image src={imageSrc} alt="" fill sizes="80px" className="object-contain" />
-        ) : (
-          <div className="flex size-20 items-center justify-center rounded-xl border border-dashed border-border text-xl text-muted-foreground">
-            {pokemon.displayName.slice(0, 1)}
-          </div>
-        )}
+    <section
+      aria-label={`${pokemon.displayName} so far`}
+      className="rounded-xl border border-border bg-card p-4"
+    >
+      <div className="flex items-start gap-4">
+        <div className="relative size-28 shrink-0">
+          {imageSrc ? (
+            <Image src={imageSrc} alt="" fill sizes="112px" className="object-contain" />
+          ) : (
+            <div className="flex size-28 items-center justify-center rounded-xl border border-dashed border-border text-xl text-muted-foreground">
+              {pokemon.displayName.slice(0, 1)}
+            </div>
+          )}
+        </div>
+        <div className="min-w-0 space-y-2">
+          <p className="font-medium">{pokemon.displayName}</p>
+          <p className="flex flex-wrap gap-1.5">
+            {pokemon.types.map((type) => (
+              <TypeBadge key={type} type={type} />
+            ))}
+            {pokemon.formType !== "base" ? (
+              <span className="rounded-full border border-border px-2 py-0.5 text-xs">
+                {FORM_TYPE_LABELS[pokemon.formType]}
+              </span>
+            ) : null}
+          </p>
+          <BaseStatLine stats={pokemon.baseStats} showTotal />
+        </div>
       </div>
-      <div className="min-w-0 space-y-1">
-        <p className="font-medium">{pokemon.displayName}</p>
-        <p className="flex flex-wrap gap-1.5">
-          {pokemon.types.map((type) => (
-            <span key={type} className="rounded-full border border-border px-2 py-0.5 text-xs">
-              {TYPE_LABELS[type]}
-            </span>
-          ))}
-        </p>
-      </div>
-    </div>
+      {hasParts && parts ? (
+        <div className="mt-4 border-t border-border pt-4">
+          <PokemonSetDetails
+            chosenAbility={parts.chosenAbility}
+            speciesAbilities={parts.speciesAbilities}
+            moves={parts.moves}
+            item={parts.item}
+            itemIsNone={parts.itemIsNone}
+          />
+        </div>
+      ) : null}
+    </section>
   );
 }
 

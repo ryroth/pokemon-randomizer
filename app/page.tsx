@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageFrame } from "@/components/layout/page-frame";
+import { StartRandomizingLink } from "@/components/session/start-randomizing-link";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -46,9 +47,9 @@ export default function HomePage() {
           whether a battle is allowed to use them.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/randomizer" className={cn(buttonVariants({ size: "lg" }))}>
+          <StartRandomizingLink className={cn(buttonVariants({ size: "lg" }))}>
             Start randomizing
-          </Link>
+          </StartRandomizingLink>
           <Link
             href="/formats"
             className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
@@ -69,9 +70,18 @@ export default function HomePage() {
                 <h3 className="contents">{step.title}</h3>
               </CardTitle>
               <CardDescription>{step.body}</CardDescription>
-              <Link href={step.href} className={cn(buttonVariants({ variant: "outline" }), "mt-2 w-fit")}>
-                {step.label}
-              </Link>
+              {step.href === "/randomizer" ? (
+                <StartRandomizingLink className={cn(buttonVariants({ variant: "outline" }), "mt-2 w-fit")}>
+                  {step.label}
+                </StartRandomizingLink>
+              ) : (
+                <Link
+                  href={step.href}
+                  className={cn(buttonVariants({ variant: "outline" }), "mt-2 w-fit")}
+                >
+                  {step.label}
+                </Link>
+              )}
             </CardHeader>
           </Card>
         ))}
