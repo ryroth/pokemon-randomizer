@@ -8,13 +8,24 @@ import { TypeBadge } from "@/components/recap/type-badge";
 import { useRandomizerSession } from "@/components/session/session-provider";
 import { useTeams } from "@/components/teams/team-provider";
 import { TeamSlotSprite } from "@/components/teams/team-slot-sprite";
-import { TeamTools } from "@/components/teams/team-tools";
+import { ShowdownImportButton, TeamTools } from "@/components/teams/team-tools";
 import { useDockPokemon } from "@/components/teams/use-dock-pokemon";
 import { Button } from "@/components/ui/button";
+import { DraftSlotDetails } from "@/components/teams/draft-slot-details";
+import { draftKey, useDraftPreviews } from "@/components/teams/use-draft-previews";
 import { openDraftInBuilder } from "@/lib/builder";
 import { exportTeamText, type DockPokemon } from "@/lib/data/dockPokemon";
-import { builtSetsInRoster, firstUnbuiltIndex } from "@/lib/teams/draftRoster";
-import { clampToFilledSlot, TEAM_SIZE, type DraftRoster, type SavedTeam } from "@/lib/teams/teams";
+import { builtSetsInRoster } from "@/lib/teams/draftRoster";
+import type { DraftSlotPreview } from "@/lib/teams/draftPreview";
+import {
+  allDraftRosters,
+  clampToFilledSlot,
+  receivingDraftRoster,
+  rosterAcceptsAdds,
+  TEAM_SIZE,
+  type DraftRoster,
+  type SavedTeam,
+} from "@/lib/teams/teams";
 import { cn } from "@/lib/utils";
 
 const selectClass =
@@ -35,13 +46,19 @@ export function TeamRoster({
 }) {
   const router = useRouter();
   const { session, setSession } = useRandomizerSession();
-  const { box, ready, chooseTeam, moveWithinTeam, copyToTeam, removeDraft } = useTeams();
-  const roster = box.draftRoster ?? null;
-  const rosterKey = roster
-    ? `${roster.id}:${roster.slots.length}:${roster.slots.filter((slot) => slot.status === "built").length}`
-    : "";
+  const { box, ready, chooseTeam, chooseDraft, moveWithinTeam, copyToTeam, removeDraft } = useTeams();
+  const rosters = allDraftRosters(box);
+  const rosterKey = rosters
+    .map((roster) => `${roster.id}:${roster.slots.length}:${roster.slots.filter((slot) => slot.status === "built").length}`)
+    .join("|");
   const [pinned, setPinned] = useState<{ key: string; teamId: string } | null>(null);
+  const [selectedDraftId, setSelectedDraftId] = useState<string | null>(null);
   const pinnedTeamId = pinned && pinned.key === rosterKey ? pinned.teamId : null;
+  const roster =
+    rosters.find((candidate) => candidate.id === selectedDraftId) ??
+    receivingDraftRoster(box) ??
+    rosters[0] ??
+    null;
   const showDraft = Boolean(roster) && pinnedTeamId === null;
   const active = showDraft
     ? null
@@ -54,6 +71,11 @@ export function TeamRoster({
       return id ? [id] : [];
     }) ?? [];
   const lookup = useDockPokemon(showDraft ? draftIds : (active?.sets.map((set) => set.pokemonId) ?? []));
+  const draftPayloads =
+    showDraft && roster
+      ? roster.slots.flatMap((slot) => (slot.status === "draft" ? [slot.pokemon.draft] : []))
+      : [];
+  const previews = useDraftPreviews(draftPayloads);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -98,8 +120,7 @@ export function TeamRoster({
     setOverIndex(null);
   }
 
-  function openNextDraft(current: DraftRoster) {
-    const index = firstUnbuiltIndex(current);
+  function openDraft(current: DraftRoster, index: number) {
     const slot = current.slots[index];
     if (!slot || slot.status !== "draft") {
       return;
@@ -148,8 +169,8 @@ export function TeamRoster({
           {showDraft ? (
             <p className="text-sm text-muted-foreground">
               {filled < TEAM_SIZE
-                ? "Building starts when this team has 6."
-                : "Build these Pokémon in slot order."}
+                ? "View a Pokémon any time. Building starts when this team has 6."
+                : "View any Pokémon, and build them in any order."}
             </p>
           ) : null}
         </div>
@@ -166,29 +187,35 @@ export function TeamRoster({
         </p>
       ) : null}
 
-      {ready && (box.teams.length > 1 || (roster && box.teams.length > 0)) ? (
+      {ready && rosters.length + box.teams.length > 1 ? (
         <label className="block space-y-1.5 text-sm font-medium">
           Active team
           <select
             className={selectClass}
-            value={showDraft ? "draft" : (active?.id ?? "")}
+            value={showDraft && roster ? `draft:${roster.id}` : (active?.id ?? "")}
             onChange={(event) => {
               setMessage(null);
               setFallbackText(null);
               const teamId = event.target.value;
-              if (teamId === "draft") {
+              if (teamId.startsWith("draft:")) {
+                const rosterId = teamId.slice("draft:".length);
                 setPinned(null);
+                setSelectedDraftId(rosterId);
+                const chosen = rosters.find((candidate) => candidate.id === rosterId);
+                if (chosen && rosterAcceptsAdds(chosen)) {
+                  chooseDraft(rosterId);
+                }
                 return;
               }
-              setPinned(roster ? { key: rosterKey, teamId } : null);
+              setPinned(rosters.length > 0 ? { key: rosterKey, teamId } : null);
               chooseTeam(teamId);
             }}
           >
-            {roster ? (
-              <option value="draft">
-                {roster.name} ({roster.slots.length} of {TEAM_SIZE}, not finished)
+            {rosters.map((candidate) => (
+              <option key={candidate.id} value={`draft:${candidate.id}`}>
+                {candidate.name} ({candidate.slots.length} of {TEAM_SIZE}, not finished)
               </option>
-            ) : null}
+            ))}
             {box.teams.map((team) => (
               <option key={team.id} value={team.id}>
                 {team.name} ({team.sets.length} of {TEAM_SIZE})
@@ -200,7 +227,7 @@ export function TeamRoster({
 
       {ready && !active && !showDraft ? (
         <p className="text-sm leading-6 text-muted-foreground">
-          Finish a Pokémon and save it from the recap to start a team. Your six slots appear here.
+          Finish a Pokémon and save it from the recap to start a team, or import one below. Your six slots appear here.
         </p>
       ) : null}
 
@@ -208,8 +235,10 @@ export function TeamRoster({
         <DraftRosterList
           roster={roster}
           lookup={lookup}
+          previews={previews}
+          onBuild={(index) => openDraft(roster, index)}
           onRemove={(index) => {
-            const result = removeDraft(index);
+            const result = removeDraft(roster.id, index);
             setFallbackText(null);
             setMessage(result.ok ? `Removed the Pokémon from slot ${result.slot}.` : result.message);
           }}
@@ -255,16 +284,10 @@ export function TeamRoster({
         </ol>
       ) : null}
 
-      {active ? <TeamTools team={active} /> : null}
+      {active ? <TeamTools team={active} /> : ready ? <ShowdownImportButton /> : null}
 
       {showDraft && roster ? (
         <div className="flex flex-col gap-2">
-          {firstUnbuiltIndex(roster) >= 0 &&
-          (roster.slots.length === TEAM_SIZE || roster.slots.some((slot) => slot.status === "built")) ? (
-            <Button type="button" onClick={() => openNextDraft(roster)}>
-              {roster.slots.some((slot) => slot.status === "built") ? "Build the next Pokémon" : "Start building"}
-            </Button>
-          ) : null}
           <Button
             type="button"
             onClick={() => void copyBuilt(roster)}
@@ -316,13 +339,19 @@ export function TeamRoster({
 function DraftRosterList({
   roster,
   lookup,
+  previews,
+  onBuild,
   onRemove,
 }: {
   roster: DraftRoster;
   lookup: Record<string, DockPokemon>;
+  previews: Record<string, DraftSlotPreview | null>;
+  onBuild: (index: number) => void;
   onRemove: (index: number) => void;
 }) {
+  const [viewing, setViewing] = useState<number | null>(null);
   const canRemove = roster.slots.every((slot) => slot.status === "draft");
+  const canBuild = roster.slots.length === TEAM_SIZE;
 
   return (
     <ol aria-label={`${roster.name} roster`} className="flex flex-col gap-2">
@@ -345,33 +374,60 @@ function DraftRosterList({
         const species = pokemon?.displayName ?? "Loading…";
         const nickname = slot.status === "built" ? slot.set.nickname?.trim() : "";
         const name = nickname ? `${nickname} (${species})` : species;
+        const preview = slot.status === "draft" ? previews[draftKey(slot.pokemon.draft)] : undefined;
+        const open = viewing === index;
         return (
-          <li
-            key={index}
-            className="flex min-h-14 items-center gap-2 rounded-lg border border-border bg-background px-2 py-1.5"
-          >
-            {pokemon ? (
-              <TeamSlotSprite sprites={pokemon.sprites} shiny={shiny} name={pokemon.displayName} />
-            ) : (
-              <span className="size-12 shrink-0" aria-hidden="true" />
-            )}
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">
-                <span className="sr-only">Slot {index + 1}. </span>
-                {name}
-              </p>
-              <p className="text-xs text-muted-foreground">{slot.status === "draft" ? "Not built yet" : "Built"}</p>
+          <li key={index} className="space-y-2 rounded-lg border border-border bg-background px-2 py-1.5">
+            <div className="flex min-h-14 items-center gap-2">
+              {pokemon ? (
+                <TeamSlotSprite sprites={pokemon.sprites} shiny={shiny} name={pokemon.displayName} />
+              ) : (
+                <span className="size-12 shrink-0" aria-hidden="true" />
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">
+                  <span className="sr-only">Slot {index + 1}. </span>
+                  {name}
+                </p>
+                <p className="text-xs text-muted-foreground">{slot.status === "draft" ? "Not built yet" : "Built"}</p>
+              </div>
+              <div className="flex shrink-0 flex-col gap-1">
+                {slot.status === "draft" ? (
+                  <Button
+                    type="button"
+                    variant={open ? "secondary" : "outline"}
+                    size="sm"
+                    aria-expanded={open}
+                    aria-label={`${open ? "Hide" : "View"} ${name}`}
+                    onClick={() => setViewing((current) => (current === index ? null : index))}
+                  >
+                    {open ? "Hide" : "View"}
+                  </Button>
+                ) : null}
+                {slot.status === "draft" && canBuild ? (
+                  <Button type="button" size="sm" aria-label={`Build ${name}`} onClick={() => onBuild(index)}>
+                    Build
+                  </Button>
+                ) : null}
+                {canRemove ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    aria-label={`Remove ${name} from the team`}
+                    onClick={() => onRemove(index)}
+                  >
+                    Remove
+                  </Button>
+                ) : null}
+              </div>
             </div>
-            {canRemove ? (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                aria-label={`Remove ${name} from the team`}
-                onClick={() => onRemove(index)}
-              >
-                Remove
-              </Button>
+            {open && preview ? <DraftSlotDetails preview={preview} /> : null}
+            {open && preview === null ? (
+              <p className="text-sm text-muted-foreground">This Pokémon does not match the current catalog.</p>
+            ) : null}
+            {open && preview === undefined && slot.status === "draft" ? (
+              <p className="text-sm text-muted-foreground">Loading this Pokémon…</p>
             ) : null}
           </li>
         );

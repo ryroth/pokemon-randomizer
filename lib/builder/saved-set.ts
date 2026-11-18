@@ -1,5 +1,6 @@
 import { requiredFormItemId } from "@/lib/data/formItems";
 import { applyBuilderDefaults } from "@/lib/builder/draft";
+import { cloneSetDraft } from "@/lib/teams/draftRoster";
 import type { DraftedPokemon, PokemonSet, PokemonSetDraft, RandomizerSession } from "@/lib/types/session";
 import { MAX_MOVE_COUNT } from "@/lib/validation/moves";
 
@@ -61,13 +62,12 @@ export function openDraftInBuilder(
 }
 
 function draftFromDrafted(pokemon: DraftedPokemon): PokemonSetDraft {
-  return {
-    pokemonId: pokemon.draft.pokemonId,
-    abilityId: pokemon.draft.abilityId,
-    itemId: pokemon.draft.itemId,
-    moveIds: Array.from({ length: MAX_MOVE_COUNT }, (_, slot) => pokemon.draft.moveIds[slot]),
-    shiny: pokemon.draft.shiny,
-  };
+  const draft = cloneSetDraft(pokemon.draft);
+  const requiredItemId = pokemon.draft.pokemonId ? requiredFormItemId(pokemon.draft.pokemonId) : undefined;
+  if (requiredItemId) {
+    draft.itemId = requiredItemId;
+  }
+  return draft;
 }
 
 export function draftFromPokemonSet(set: PokemonSet): PokemonSetDraft {

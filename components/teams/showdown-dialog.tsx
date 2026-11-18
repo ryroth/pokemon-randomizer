@@ -6,9 +6,9 @@ import { useTeams } from "@/components/teams/team-provider";
 import { useTeamDetails } from "@/components/teams/use-team-details";
 import { Button } from "@/components/ui/button";
 import { readShowdownPaste } from "@/lib/data/teamTools";
-import type { ImportedSetResult } from "@/lib/showdown/importTeam";
+import type { ImportedSetResult, UnbuiltImportResult } from "@/lib/showdown/importTeam";
 import { MAX_IMPORT_CHARS } from "@/lib/showdown/parseSet";
-import { TEAM_SIZE } from "@/lib/teams/teams";
+import { receivingDraftRoster, TEAM_SIZE } from "@/lib/teams/teams";
 import { cn } from "@/lib/utils";
 
 /**
@@ -59,19 +59,23 @@ const textAreaClass =
   "min-h-48 w-full resize-y rounded-lg border border-input bg-background p-3 font-mono text-xs leading-5 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 function DialogBody({ headingId, onClose }: { headingId: string; onClose: () => void }) {
-  const { box, importSets } = useTeams();
+  const { box, importSets, importUnbuilt } = useTeams();
   const active = box.teams.find((team) => team.id === box.activeTeamId) ?? null;
   const details = useTeamDetails(active?.sets ?? []);
 
   const [pasteText, setPasteText] = useState("");
   const [reading, setReading] = useState(false);
   const [results, setResults] = useState<ImportedSetResult[] | null>(null);
+  const [unbuilt, setUnbuilt] = useState<UnbuiltImportResult[] | null>(null);
   const [problem, setProblem] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [copyMessage, setCopyMessage] = useState<string | null>(null);
 
   const ready = results?.flatMap((result) => (result.ok ? [result.set] : [])) ?? [];
+  const unbuiltReady = unbuilt?.flatMap((result) => (result.ok ? [result.pokemon] : [])) ?? [];
   const open = active ? TEAM_SIZE - active.sets.length : 0;
+  const receiving = receivingDraftRoster(box);
+  const draftOpen = receiving ? TEAM_SIZE - receiving.slots.length : TEAM_SIZE;
 
   async function copyText(text: string) {
     try {
@@ -87,12 +91,14 @@ function DialogBody({ headingId, onClose }: { headingId: string; onClose: () => 
     setMessage(null);
     setProblem(null);
     setResults(null);
+    setUnbuilt(null);
     try {
       const preview = await readShowdownPaste(pasteText);
-      if (preview.ok) {
-        setResults(preview.results);
+      if (preview.finished.ok) {
+        setResults(preview.finished.results);
+        setUnbuilt(preview.unbuilt.ok ? preview.unbuilt.results : null);
       } else {
-        setProblem(preview.message);
+        setProblem(preview.finished.message);
       }
     } catch {
       setProblem("The paste could not be read. Try again in a moment.");
@@ -109,8 +115,22 @@ function DialogBody({ headingId, onClose }: { headingId: string; onClose: () => 
     }
     setProblem(null);
     setResults(null);
+    setUnbuilt(null);
     setPasteText("");
     setMessage(`Added ${outcome.added} Pokémon to ${outcome.teamName}.`);
+  }
+
+  function addUnbuilt(target: "active" | "new") {
+    const outcome = importUnbuilt(unbuiltReady, target);
+    if (!outcome.ok) {
+      setProblem(outcome.message);
+      return;
+    }
+    setProblem(null);
+    setResults(null);
+    setUnbuilt(null);
+    setPasteText("");
+    setMessage(`Imported ${outcome.added} unbuilt Pokémon to ${outcome.teamName}. Build them in any order.`);
   }
 
   return (
@@ -183,15 +203,18 @@ function DialogBody({ headingId, onClose }: { headingId: string; onClose: () => 
               aria-describedby={`${headingId}-import-help`}
               onChange={(event) => {
                 setPasteText(event.target.value);
-                setResults(null);
-                setProblem(null);
-                setMessage(null);
+              setResults(null);
+              setUnbuilt(null);
+              setProblem(null);
+              setMessage(null);
               }}
             />
           </label>
           <p id={`${headingId}-import-help`} className="text-xs leading-5 text-muted-foreground">
-            Up to {TEAM_SIZE} Pokémon, separated by a blank line. Each needs an Ability, a Nature, a Tera Type, and
-            four moves. Species with both genders need (M) or (F). The app never fills these in for you.
+            Up to {TEAM_SIZE} Pokémon, separated by a blank line. A finished Pokémon needs an Ability, a Nature, a
+            Tera Type, and at least one move. Species with both genders need (M) or (F). You can also import a
+            Pokémon that is not built yet: a name is enough, and any Ability, item, or moves in the paste are kept
+            for the builder.
           </p>
           <Button
             type="button"
@@ -267,6 +290,38 @@ function DialogBody({ headingId, onClose }: { headingId: string; onClose: () => 
                 <p className="text-xs text-muted-foreground">
                   {active.name} has {open} open {open === 1 ? "slot" : "slots"}. Save these as a new team instead.
                 </p>
+              ) : null}
+              {unbuiltReady.length > 0 ? (
+                <div className="space-y-2 border-t border-border pt-3">
+                  <p className="text-sm font-medium">
+                    <span className="font-mono tabular-nums">{unbuiltReady.length}</span> of{" "}
+                    <span className="font-mono tabular-nums">{unbuilt?.length ?? 0}</span> can be imported unbuilt.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    An unbuilt Pokémon keeps the species and any parts in the paste. Ability, moves, Nature, and the
+                    rest can be filled in the builder.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      disabled={!receiving || unbuiltReady.length > draftOpen}
+                      onClick={() => addUnbuilt("active")}
+                    >
+                      {receiving
+                        ? `Add ${unbuiltReady.length} unbuilt to ${receiving.name}`
+                        : `Add ${unbuiltReady.length} unbuilt`}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => addUnbuilt("new")}>
+                      Import {unbuiltReady.length} as a new unbuilt team
+                    </Button>
+                  </div>
+                  {receiving && unbuiltReady.length > draftOpen ? (
+                    <p className="text-xs text-muted-foreground">
+                      {receiving.name} has {draftOpen} open {draftOpen === 1 ? "slot" : "slots"}. Import these as a
+                      new team instead.
+                    </p>
+                  ) : null}
+                </div>
               ) : null}
             </div>
           ) : null}

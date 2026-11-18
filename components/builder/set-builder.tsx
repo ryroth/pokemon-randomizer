@@ -30,6 +30,7 @@ import {
   setDraftCustomBaseStat,
   resetDraftCustomBaseStats,
   setDraftTeraType,
+  openDraftInBuilder,
 } from "@/lib/builder";
 import { BaseStatEditor } from "@/components/builder/base-stat-editor";
 import { TypeEditor } from "@/components/builder/type-editor";
@@ -45,6 +46,7 @@ import { ItemIcon } from "@/components/items/item-icon";
 import { NumberInput } from "@/components/builder/number-input";
 import { MovePicker } from "@/components/builder/move-picker";
 import { useRandomizerSession } from "@/components/session/session-provider";
+import { DraftSlotDetails } from "@/components/teams/draft-slot-details";
 import { useTeams } from "@/components/teams/team-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { builderAbilityPool, battlePokemonId, openRandomizerTab } from "@/lib/randomizer";
@@ -60,7 +62,8 @@ import {
 import type { Ability, Item, Move, Nature } from "@/lib/types/catalog-entities";
 import type { PokemonForm } from "@/lib/types/pokemon";
 import type { RandomizerTab } from "@/lib/types/randomizer";
-import { pokemonSetsEqual } from "@/lib/teams/teams";
+import { previewDraftSlot } from "@/lib/teams/draftPreview";
+import { allDraftRosters, pokemonSetsEqual, type DraftRoster } from "@/lib/teams/teams";
 import { defaultTeraType } from "@/lib/validation/set";
 import { showCustomStatPicker, showCustomTypePicker } from "@/lib/pokemon/customAttributes";
 import { DEFAULT_HAPPINESS, DEFAULT_LEVEL, MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL, MAX_MOVE_COUNT, evsCountingBlanksAsZero, sumEvs, validateSet } from "@/lib/validation";
@@ -194,8 +197,23 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         {session.buildingDraft ? (
           <p className="text-sm leading-6 text-muted-foreground">
             This is slot {session.buildingDraft.index + 1} of 6. Parts the randomizer already chose stay
-            locked.
+            locked. The other Pokémon on this team can be viewed and built in any order.
           </p>
+        ) : null}
+        {session.buildingDraft ? (
+          <OtherDraftSlots
+            roster={allDraftRosters(box).find((candidate) => candidate.id === session.buildingDraft?.rosterId)}
+            currentIndex={session.buildingDraft.index}
+            catalog={{ pokemon, abilities, moves, items }}
+            onBuild={(index) => {
+              const roster = allDraftRosters(box).find((candidate) => candidate.id === session.buildingDraft?.rosterId);
+              const slot = roster?.slots[index];
+              if (!roster || !slot || slot.status !== "draft") {
+                return;
+              }
+              setSession(openDraftInBuilder(session, roster.id, slot.pokemon, index));
+            }}
+          />
         ) : null}
       </header>
 
@@ -671,6 +689,70 @@ function pendingSentence(pending: readonly RandomizerTab[]): string {
   const list =
     names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}` : (names[0] ?? "");
   return `The ${list} ${names.length > 1 ? "randomizers have" : "randomizer has"} not finished for this Pokémon.`;
+}
+
+function OtherDraftSlots({
+  roster,
+  currentIndex,
+  catalog,
+  onBuild,
+}: {
+  roster: DraftRoster | undefined;
+  currentIndex: number;
+  catalog: {
+    pokemon: readonly PokemonForm[];
+    abilities: readonly Ability[];
+    moves: readonly Move[];
+    items: readonly Item[];
+  };
+  onBuild: (index: number) => void;
+}) {
+  if (!roster) {
+    return null;
+  }
+  const others = roster.slots.flatMap((slot, index) => (index === currentIndex ? [] : [{ slot, index }]));
+  if (others.length === 0) {
+    return null;
+  }
+  return (
+    <section aria-label="Other Pokémon on this team" className="space-y-3 rounded-xl border border-border bg-card p-4">
+      <h2 className="text-lg font-medium">Other Pokémon on this team</h2>
+      <p className="text-sm text-muted-foreground">
+        Opening another Pokémon leaves this one unbuilt. You can come back to it.
+      </p>
+      <ul className="flex flex-col gap-3">
+        {others.map(({ slot, index }) => {
+          if (slot.status === "built") {
+            const form = catalog.pokemon.find((pokemon) => pokemon.id === slot.set.pokemonId);
+            const nickname = slot.set.nickname?.trim();
+            const name = nickname ? `${nickname} (${form?.displayName ?? "Pokémon"})` : (form?.displayName ?? "Pokémon");
+            return (
+              <li key={index} className="text-sm">
+                <span className="font-medium">Slot {index + 1}. {name}.</span> Built
+              </li>
+            );
+          }
+          const preview = previewDraftSlot(slot.pokemon, catalog);
+          const name = preview?.displayName ?? "Pokémon";
+          return (
+            <li key={index} className="space-y-2 rounded-lg border border-border p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold">
+                  Slot {index + 1}. {name}
+                </h3>
+                <Button type="button" size="sm" onClick={() => onBuild(index)}>
+                  Build {name}
+                </Button>
+              </div>
+              {preview ? <DraftSlotDetails preview={preview} /> : (
+                <p className="text-sm text-muted-foreground">This Pokémon does not match the current catalog.</p>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
 }
 
 function pendingLinkLabel(tab: RandomizerTab | undefined): string {

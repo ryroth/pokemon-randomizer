@@ -14,7 +14,7 @@ export type DraftRosterSlot =
   | { status: "draft"; pokemon: DraftedPokemon }
   | { status: "built"; set: PokemonSet };
 
-/** Up to six Pokémon rolled before they are built. One roster at a time. */
+/** Up to six Pokémon rolled before they are built. */
 export interface DraftRoster {
   id: string;
   name: string;
@@ -24,7 +24,17 @@ export interface DraftRoster {
 export interface TeamBox {
   activeTeamId: string | null;
   teams: SavedTeam[];
-  /** Present while a team is being drafted or built. Cleared once all six sets are finished. */
+  /**
+   * Teams that are still being drafted or built. A full team stays here until every slot is a
+   * finished set, so the next randomized Pokémon can start a different team.
+   */
+  draftRosters?: DraftRoster[];
+  /** The draft team that receives the next randomized Pokémon, when that team still has room. */
+  activeDraftRosterId?: string | null;
+  /**
+   * Older saves stored a single roster here. New saves use `draftRosters`.
+   * Kept so a save from before several draft teams still loads.
+   */
   draftRoster?: DraftRoster;
 }
 
@@ -425,13 +435,48 @@ export function createTeamId(): string {
   return crypto.randomUUID();
 }
 
-/** Team edits keep the in-progress draft roster. Promoting that roster omits it on purpose. */
+/** Every draft team on this save. A save from before several draft teams had only `draftRoster`. */
+export function allDraftRosters(box: TeamBox): DraftRoster[] {
+  if (box.draftRosters && box.draftRosters.length > 0) {
+    return box.draftRosters;
+  }
+  return box.draftRoster ? [box.draftRoster] : [];
+}
+
+/** A roster can take another randomized Pokémon only while every slot is still unbuilt and it has room. */
+export function rosterAcceptsAdds(roster: DraftRoster): boolean {
+  return roster.slots.length < TEAM_SIZE && roster.slots.every((slot) => slot.status === "draft");
+}
+
+/**
+ * The draft team that receives the next randomized Pokémon.
+ * A full team, or one that has already started building, does not receive it.
+ */
+export function receivingDraftRoster(box: TeamBox): DraftRoster | undefined {
+  const rosters = allDraftRosters(box);
+  if (box.activeDraftRosterId) {
+    const active = rosters.find((roster) => roster.id === box.activeDraftRosterId);
+    return active && rosterAcceptsAdds(active) ? active : undefined;
+  }
+  if (rosters.length === 1) {
+    const only = rosters[0];
+    return only && rosterAcceptsAdds(only) ? only : undefined;
+  }
+  return rosters.find((roster) => rosterAcceptsAdds(roster));
+}
+
+/** Team edits keep draft teams. Promoting one roster removes only that roster. */
 function keepRoster(
   box: TeamBox,
   next: { activeTeamId: string | null; teams: SavedTeam[] },
 ): TeamBox {
-  if (!box.draftRoster) {
+  const rosters = allDraftRosters(box);
+  if (rosters.length === 0) {
     return next;
   }
-  return { ...next, draftRoster: box.draftRoster };
+  const preserved: TeamBox = { ...next, draftRosters: rosters };
+  if (box.activeDraftRosterId && rosters.some((roster) => roster.id === box.activeDraftRosterId)) {
+    preserved.activeDraftRosterId = box.activeDraftRosterId;
+  }
+  return preserved;
 }

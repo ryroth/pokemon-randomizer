@@ -3,7 +3,12 @@
 import { effectiveTypes } from "@/lib/pokemon/customAttributes";
 import type { TeamMemberInput } from "@/lib/analysis/teamAnalysis";
 import { loadGeneratedCatalog } from "@/lib/data/loadCatalog";
-import { previewShowdownImport, type ImportPreview } from "@/lib/showdown/importTeam";
+import {
+  previewShowdownImport,
+  previewUnbuiltImport,
+  type ImportPreview,
+  type UnbuiltImportPreview,
+} from "@/lib/showdown/importTeam";
 import { teamShowdownText } from "@/lib/teams/export";
 import { TEAM_SIZE } from "@/lib/teams/teams";
 import type { PokemonSet } from "@/lib/types/session";
@@ -59,11 +64,24 @@ export async function loadTeamDetails(sets: PokemonSet[]): Promise<TeamDetails> 
   }
 }
 
+export interface ShowdownPasteRead {
+  finished: ImportPreview;
+  unbuilt: UnbuiltImportPreview;
+}
+
 /** Reads pasted Showdown text against the catalog. Nothing is saved until the player confirms. */
-export async function readShowdownPaste(text: string): Promise<ImportPreview> {
+export async function readShowdownPaste(text: string): Promise<ShowdownPasteRead> {
+  const unavailable = "The Pokémon list could not be loaded. Try again in a moment.";
   try {
-    return previewShowdownImport(text, loadGeneratedCatalog());
+    const catalog = loadGeneratedCatalog();
+    return {
+      finished: previewShowdownImport(text, catalog),
+      unbuilt: previewUnbuiltImport(text, catalog),
+    };
   } catch {
-    return { ok: false, message: "The Pokémon list could not be loaded. Try again in a moment." };
+    return {
+      finished: { ok: false, message: unavailable },
+      unbuilt: { ok: false, message: unavailable },
+    };
   }
 }
