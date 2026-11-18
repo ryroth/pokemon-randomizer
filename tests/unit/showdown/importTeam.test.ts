@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { loadGeneratedCatalog } from "@/lib/data/loadCatalog";
 import { buildRecapEntry } from "@/lib/recap/entries";
 import { exportShowdownTeam } from "@/lib/showdown/exportSet";
-import { previewShowdownImport, type ImportedSetResult } from "@/lib/showdown/importTeam";
+import { previewShowdownImport, previewUnbuiltImport, type ImportedSetResult } from "@/lib/showdown/importTeam";
 import { parseShowdownText } from "@/lib/showdown/parseSet";
 import type { PokemonSet } from "@/lib/types/session";
 
@@ -212,5 +212,72 @@ describe("previewShowdownImport", () => {
   it("reports each set on its own, keeping the good ones", () => {
     const preview = previewShowdownImport(`${SWAMPERT_PASTE}\n\nNotamon`, catalog);
     expect(preview.ok && preview.results.map((result) => result.ok)).toEqual([true, false]);
+  });
+});
+
+describe("previewUnbuiltImport", () => {
+  it("keeps a bare species and any parts the paste did include", () => {
+    const preview = previewUnbuiltImport(
+      ["Pikachu", "", "Swampert @ Leftovers", "Ability: Torrent", "- Earthquake"].join("\n"),
+      catalog,
+    );
+    expect(preview.ok).toBe(true);
+    if (!preview.ok) {
+      return;
+    }
+    expect(preview.results[0]).toMatchObject({
+      ok: true,
+      pokemon: {
+        draft: { pokemonId: "pikachu" },
+        locks: { ability: false, item: false, moveSlots: [false, false, false, false] },
+      },
+    });
+    const second = preview.results[1];
+    expect(second?.ok).toBe(true);
+    if (second?.ok) {
+      expect(second.pokemon.draft).toMatchObject({
+        pokemonId: "swampert",
+        abilityId: "torrent",
+        itemId: "leftovers",
+      });
+      expect(second.pokemon.draft.moveIds[0]).toBe("earthquake");
+      expect(second.pokemon.locks.ability).toBe(false);
+    }
+  });
+
+  it("keeps Nature and EVs from a finished paste without locking them", () => {
+    const preview = previewUnbuiltImport(SWAMPERT_PASTE, catalog);
+    expect(preview.ok).toBe(true);
+    if (!preview.ok || !preview.results[0]?.ok) {
+      return;
+    }
+    expect(preview.results[0].pokemon.draft).toMatchObject({
+      pokemonId: "swampert",
+      natureId: "adamant",
+      teraType: "water",
+      gender: "M",
+      nickname: "Mud",
+      shiny: true,
+      evs: { hp: 252, atk: 252, spd: 4 },
+    });
+    expect(preview.results[0].pokemon.locks.moveSlots).toEqual([false, false, false, false]);
+  });
+
+  it("rejects an unknown species, an illegal ability, and Struggle", () => {
+    const unknown = previewUnbuiltImport("Notamon", catalog);
+    expect(unknown.ok).toBe(true);
+    if (unknown.ok && !unknown.results[0]?.ok) {
+      expect(unknown.results[0].problems.join(" ")).toContain("Notamon");
+    }
+    const illegal = previewUnbuiltImport("Swampert\nAbility: Levitate", catalog);
+    expect(illegal.ok).toBe(true);
+    if (illegal.ok && !illegal.results[0]?.ok) {
+      expect(illegal.results[0].problems.join(" ")).toContain("cannot have the ability");
+    }
+    const struggle = previewUnbuiltImport("Pikachu\n- Struggle", catalog);
+    expect(struggle.ok).toBe(true);
+    if (struggle.ok && !struggle.results[0]?.ok) {
+      expect(struggle.results[0].problems.join(" ")).toContain("Struggle");
+    }
   });
 });

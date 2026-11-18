@@ -7,7 +7,7 @@ import { BookOpen, Hammer, Shuffle, Swords, Users } from "lucide-react";
 import { NAV_LINKS } from "@/components/layout/nav-links";
 import { TeamRoster } from "@/components/teams/team-dock";
 import { useTeams } from "@/components/teams/team-provider";
-import { TEAM_SIZE } from "@/lib/teams/teams";
+import { allDraftRosters, receivingDraftRoster, TEAM_SIZE } from "@/lib/teams/teams";
 import { cn } from "@/lib/utils";
 
 const NAV_ICONS = {
@@ -29,7 +29,8 @@ export function MobileDockBar() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
   const active = box.teams.find((team) => team.id === box.activeTeamId) ?? null;
-  const teamCount = box.draftRoster?.slots.length ?? active?.sets.length ?? 0;
+  const draft = receivingDraftRoster(box) ?? allDraftRosters(box)[0];
+  const teamCount = draft?.slots.length ?? active?.sets.length ?? 0;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/90 backdrop-blur-md pb-[env(safe-area-inset-bottom)] lg:hidden">

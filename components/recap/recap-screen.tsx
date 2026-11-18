@@ -10,10 +10,12 @@ import { NextRandomizerButton } from "@/components/session/next-randomizer-butto
 import { useRandomizerSession } from "@/components/session/session-provider";
 import { useTeams } from "@/components/teams/team-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { DraftSlotDetails } from "@/components/teams/draft-slot-details";
 import { openDraftInBuilder } from "@/lib/builder";
 import { recapEditAccess } from "@/lib/builder/locks";
 import { buildRecap, type RecapCatalog } from "@/lib/recap/entries";
-import { firstUnbuiltIndex } from "@/lib/teams/draftRoster";
+import { previewDraftSlot } from "@/lib/teams/draftPreview";
+import { allDraftRosters } from "@/lib/teams/teams";
 import { cn } from "@/lib/utils";
 
 export function RecapScreen({ pokemon, abilities, moves, items, natures }: RecapCatalog) {
@@ -26,10 +28,12 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
   }
 
   const recap = buildRecap(session, { pokemon, abilities, moves, items, natures });
+  const catalog = { pokemon, abilities, moves, items, natures };
   const building = session.buildingDraft;
-  const roster = building ? box.draftRoster : undefined;
-  const nextIndex = roster && roster.id === building?.rosterId ? firstUnbuiltIndex(roster) : -1;
-  const nextSlot = nextIndex >= 0 ? roster?.slots[nextIndex] : undefined;
+  const roster = building ? allDraftRosters(box).find((candidate) => candidate.id === building.rosterId) : undefined;
+  const unbuilt = roster
+    ? roster.slots.flatMap((slot, index) => (slot.status === "draft" ? [{ slot, index }] : []))
+    : [];
   const finishedTeam = building
     ? box.teams.find((team) => team.id === building.rosterId)
     : undefined;
@@ -69,21 +73,41 @@ export function RecapScreen({ pokemon, abilities, moves, items, natures }: Recap
         <SaveToTeam set={session.finalizedSet} catalog={{ pokemon, abilities, moves, items, natures }} />
       ) : null}
 
-      {building && nextSlot?.status === "draft" ? (
-        <Button
-          type="button"
-          size="lg"
-          className="w-fit"
-          onClick={() => {
-            setSession(openDraftInBuilder(session, building.rosterId, nextSlot.pokemon, nextIndex));
-            router.push("/builder");
-          }}
-        >
-          Build the next Pokémon
-        </Button>
+      {building && unbuilt.length > 0 ? (
+        <section aria-label="Pokémon still to build" className="space-y-3">
+          <h2 className="text-lg font-semibold">Still to build</h2>
+          <p className="text-sm text-muted-foreground">
+            Build any of these next. Each one shows the parts already chosen and its base stats.
+          </p>
+          <ul className="flex flex-col gap-3">
+            {unbuilt.map(({ slot, index }) => {
+              const preview = previewDraftSlot(slot.pokemon, catalog);
+              const name = preview?.displayName ?? "Pokémon";
+              return (
+                <li key={index} className="space-y-3 rounded-2xl border border-border bg-card p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="text-base font-semibold">
+                      Slot {index + 1}. {name}
+                    </h3>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setSession(openDraftInBuilder(session, building.rosterId, slot.pokemon, index));
+                        router.push("/builder");
+                      }}
+                    >
+                      Build {name}
+                    </Button>
+                  </div>
+                  {preview ? <DraftSlotDetails preview={preview} /> : null}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       ) : null}
 
-      {building && !nextSlot && finishedTeam ? (
+      {building && unbuilt.length === 0 && finishedTeam ? (
         <p className="text-base leading-7">
           {finishedTeam.name} is ready.{" "}
           <Link href="/teams" className="font-medium text-primary underline-offset-4 hover:underline">

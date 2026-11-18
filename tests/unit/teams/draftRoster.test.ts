@@ -13,9 +13,11 @@ import { parseStoredSession } from "@/lib/session/storage";
 import {
   addDraftToRoster,
   draftedPokemonFromSession,
+  importDraftsToRoster,
   removeDraftFromRoster,
   writeBuiltDraft,
 } from "@/lib/teams/draftRoster";
+import { allDraftRosters } from "@/lib/teams/teams";
 import { parseStoredTeams } from "@/lib/teams/storage";
 import { createEmptyTeamBox, saveSetToNewTeam } from "@/lib/teams/teams";
 import type { PokemonForm } from "@/lib/types/pokemon";
@@ -105,11 +107,25 @@ describe("draft roster", () => {
       }
       box = added.box;
     }
-    expect(box.draftRoster?.slots).toHaveLength(6);
-    const extra = addDraftToRoster(box, draftedPokemonFromSession(selected())!);
-    expect(extra).toMatchObject({ ok: false });
+    expect(allDraftRosters(box)[0]?.slots).toHaveLength(6);
+    const extra = addDraftToRoster(box, draftedPokemonFromSession(selected("squirtle"))!);
+    expect(extra.ok).toBe(true);
+    if (!extra.ok) {
+      return;
+    }
+    expect(extra.startedNew).toBe(true);
+    expect(extra.teamName).not.toBe(allDraftRosters(box)[0]?.name);
+    expect(allDraftRosters(extra.box)).toHaveLength(2);
+    expect(allDraftRosters(extra.box)[0]?.slots).toHaveLength(6);
+    expect(allDraftRosters(extra.box)[1]?.slots).toHaveLength(1);
+    box = {
+      activeTeamId: extra.box.activeTeamId,
+      teams: extra.box.teams,
+      draftRosters: [allDraftRosters(extra.box)[0]!],
+      activeDraftRosterId: allDraftRosters(extra.box)[0]?.id ?? null,
+    };
 
-    const rosterId = box.draftRoster!.id;
+    const rosterId = allDraftRosters(box)[0]!.id;
     for (let index = 0; index < 5; index += 1) {
       const written = writeBuiltDraft(box, rosterId, index, { ...finished, pokemonId: "pikachu" });
       expect(written.ok && written.promoted).toBe(false);
@@ -119,7 +135,7 @@ describe("draft roster", () => {
       expect(written.nextIndex).toBe(index + 1);
       box = written.box;
     }
-    expect(removeDraftFromRoster(box, 5)).toMatchObject({
+    expect(removeDraftFromRoster(box, rosterId, 5)).toMatchObject({
       ok: false,
       message: "This team is already being built.",
     });
@@ -130,7 +146,7 @@ describe("draft roster", () => {
       return;
     }
     expect(last.promoted).toBe(true);
-    expect(last.box.draftRoster).toBeUndefined();
+    expect(allDraftRosters(last.box)).toHaveLength(0);
     expect(last.box.activeTeamId).toBe(rosterId);
     expect(last.box.teams[0]?.sets.map((set) => set.pokemonId)).toEqual([
       "pikachu",
@@ -157,19 +173,21 @@ describe("draft roster", () => {
     if (!second.ok) {
       return;
     }
-    const removed = removeDraftFromRoster(second.box, 0);
+    const removed = second.ok ? removeDraftFromRoster(second.box, second.rosterId, 0) : second;
     expect(removed.ok).toBe(true);
     if (!removed.ok) {
       return;
     }
-    expect(removed.box.draftRoster?.slots).toHaveLength(1);
-    expect(removed.box.draftRoster?.slots[0]?.status === "draft" && removed.box.draftRoster.slots[0].pokemon.draft.pokemonId).toBe(
-      "sandshrew",
-    );
+    const kept = allDraftRosters(removed.box)[0]?.slots[0];
+    expect(allDraftRosters(removed.box)[0]?.slots).toHaveLength(1);
+    expect(kept?.status).toBe("draft");
+    if (kept?.status === "draft") {
+      expect(kept.pokemon.draft.pokemonId).toBe("sandshrew");
+    }
     expect(removed.box.teams).toHaveLength(1);
 
     const again = saveSetToNewTeam(removed.box, finished, "Another");
-    expect(again.ok && again.box.draftRoster?.slots).toHaveLength(1);
+    expect(again.ok && allDraftRosters(again.box)[0]?.slots).toHaveLength(1);
   });
 
   it("opens a drafted Pokémon with the stored locks, not the current randomizer settings", () => {
@@ -222,7 +240,7 @@ describe("draft roster", () => {
       draftRoster: { id: "draft", name: "Team 2", slots: [{ status: "mystery" }] },
     };
     const restored = parseStoredTeams(JSON.stringify(raw));
-    expect(restored.draftRoster).toBeUndefined();
+    expect(allDraftRosters(restored)).toHaveLength(0);
     expect(restored.teams[0]?.sets).toHaveLength(1);
 
     const captured = draftedPokemonFromSession(selected());
@@ -232,8 +250,86 @@ describe("draft roster", () => {
       return;
     }
     const roundTrip = parseStoredTeams(JSON.stringify(added.box));
-    expect(roundTrip.draftRoster?.slots[0]?.status).toBe("draft");
+    expect(allDraftRosters(roundTrip)[0]?.slots[0]?.status).toBe("draft");
     expect(roundTrip.teams).toHaveLength(1);
+
+    const legacy = parseStoredTeams(JSON.stringify({ ...saved.box, draftRoster: added.box.draftRosters?.[0] }));
+    expect(legacy.draftRoster?.name).toBe(added.teamName);
+    expect(allDraftRosters(legacy)).toHaveLength(1);
+  });
+
+  it("builds a later slot before the first and keeps the earlier one unbuilt", () => {
+    let box = createEmptyTeamBox();
+    for (let index = 0; index < 6; index += 1) {
+      const added = addDraftToRoster(box, draftedPokemonFromSession(selected(index === 2 ? "sandshrew" : "pikachu"))!);
+      expect(added.ok).toBe(true);
+      if (!added.ok) {
+        return;
+      }
+      box = added.box;
+    }
+    const roster = allDraftRosters(box)[0]!;
+    const written = writeBuiltDraft(box, roster.id, 2, { ...finished, pokemonId: "sandshrew" });
+    expect(written.ok).toBe(true);
+    if (!written.ok) {
+      return;
+    }
+    expect(written.promoted).toBe(false);
+    expect(written.nextIndex).toBe(0);
+    const slots = allDraftRosters(written.box)[0]?.slots ?? [];
+    expect(slots[0]?.status).toBe("draft");
+    expect(slots[2]?.status).toBe("built");
+  });
+
+  it("imports an unbuilt Pokémon onto the open draft team", () => {
+    const captured = draftedPokemonFromSession(selected("pikachu"))!;
+    const added = addDraftToRoster(createEmptyTeamBox(), captured);
+    expect(added.ok).toBe(true);
+    if (!added.ok) {
+      return;
+    }
+    const imported = importDraftsToRoster(
+      added.box,
+      [{ draft: { pokemonId: "squirtle", moveIds: [] }, locks: { ability: false, item: false, moveSlots: [] } }],
+      "active",
+    );
+    expect(imported.ok).toBe(true);
+    if (!imported.ok) {
+      return;
+    }
+    expect(imported.teamName).toBe(added.teamName);
+    expect(allDraftRosters(imported.box)[0]?.slots).toHaveLength(2);
+
+    let full = imported.box;
+    while ((allDraftRosters(full)[0]?.slots.length ?? 0) < 6) {
+      const next = addDraftToRoster(full, captured);
+      expect(next.ok).toBe(true);
+      if (!next.ok) {
+        return;
+      }
+      full = next.box;
+    }
+    const overflow = importDraftsToRoster(
+      full,
+      [{ draft: { pokemonId: "bulbasaur", moveIds: [] }, locks: { ability: false, item: false, moveSlots: [] } }],
+      "active",
+    );
+    expect(overflow.ok).toBe(false);
+    const created = importDraftsToRoster(
+      full,
+      [{ draft: { pokemonId: "bulbasaur", moveIds: [] }, locks: { ability: false, item: false, moveSlots: [] } }],
+      "new",
+    );
+    expect(created.ok).toBe(true);
+    if (!created.ok) {
+      return;
+    }
+    const importedSlot = allDraftRosters(created.box)[1]?.slots[0];
+    expect(allDraftRosters(created.box)).toHaveLength(2);
+    expect(importedSlot?.status).toBe("draft");
+    if (importedSlot?.status === "draft") {
+      expect(importedSlot.pokemon.draft.pokemonId).toBe("bulbasaur");
+    }
   });
 
   it("drops a stored builder lock that is not a real draft slot", () => {

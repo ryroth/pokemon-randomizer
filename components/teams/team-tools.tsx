@@ -22,20 +22,28 @@ function Disclosure({ title, children }: { title: string; children: ReactNode })
   );
 }
 
-/**
- * Showdown sync and team analysis for the active team: a button for the import and export dialog,
- * the type matrices, and the live Showdown text. The details load as soon as the roster changes, so\n * opening a panel never waits and never depends on a toggle event.
- */
-export function TeamTools({ team }: { team: SavedTeam }) {
+/** Opens the Showdown dialog. Works before any team is saved, so an unbuilt paste can start a team. */
+export function ShowdownImportButton() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const details = useTeamDetails(team.sets);
 
   return (
-    <div className="flex flex-col gap-2">
+    <>
       <Button type="button" variant="outline" aria-haspopup="dialog" onClick={() => setDialogOpen(true)}>
         <ArrowLeftRight aria-hidden="true" />
         Showdown import / export
       </Button>
+      <ShowdownDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
+    </>
+  );
+}
+
+/** Type analysis and Showdown text for one saved team, plus the import dialog. */
+export function TeamTools({ team }: { team: SavedTeam }) {
+  const details = useTeamDetails(team.sets);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <ShowdownImportButton />
 
       <Disclosure title="Type analysis">
         <TeamAnalysisPanel state={details} />
@@ -63,7 +71,6 @@ export function TeamTools({ team }: { team: SavedTeam }) {
         )}
       </Disclosure>
 
-      <ShowdownDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </div>
   );
 }

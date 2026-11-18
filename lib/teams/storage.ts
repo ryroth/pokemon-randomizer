@@ -1,6 +1,10 @@
 import { validateCustomBaseStats, validateCustomTypes } from "@/lib/pokemon/customAttributes";
+import { TERA_TYPES } from "@/lib/types/pokemon-type";
 import { STAT_IDS, type StatSpread } from "@/lib/types/stats";
 import type { DraftedPokemon, DraftLocks, PokemonSet, PokemonSetDraft } from "@/lib/types/session";
+import { MAX_HAPPINESS, MAX_LEVEL, MAX_NICKNAME_LENGTH, MIN_HAPPINESS, MIN_LEVEL } from "@/lib/validation/details";
+import { MAX_EV_PER_STAT, MAX_EV_TOTAL } from "@/lib/validation/ev";
+import { MAX_IV, MIN_IV } from "@/lib/validation/iv";
 import { MAX_MOVE_COUNT } from "@/lib/validation/moves";
 import { createEmptyTeamBox, type DraftRoster, type DraftRosterSlot, type SavedTeam, type TeamBox } from "@/lib/teams/teams";
 
@@ -12,10 +16,24 @@ export function parseStoredTeams(raw: string): TeamBox {
     if (!isTeamBox(value)) {
       return createEmptyTeamBox();
     }
-    const draftRoster = parseDraftRoster((value as { draftRoster?: unknown }).draftRoster);
     const box: TeamBox = { activeTeamId: value.activeTeamId, teams: value.teams };
-    if (draftRoster) {
-      box.draftRoster = draftRoster;
+    const record = value as { draftRoster?: unknown; draftRosters?: unknown; activeDraftRosterId?: unknown };
+    if (Array.isArray(record.draftRosters)) {
+      const draftRosters = parseDraftRosterList(record.draftRosters);
+      if (draftRosters && draftRosters.length > 0) {
+        box.draftRosters = draftRosters;
+        if (
+          typeof record.activeDraftRosterId === "string" &&
+          draftRosters.some((roster) => roster.id === record.activeDraftRosterId)
+        ) {
+          box.activeDraftRosterId = record.activeDraftRosterId;
+        }
+      }
+    } else {
+      const draftRoster = parseDraftRoster(record.draftRoster);
+      if (draftRoster) {
+        box.draftRoster = draftRoster;
+      }
     }
     return box;
   } catch {
@@ -91,6 +109,21 @@ function optionalCustomFields(set: Partial<PokemonSet>): boolean {
     }
   }
   return true;
+}
+
+function parseDraftRosterList(value: unknown[]): DraftRoster[] | undefined {
+  if (value.length > 48) {
+    return undefined;
+  }
+  const rosters: DraftRoster[] = [];
+  for (const entry of value) {
+    const roster = parseDraftRoster(entry);
+    if (!roster) {
+      return undefined;
+    }
+    rosters.push(roster);
+  }
+  return rosters;
 }
 
 function parseDraftRoster(value: unknown): DraftRoster | undefined {
@@ -181,6 +214,75 @@ function parsePartialDraft(value: unknown): PokemonSetDraft | undefined {
   }
   if (draft.shiny) {
     next.shiny = true;
+  }
+  if (typeof draft.natureId === "string" && draft.natureId.length > 0) {
+    next.natureId = draft.natureId;
+  }
+  if (typeof draft.teraType === "string" && TERA_TYPES.includes(draft.teraType)) {
+    next.teraType = draft.teraType;
+  }
+  if (draft.gender === "M" || draft.gender === "F") {
+    next.gender = draft.gender;
+  }
+  if (typeof draft.level === "number" && Number.isInteger(draft.level) && draft.level >= MIN_LEVEL && draft.level <= MAX_LEVEL) {
+    next.level = draft.level;
+  }
+  if (typeof draft.nickname === "string" && draft.nickname.length > 0 && draft.nickname.length <= MAX_NICKNAME_LENGTH) {
+    next.nickname = draft.nickname;
+  }
+  if (
+    typeof draft.happiness === "number" &&
+    Number.isInteger(draft.happiness) &&
+    draft.happiness >= MIN_HAPPINESS &&
+    draft.happiness <= MAX_HAPPINESS
+  ) {
+    next.happiness = draft.happiness;
+  }
+  const evs = partialStatSpread(draft.evs, MAX_EV_PER_STAT, MAX_EV_TOTAL);
+  if (evs) {
+    next.evs = evs;
+  }
+  const ivs = partialStatSpread(draft.ivs, MAX_IV, Number.POSITIVE_INFINITY);
+  if (ivs && STAT_IDS.every((stat) => ivs[stat] === undefined || ivs[stat] >= MIN_IV)) {
+    next.ivs = ivs;
+  }
+  if (Array.isArray(draft.customTypes) && validateCustomTypes(draft.customTypes).ok) {
+    next.customTypes = [...draft.customTypes];
+  }
+  if (
+    draft.customBaseStats &&
+    typeof draft.customBaseStats === "object" &&
+    validateCustomBaseStats(draft.customBaseStats).ok
+  ) {
+    next.customBaseStats = { ...draft.customBaseStats };
+  }
+  return next;
+}
+
+function partialStatSpread(
+  value: unknown,
+  perStatMax: number,
+  totalMax: number,
+): Partial<StatSpread> | undefined {
+  if (!value || typeof value !== "object") {
+    return undefined;
+  }
+  const spread = value as Partial<StatSpread>;
+  const next: Partial<StatSpread> = {};
+  let total = 0;
+  for (const stat of STAT_IDS) {
+    const statValue = spread[stat];
+    if (statValue === undefined) {
+      continue;
+    }
+    if (!Number.isInteger(statValue) || statValue < 0 || statValue > perStatMax) {
+      return undefined;
+    }
+    next[stat] = statValue;
+    total += statValue;
+  }
+  if (total > totalMax || Object.keys(next).length === 0) {
+    return undefined;
   }
   return next;
 }

@@ -3,12 +3,15 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   addDraftToRoster,
+  focusDraftRoster,
+  importDraftsToRoster,
   removeDraftFromRoster,
   renameDraftRoster,
   writeBuiltDraft,
   type AddDraftResult,
   type DraftRemoveResult,
   type DraftWriteResult,
+  type UnbuiltImportResult,
 } from "@/lib/teams/draftRoster";
 import { parseStoredTeams, TEAM_STORAGE_KEY } from "@/lib/teams/storage";
 import {
@@ -49,9 +52,11 @@ interface TeamContextValue {
   replaceSet: (teamId: string, index: number, set: PokemonSet) => TeamSaveResult;
   importSets: (sets: readonly PokemonSet[], target: "active" | "new") => TeamImportResult;
   addDraft: (pokemon: DraftedPokemon) => AddDraftResult;
-  removeDraft: (index: number) => DraftRemoveResult;
-  renameDraft: (name: string) => { ok: true; teamName: string } | { ok: false; message: string };
+  chooseDraft: (rosterId: string) => void;
+  removeDraft: (rosterId: string, index: number) => DraftRemoveResult;
+  renameDraft: (rosterId: string, name: string) => { ok: true; teamName: string } | { ok: false; message: string };
   saveBuiltDraft: (rosterId: string, index: number, set: PokemonSet) => DraftWriteResult;
+  importUnbuilt: (pokemon: readonly DraftedPokemon[], target: "active" | "new") => UnbuiltImportResult;
 }
 
 const TeamContext = createContext<TeamContextValue | null>(null);
@@ -165,19 +170,27 @@ export function TeamProvider({ children }: { children: ReactNode }) {
       }
       return result;
     },
-    removeDraft: (index) => {
-      const result = removeDraftFromRoster(boxRef.current, index);
+    chooseDraft: (rosterId) => commit(focusDraftRoster(boxRef.current, rosterId)),
+    removeDraft: (rosterId, index) => {
+      const result = removeDraftFromRoster(boxRef.current, rosterId, index);
       if (result.ok) {
         commit(result.box);
       }
       return result;
     },
-    renameDraft: (name) => {
-      const result = renameDraftRoster(boxRef.current, name);
+    renameDraft: (rosterId, name) => {
+      const result = renameDraftRoster(boxRef.current, rosterId, name);
       if (result.ok) {
         commit(result.box);
       }
       return result.ok ? { ok: true, teamName: result.teamName } : result;
+    },
+    importUnbuilt: (pokemon, target) => {
+      const result = importDraftsToRoster(boxRef.current, pokemon, target);
+      if (result.ok) {
+        commit(result.box);
+      }
+      return result;
     },
     saveBuiltDraft: (rosterId, index, set) => {
       const result = writeBuiltDraft(boxRef.current, rosterId, index, set);

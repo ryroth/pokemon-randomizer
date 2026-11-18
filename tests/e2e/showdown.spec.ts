@@ -137,6 +137,8 @@ test("an import explains what is missing and adds nothing", async ({ page }) => 
   await expect(dialog.getByText('I do not know a Pokémon called "Notamon".')).toBeVisible();
   await expect(dialog.getByRole("button", { name: /^Add 0 to/ })).toBeDisabled();
   await expect(dialog.getByRole("button", { name: /^Save 0 as a new team/ })).toBeDisabled();
+  await expect(dialog.getByText("1 of 2 can be imported unbuilt.")).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Import 1 as a new unbuilt team" })).toBeEnabled();
 
   await dialog.getByLabel("Paste Pokémon Showdown text").fill("   ");
   await expect(dialog.getByRole("button", { name: "Read paste" })).toHaveAttribute("aria-disabled", "true");
@@ -159,4 +161,29 @@ test("a paste too big for the open slots can be saved as a new team", async ({ p
   await expect(dialog.getByText("Added 5 Pokémon to Team 2.")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("complementary", { name: "Team" }).getByRole("list", { name: "Team 2 roster" })).toBeVisible();
+});
+
+test("an unbuilt paste can start a team before any Pokémon is built", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/teams");
+
+  const pageHeader = page.locator("header").filter({ has: page.getByRole("heading", { name: "Teams", level: 1 }) });
+  await pageHeader.getByRole("button", { name: "Showdown import / export" }).click();
+
+  const dialog = page.getByRole("dialog", { name: "Pokémon Showdown import and export" });
+  await dialog.getByLabel("Paste Pokémon Showdown text").fill("Pikachu\nAbility: Static");
+  await dialog.getByRole("button", { name: "Read paste" }).click();
+  await expect(dialog.getByText("0 of 1 Pokémon is ready.")).toBeVisible();
+  await expect(dialog.getByText("1 of 1 can be imported unbuilt.")).toBeVisible();
+  await expect(dialog.getByRole("button", { name: "Add 1 unbuilt" })).toBeDisabled();
+
+  await dialog.getByRole("button", { name: "Import 1 as a new unbuilt team" }).click();
+  await expect(dialog.getByText("Imported 1 unbuilt Pokémon to Team 1. Build them in any order.")).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  const team = page.getByRole("region", { name: "Team 1" });
+  await expect(team).toContainText("Not built yet");
+  await expect(team).toContainText("Building starts when this team has 6.");
+  await team.getByRole("button", { name: "View Pikachu" }).click();
+  await expect(team).toContainText("Ability. Static");
 });
