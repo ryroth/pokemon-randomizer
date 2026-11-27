@@ -1,0 +1,5493 @@
+{
+  "commit": "7df23d074034605974aed50b3b4c6e631d9d6a6c",
+  "pokemon": {
+    "abomasnow": {
+      "key": "460",
+      "shiny": "sheet",
+      "femaleKey": "female/460",
+      "femaleShiny": "sheet"
+    },
+    "abomasnowmega": {
+      "key": "460-mega",
+      "shiny": "sheet"
+    },
+    "abra": {
+      "key": "63",
+      "shiny": "sheet"
+    },
+    "absol": {
+      "key": "359",
+      "shiny": "sheet"
+    },
+    "absolmega": {
+      "key": "359-mega",
+      "shiny": "sheet"
+    },
+    "accelgor": {
+      "key": "617",
+      "shiny": "sheet"
+    },
+    "aegislash": {
+      "key": "681",
+      "shiny": "sheet"
+    },
+    "aegislashblade": {
+      "key": "681-blade",
+      "shiny": "sheet"
+    },
+    "aerodactyl": {
+      "key": "142",
+      "shiny": "sheet"
+    },
+    "aerodactylmega": {
+      "key": "142-mega",
+      "shiny": "sheet"
+    },
+    "aggron": {
+      "key": "306",
+      "shiny": "sheet"
+    },
+    "aggronmega": {
+      "key": "306-mega",
+      "shiny": "sheet"
+    },
+    "aipom": {
+      "key": "190",
+      "shiny": "sheet",
+      "femaleKey": "female/190",
+      "femaleShiny": "sheet"
+    },
+    "alakazam": {
+      "key": "65",
+      "shiny": "sheet",
+      "femaleKey": "female/65",
+      "femaleShiny": "sheet"
+    },
+    "alakazammega": {
+      "key": "65-mega",
+      "shiny": "sheet"
+    },
+    "alcremie": {
+      "key": "869",
+      "shiny": "sheet"
+    },
+    "alcremiegmax": {
+      "key": "869-gigantamax",
+      "shiny": "sheet"
+    },
+    "alomomola": {
+      "key": "594",
+      "shiny": "sheet"
+    },
+    "altaria": {
+      "key": "334",
+      "shiny": "sheet"
+    },
+    "altariamega": {
+      "key": "334-mega",
+      "shiny": "sheet"
+    },
+    "amaura": {
+      "key": "698",
+      "shiny": "sheet"
+    },
+    "ambipom": {
+      "key": "424",
+      "shiny": "sheet",
+      "femaleKey": "female/424",
+      "femaleShiny": "sheet"
+    },
+    "amoonguss": {
+      "key": "591",
+      "shiny": "sheet"
+    },
+    "ampharos": {
+      "key": "181",
+      "shiny": "sheet"
+    },
+    "ampharosmega": {
+      "key": "181-mega",
+      "shiny": "sheet"
+    },
+    "annihilape": {
+      "key": "979",
+      "shiny": "sheet"
+    },
+    "anorith": {
+      "key": "347",
+      "shiny": "sheet"
+    },
+    "appletun": {
+      "key": "842",
+      "shiny": "sheet"
+    },
+    "appletungmax": {
+      "key": "842-gigantamax",
+      "shiny": "sheet"
+    },
+    "applin": {
+      "key": "840",
+      "shiny": "sheet"
+    },
+    "araquanid": {
+      "key": "752",
+      "shiny": "sheet"
+    },
+    "arbok": {
+      "key": "24",
+      "shiny": "sheet"
+    },
+    "arboliva": {
+      "key": "930",
+      "shiny": "sheet"
+    },
+    "arcanine": {
+      "key": "59",
+      "shiny": "sheet"
+    },
+    "arcaninehisui": {
+      "key": "6059",
+      "shiny": "sheet"
+    },
+    "arceus": {
+      "key": "493-normal",
+      "shiny": "sheet"
+    },
+    "arceusbug": {
+      "key": "493-bug",
+      "shiny": "sheet"
+    },
+    "arceusdark": {
+      "key": "493-dark",
+      "shiny": "sheet"
+    },
+    "arceusdragon": {
+      "key": "493-dragon",
+      "shiny": "sheet"
+    },
+    "arceuselectric": {
+      "key": "493-electric",
+      "shiny": "sheet"
+    },
+    "arceusfairy": {
+      "key": "493-fairy",
+      "shiny": "sheet"
+    },
+    "arceusfighting": {
+      "key": "493-fighting",
+      "shiny": "sheet"
+    },
+    "arceusfire": {
+      "key": "493-fire",
+      "shiny": "sheet"
+    },
+    "arceusflying": {
+      "key": "493-flying",
+      "shiny": "sheet"
+    },
+    "arceusghost": {
+      "key": "493-ghost",
+      "shiny": "sheet"
+    },
+    "arceusgrass": {
+      "key": "493-grass",
+      "shiny": "sheet"
+    },
+    "arceusground": {
+      "key": "493-ground",
+      "shiny": "sheet"
+    },
+    "arceusice": {
+      "key": "493-ice",
+      "shiny": "sheet"
+    },
+    "arceuspoison": {
+      "key": "493-poison",
+      "shiny": "sheet"
+    },
+    "arceuspsychic": {
+      "key": "493-psychic",
+      "shiny": "sheet"
+    },
+    "arceusrock": {
+      "key": "493-rock",
+      "shiny": "sheet"
+    },
+    "arceussteel": {
+      "key": "493-steel",
+      "shiny": "sheet"
+    },
+    "arceuswater": {
+      "key": "493-water",
+      "shiny": "sheet"
+    },
+    "archaludon": {
+      "key": "1018",
+      "shiny": "sheet"
+    },
+    "archen": {
+      "key": "566",
+      "shiny": "sheet"
+    },
+    "archeops": {
+      "key": "567",
+      "shiny": "sheet"
+    },
+    "arctibax": {
+      "key": "997",
+      "shiny": "sheet"
+    },
+    "arctovish": {
+      "key": "883",
+      "shiny": "sheet"
+    },
+    "arctozolt": {
+      "key": "881",
+      "shiny": "sheet"
+    },
+    "ariados": {
+      "key": "168",
+      "shiny": "sheet"
+    },
+    "armaldo": {
+      "key": "348",
+      "shiny": "sheet"
+    },
+    "armarouge": {
+      "key": "936",
+      "shiny": "sheet"
+    },
+    "aromatisse": {
+      "key": "683",
+      "shiny": "sheet"
+    },
+    "aron": {
+      "key": "304",
+      "shiny": "sheet"
+    },
+    "arrokuda": {
+      "key": "846",
+      "shiny": "sheet"
+    },
+    "articuno": {
+      "key": "144",
+      "shiny": "sheet"
+    },
+    "articunogalar": {
+      "key": "4144",
+      "shiny": "sheet"
+    },
+    "audino": {
+      "key": "531",
+      "shiny": "sheet"
+    },
+    "audinomega": {
+      "key": "531-mega",
+      "shiny": "sheet"
+    },
+    "aurorus": {
+      "key": "699",
+      "shiny": "sheet"
+    },
+    "avalugg": {
+      "key": "713",
+      "shiny": "sheet"
+    },
+    "avalugghisui": {
+      "key": "6713",
+      "shiny": "sheet"
+    },
+    "axew": {
+      "key": "610",
+      "shiny": "sheet"
+    },
+    "azelf": {
+      "key": "482",
+      "shiny": "sheet"
+    },
+    "azumarill": {
+      "key": "184",
+      "shiny": "sheet"
+    },
+    "azurill": {
+      "key": "298",
+      "shiny": "sheet"
+    },
+    "bagon": {
+      "key": "371",
+      "shiny": "sheet"
+    },
+    "baltoy": {
+      "key": "343",
+      "shiny": "sheet"
+    },
+    "banette": {
+      "key": "354",
+      "shiny": "sheet"
+    },
+    "banettemega": {
+      "key": "354-mega",
+      "shiny": "sheet"
+    },
+    "barbaracle": {
+      "key": "689",
+      "shiny": "sheet"
+    },
+    "barboach": {
+      "key": "339",
+      "shiny": "sheet"
+    },
+    "barraskewda": {
+      "key": "847",
+      "shiny": "sheet"
+    },
+    "basculegion": {
+      "key": "902",
+      "shiny": "sheet"
+    },
+    "basculegionf": {
+      "key": "902-female",
+      "shiny": "sheet"
+    },
+    "basculin": {
+      "key": "550-red-striped",
+      "shiny": "sheet"
+    },
+    "basculinbluestriped": {
+      "key": "550-blue-striped",
+      "shiny": "sheet"
+    },
+    "basculinwhitestriped": {
+      "key": "6550",
+      "shiny": "sheet"
+    },
+    "bastiodon": {
+      "key": "411",
+      "shiny": "sheet"
+    },
+    "baxcalibur": {
+      "key": "998",
+      "shiny": "sheet"
+    },
+    "bayleef": {
+      "key": "153",
+      "shiny": "sheet"
+    },
+    "beartic": {
+      "key": "614",
+      "shiny": "sheet"
+    },
+    "beautifly": {
+      "key": "267",
+      "shiny": "sheet",
+      "femaleKey": "female/267",
+      "femaleShiny": "sheet"
+    },
+    "beedrill": {
+      "key": "15",
+      "shiny": "sheet"
+    },
+    "beedrillmega": {
+      "key": "15-mega",
+      "shiny": "sheet"
+    },
+    "beheeyem": {
+      "key": "606",
+      "shiny": "sheet"
+    },
+    "beldum": {
+      "key": "374",
+      "shiny": "sheet"
+    },
+    "bellibolt": {
+      "key": "939",
+      "shiny": "sheet"
+    },
+    "bellossom": {
+      "key": "182",
+      "shiny": "sheet"
+    },
+    "bellsprout": {
+      "key": "69",
+      "shiny": "sheet"
+    },
+    "bergmite": {
+      "key": "712",
+      "shiny": "sheet"
+    },
+    "bewear": {
+      "key": "760",
+      "shiny": "sheet"
+    },
+    "bibarel": {
+      "key": "400",
+      "shiny": "sheet",
+      "femaleKey": "female/400",
+      "femaleShiny": "sheet"
+    },
+    "bidoof": {
+      "key": "399",
+      "shiny": "sheet",
+      "femaleKey": "female/399",
+      "femaleShiny": "sheet"
+    },
+    "binacle": {
+      "key": "688",
+      "shiny": "sheet"
+    },
+    "bisharp": {
+      "key": "625",
+      "shiny": "sheet"
+    },
+    "blacephalon": {
+      "key": "806",
+      "shiny": "sheet"
+    },
+    "blastoise": {
+      "key": "9",
+      "shiny": "sheet"
+    },
+    "blastoisegmax": {
+      "key": "9-gigantamax",
+      "shiny": "sheet"
+    },
+    "blastoisemega": {
+      "key": "9-mega",
+      "shiny": "sheet"
+    },
+    "blaziken": {
+      "key": "257",
+      "shiny": "sheet",
+      "femaleKey": "female/257",
+      "femaleShiny": "sheet"
+    },
+    "blazikenmega": {
+      "key": "257-mega",
+      "shiny": "sheet"
+    },
+    "blipbug": {
+      "key": "824",
+      "shiny": "sheet"
+    },
+    "blissey": {
+      "key": "242",
+      "shiny": "sheet"
+    },
+    "blitzle": {
+      "key": "522",
+      "shiny": "sheet"
+    },
+    "boldore": {
+      "key": "525",
+      "shiny": "sheet"
+    },
+    "boltund": {
+      "key": "836",
+      "shiny": "sheet"
+    },
+    "bombirdier": {
+      "key": "962",
+      "shiny": "sheet"
+    },
+    "bonsly": {
+      "key": "438",
+      "shiny": "sheet"
+    },
+    "bouffalant": {
+      "key": "626",
+      "shiny": "sheet"
+    },
+    "bounsweet": {
+      "key": "761",
+      "shiny": "sheet"
+    },
+    "braixen": {
+      "key": "654",
+      "shiny": "sheet"
+    },
+    "brambleghast": {
+      "key": "947",
+      "shiny": "sheet"
+    },
+    "bramblin": {
+      "key": "946",
+      "shiny": "sheet"
+    },
+    "braviary": {
+      "key": "628",
+      "shiny": "sheet"
+    },
+    "braviaryhisui": {
+      "key": "6628",
+      "shiny": "sheet"
+    },
+    "breloom": {
+      "key": "286",
+      "shiny": "sheet"
+    },
+    "brionne": {
+      "key": "729",
+      "shiny": "sheet"
+    },
+    "bronzong": {
+      "key": "437",
+      "shiny": "sheet"
+    },
+    "bronzor": {
+      "key": "436",
+      "shiny": "sheet"
+    },
+    "brutebonnet": {
+      "key": "986",
+      "shiny": "sheet"
+    },
+    "bruxish": {
+      "key": "779",
+      "shiny": "sheet"
+    },
+    "budew": {
+      "key": "406",
+      "shiny": "sheet"
+    },
+    "buizel": {
+      "key": "418",
+      "shiny": "sheet",
+      "femaleKey": "female/418",
+      "femaleShiny": "sheet"
+    },
+    "bulbasaur": {
+      "key": "1",
+      "shiny": "sheet"
+    },
+    "buneary": {
+      "key": "427",
+      "shiny": "sheet"
+    },
+    "bunnelby": {
+      "key": "659",
+      "shiny": "sheet"
+    },
+    "burmy": {
+      "key": "412-plant",
+      "shiny": "sheet"
+    },
+    "butterfree": {
+      "key": "12",
+      "shiny": "sheet",
+      "femaleKey": "female/12",
+      "femaleShiny": "sheet"
+    },
+    "butterfreegmax": {
+      "key": "12-gigantamax",
+      "shiny": "sheet"
+    },
+    "buzzwole": {
+      "key": "794",
+      "shiny": "sheet"
+    },
+    "cacnea": {
+      "key": "331",
+      "shiny": "sheet"
+    },
+    "cacturne": {
+      "key": "332",
+      "shiny": "sheet",
+      "femaleKey": "female/332",
+      "femaleShiny": "sheet"
+    },
+    "calyrex": {
+      "key": "898",
+      "shiny": "sheet"
+    },
+    "calyrexice": {
+      "key": "898-ice",
+      "shiny": "sheet"
+    },
+    "calyrexshadow": {
+      "key": "898-shadow",
+      "shiny": "sheet"
+    },
+    "camerupt": {
+      "key": "323",
+      "shiny": "sheet",
+      "femaleKey": "female/323",
+      "femaleShiny": "sheet"
+    },
+    "cameruptmega": {
+      "key": "323-mega",
+      "shiny": "sheet"
+    },
+    "capsakid": {
+      "key": "951",
+      "shiny": "sheet"
+    },
+    "carbink": {
+      "key": "703",
+      "shiny": "sheet"
+    },
+    "carkol": {
+      "key": "838",
+      "shiny": "sheet"
+    },
+    "carnivine": {
+      "key": "455",
+      "shiny": "sheet"
+    },
+    "carracosta": {
+      "key": "565",
+      "shiny": "sheet"
+    },
+    "carvanha": {
+      "key": "318",
+      "shiny": "sheet"
+    },
+    "cascoon": {
+      "key": "268",
+      "shiny": "sheet"
+    },
+    "castform": {
+      "key": "351",
+      "shiny": "sheet"
+    },
+    "castformrainy": {
+      "key": "351-rainy",
+      "shiny": "sheet"
+    },
+    "castformsnowy": {
+      "key": "351-snowy",
+      "shiny": "sheet"
+    },
+    "castformsunny": {
+      "key": "351-sunny",
+      "shiny": "sheet"
+    },
+    "caterpie": {
+      "key": "10",
+      "shiny": "sheet"
+    },
+    "celebi": {
+      "key": "251",
+      "shiny": "sheet"
+    },
+    "celesteela": {
+      "key": "797",
+      "shiny": "sheet"
+    },
+    "centiskorch": {
+      "key": "851",
+      "shiny": "sheet"
+    },
+    "centiskorchgmax": {
+      "key": "851-gigantamax",
+      "shiny": "sheet"
+    },
+    "ceruledge": {
+      "key": "937",
+      "shiny": "sheet"
+    },
+    "cetitan": {
+      "key": "975",
+      "shiny": "sheet"
+    },
+    "cetoddle": {
+      "key": "974",
+      "shiny": "sheet"
+    },
+    "chandelure": {
+      "key": "609",
+      "shiny": "sheet"
+    },
+    "chansey": {
+      "key": "113",
+      "shiny": "sheet"
+    },
+    "charcadet": {
+      "key": "935",
+      "shiny": "sheet"
+    },
+    "charizard": {
+      "key": "6",
+      "shiny": "sheet"
+    },
+    "charizardgmax": {
+      "key": "6-gigantamax",
+      "shiny": "sheet"
+    },
+    "charizardmegax": {
+      "key": "6-mega-x",
+      "shiny": "sheet"
+    },
+    "charizardmegay": {
+      "key": "6-mega-y",
+      "shiny": "sheet"
+    },
+    "charjabug": {
+      "key": "737",
+      "shiny": "sheet"
+    },
+    "charmander": {
+      "key": "4",
+      "shiny": "sheet"
+    },
+    "charmeleon": {
+      "key": "5",
+      "shiny": "sheet"
+    },
+    "chatot": {
+      "key": "441",
+      "shiny": "sheet"
+    },
+    "cherrim": {
+      "key": "421-overcast",
+      "shiny": "sheet"
+    },
+    "cherrimsunshine": {
+      "key": "421-sunshine",
+      "shiny": "sheet"
+    },
+    "cherubi": {
+      "key": "420",
+      "shiny": "sheet"
+    },
+    "chesnaught": {
+      "key": "652",
+      "shiny": "sheet"
+    },
+    "chespin": {
+      "key": "650",
+      "shiny": "sheet"
+    },
+    "chewtle": {
+      "key": "833",
+      "shiny": "sheet"
+    },
+    "chienpao": {
+      "key": "1002",
+      "shiny": "sheet"
+    },
+    "chikorita": {
+      "key": "152",
+      "shiny": "sheet"
+    },
+    "chimchar": {
+      "key": "390",
+      "shiny": "sheet"
+    },
+    "chimecho": {
+      "key": "358",
+      "shiny": "sheet"
+    },
+    "chinchou": {
+      "key": "170",
+      "shiny": "sheet"
+    },
+    "chingling": {
+      "key": "433",
+      "shiny": "sheet"
+    },
+    "chiyu": {
+      "key": "1004",
+      "shiny": "sheet"
+    },
+    "cinccino": {
+      "key": "573",
+      "shiny": "sheet"
+    },
+    "cinderace": {
+      "key": "815",
+      "shiny": "sheet"
+    },
+    "cinderacegmax": {
+      "key": "815-gigantamax",
+      "shiny": "sheet"
+    },
+    "clamperl": {
+      "key": "366",
+      "shiny": "sheet"
+    },
+    "clauncher": {
+      "key": "692",
+      "shiny": "sheet"
+    },
+    "clawitzer": {
+      "key": "693",
+      "shiny": "sheet"
+    },
+    "claydol": {
+      "key": "344",
+      "shiny": "sheet"
+    },
+    "clefable": {
+      "key": "36",
+      "shiny": "sheet"
+    },
+    "clefairy": {
+      "key": "35",
+      "shiny": "sheet"
+    },
+    "cleffa": {
+      "key": "173",
+      "shiny": "sheet"
+    },
+    "clobbopus": {
+      "key": "852",
+      "shiny": "sheet"
+    },
+    "clodsire": {
+      "key": "980",
+      "shiny": "sheet"
+    },
+    "cloyster": {
+      "key": "91",
+      "shiny": "sheet"
+    },
+    "coalossal": {
+      "key": "839",
+      "shiny": "sheet"
+    },
+    "coalossalgmax": {
+      "key": "839-gigantamax",
+      "shiny": "sheet"
+    },
+    "cobalion": {
+      "key": "638",
+      "shiny": "sheet"
+    },
+    "cofagrigus": {
+      "key": "563",
+      "shiny": "sheet"
+    },
+    "combee": {
+      "key": "415",
+      "shiny": "sheet",
+      "femaleKey": "female/415",
+      "femaleShiny": "sheet"
+    },
+    "combusken": {
+      "key": "256",
+      "shiny": "sheet",
+      "femaleKey": "female/256",
+      "femaleShiny": "sheet"
+    },
+    "comfey": {
+      "key": "764",
+      "shiny": "sheet"
+    },
+    "conkeldurr": {
+      "key": "534",
+      "shiny": "sheet"
+    },
+    "copperajah": {
+      "key": "879",
+      "shiny": "sheet"
+    },
+    "copperajahgmax": {
+      "key": "879-gigantamax",
+      "shiny": "sheet"
+    },
+    "corphish": {
+      "key": "341",
+      "shiny": "sheet"
+    },
+    "corsola": {
+      "key": "222",
+      "shiny": "sheet"
+    },
+    "corsolagalar": {
+      "key": "4222",
+      "shiny": "sheet"
+    },
+    "corviknight": {
+      "key": "823",
+      "shiny": "sheet"
+    },
+    "corviknightgmax": {
+      "key": "823-gigantamax",
+      "shiny": "sheet"
+    },
+    "corvisquire": {
+      "key": "822",
+      "shiny": "sheet"
+    },
+    "cosmoem": {
+      "key": "790",
+      "shiny": "sheet"
+    },
+    "cosmog": {
+      "key": "789",
+      "shiny": "sheet"
+    },
+    "cottonee": {
+      "key": "546",
+      "shiny": "sheet"
+    },
+    "crabominable": {
+      "key": "740",
+      "shiny": "sheet"
+    },
+    "crabrawler": {
+      "key": "739",
+      "shiny": "sheet"
+    },
+    "cradily": {
+      "key": "346",
+      "shiny": "sheet"
+    },
+    "cramorant": {
+      "key": "845",
+      "shiny": "sheet"
+    },
+    "cramorantgorging": {
+      "key": "845-gorging",
+      "shiny": "sheet"
+    },
+    "cramorantgulping": {
+      "key": "845-gulping",
+      "shiny": "sheet"
+    },
+    "cranidos": {
+      "key": "408",
+      "shiny": "sheet"
+    },
+    "crawdaunt": {
+      "key": "342",
+      "shiny": "sheet"
+    },
+    "cresselia": {
+      "key": "488",
+      "shiny": "sheet"
+    },
+    "croagunk": {
+      "key": "453",
+      "shiny": "sheet",
+      "femaleKey": "female/453",
+      "femaleShiny": "sheet"
+    },
+    "crobat": {
+      "key": "169",
+      "shiny": "sheet"
+    },
+    "crocalor": {
+      "key": "910",
+      "shiny": "sheet"
+    },
+    "croconaw": {
+      "key": "159",
+      "shiny": "sheet"
+    },
+    "crustle": {
+      "key": "558",
+      "shiny": "sheet"
+    },
+    "cryogonal": {
+      "key": "615",
+      "shiny": "sheet"
+    },
+    "cubchoo": {
+      "key": "613",
+      "shiny": "sheet"
+    },
+    "cubone": {
+      "key": "104",
+      "shiny": "sheet"
+    },
+    "cufant": {
+      "key": "878",
+      "shiny": "sheet"
+    },
+    "cursola": {
+      "key": "864",
+      "shiny": "sheet"
+    },
+    "cutiefly": {
+      "key": "742",
+      "shiny": "sheet"
+    },
+    "cyclizar": {
+      "key": "967",
+      "shiny": "sheet"
+    },
+    "cyndaquil": {
+      "key": "155",
+      "shiny": "sheet"
+    },
+    "dachsbun": {
+      "key": "927",
+      "shiny": "sheet"
+    },
+    "darkrai": {
+      "key": "491",
+      "shiny": "sheet"
+    },
+    "darmanitan": {
+      "key": "555",
+      "shiny": "sheet"
+    },
+    "darmanitangalar": {
+      "key": "4555",
+      "shiny": "sheet"
+    },
+    "darmanitangalarzen": {
+      "key": "4555-zen",
+      "shiny": "sheet"
+    },
+    "darmanitanzen": {
+      "key": "555-zen",
+      "shiny": "sheet"
+    },
+    "dartrix": {
+      "key": "723",
+      "shiny": "sheet"
+    },
+    "darumaka": {
+      "key": "554",
+      "shiny": "sheet"
+    },
+    "darumakagalar": {
+      "key": "4554",
+      "shiny": "sheet"
+    },
+    "decidueye": {
+      "key": "724",
+      "shiny": "sheet"
+    },
+    "decidueyehisui": {
+      "key": "6724",
+      "shiny": "sheet"
+    },
+    "dedenne": {
+      "key": "702",
+      "shiny": "sheet"
+    },
+    "deerling": {
+      "key": "585-spring",
+      "shiny": "sheet"
+    },
+    "deino": {
+      "key": "633",
+      "shiny": "sheet"
+    },
+    "delcatty": {
+      "key": "301",
+      "shiny": "sheet"
+    },
+    "delibird": {
+      "key": "225",
+      "shiny": "sheet"
+    },
+    "delphox": {
+      "key": "655",
+      "shiny": "sheet"
+    },
+    "deoxys": {
+      "key": "386",
+      "shiny": "sheet"
+    },
+    "deoxysattack": {
+      "key": "386-attack",
+      "shiny": "sheet"
+    },
+    "deoxysdefense": {
+      "key": "386-defense",
+      "shiny": "sheet"
+    },
+    "deoxysspeed": {
+      "key": "386-speed",
+      "shiny": "sheet"
+    },
+    "dewgong": {
+      "key": "87",
+      "shiny": "sheet"
+    },
+    "dewott": {
+      "key": "502",
+      "shiny": "sheet"
+    },
+    "dewpider": {
+      "key": "751",
+      "shiny": "sheet"
+    },
+    "dhelmise": {
+      "key": "781",
+      "shiny": "sheet"
+    },
+    "dialga": {
+      "key": "483",
+      "shiny": "sheet"
+    },
+    "dialgaorigin": {
+      "key": "483-origin",
+      "shiny": "sheet"
+    },
+    "diancie": {
+      "key": "719",
+      "shiny": "sheet"
+    },
+    "dianciemega": {
+      "key": "719-mega",
+      "shiny": "sheet"
+    },
+    "diggersby": {
+      "key": "660",
+      "shiny": "sheet"
+    },
+    "diglett": {
+      "key": "50",
+      "shiny": "sheet"
+    },
+    "diglettalola": {
+      "key": "2050",
+      "shiny": "sheet"
+    },
+    "dipplin": {
+      "key": "1011",
+      "shiny": "sheet"
+    },
+    "ditto": {
+      "key": "132",
+      "shiny": "sheet"
+    },
+    "dodrio": {
+      "key": "85",
+      "shiny": "sheet",
+      "femaleKey": "female/85",
+      "femaleShiny": "sheet"
+    },
+    "doduo": {
+      "key": "84",
+      "shiny": "sheet",
+      "femaleKey": "female/84",
+      "femaleShiny": "sheet"
+    },
+    "dolliv": {
+      "key": "929",
+      "shiny": "sheet"
+    },
+    "dondozo": {
+      "key": "977",
+      "shiny": "sheet"
+    },
+    "donphan": {
+      "key": "232",
+      "shiny": "sheet",
+      "femaleKey": "female/232",
+      "femaleShiny": "sheet"
+    },
+    "dottler": {
+      "key": "825",
+      "shiny": "sheet"
+    },
+    "doublade": {
+      "key": "680",
+      "shiny": "sheet"
+    },
+    "dracovish": {
+      "key": "882",
+      "shiny": "sheet"
+    },
+    "dracozolt": {
+      "key": "880",
+      "shiny": "sheet"
+    },
+    "dragalge": {
+      "key": "691",
+      "shiny": "sheet"
+    },
+    "dragapult": {
+      "key": "887",
+      "shiny": "sheet"
+    },
+    "dragonair": {
+      "key": "148",
+      "shiny": "sheet"
+    },
+    "dragonite": {
+      "key": "149",
+      "shiny": "sheet"
+    },
+    "drakloak": {
+      "key": "886",
+      "shiny": "sheet"
+    },
+    "drampa": {
+      "key": "780",
+      "shiny": "sheet"
+    },
+    "drapion": {
+      "key": "452",
+      "shiny": "sheet"
+    },
+    "dratini": {
+      "key": "147",
+      "shiny": "sheet"
+    },
+    "drednaw": {
+      "key": "834",
+      "shiny": "sheet"
+    },
+    "drednawgmax": {
+      "key": "834-gigantamax",
+      "shiny": "sheet"
+    },
+    "dreepy": {
+      "key": "885",
+      "shiny": "sheet"
+    },
+    "drifblim": {
+      "key": "426",
+      "shiny": "sheet"
+    },
+    "drifloon": {
+      "key": "425",
+      "shiny": "sheet"
+    },
+    "drilbur": {
+      "key": "529",
+      "shiny": "sheet"
+    },
+    "drizzile": {
+      "key": "817",
+      "shiny": "sheet"
+    },
+    "drowzee": {
+      "key": "96",
+      "shiny": "sheet"
+    },
+    "druddigon": {
+      "key": "621",
+      "shiny": "sheet"
+    },
+    "dubwool": {
+      "key": "832",
+      "shiny": "sheet"
+    },
+    "ducklett": {
+      "key": "580",
+      "shiny": "sheet"
+    },
+    "dudunsparce": {
+      "key": "982",
+      "shiny": "sheet"
+    },
+    "dudunsparcethreesegment": {
+      "key": "982-three-segment",
+      "shiny": "sheet"
+    },
+    "dugtrio": {
+      "key": "51",
+      "shiny": "sheet"
+    },
+    "dugtrioalola": {
+      "key": "2051",
+      "shiny": "sheet"
+    },
+    "dunsparce": {
+      "key": "206",
+      "shiny": "sheet"
+    },
+    "duosion": {
+      "key": "578",
+      "shiny": "sheet"
+    },
+    "duraludon": {
+      "key": "884",
+      "shiny": "sheet"
+    },
+    "duraludongmax": {
+      "key": "884-gigantamax",
+      "shiny": "sheet"
+    },
+    "durant": {
+      "key": "632",
+      "shiny": "sheet"
+    },
+    "dusclops": {
+      "key": "356",
+      "shiny": "sheet"
+    },
+    "dusknoir": {
+      "key": "477",
+      "shiny": "sheet"
+    },
+    "duskull": {
+      "key": "355",
+      "shiny": "sheet"
+    },
+    "dustox": {
+      "key": "269",
+      "shiny": "sheet",
+      "femaleKey": "female/269",
+      "femaleShiny": "sheet"
+    },
+    "dwebble": {
+      "key": "557",
+      "shiny": "sheet"
+    },
+    "eelektrik": {
+      "key": "603",
+      "shiny": "sheet"
+    },
+    "eelektross": {
+      "key": "604",
+      "shiny": "sheet"
+    },
+    "eevee": {
+      "key": "133",
+      "shiny": "sheet"
+    },
+    "eeveegmax": {
+      "key": "133-gigantamax",
+      "shiny": "sheet"
+    },
+    "eiscue": {
+      "key": "875",
+      "shiny": "sheet"
+    },
+    "eiscuenoice": {
+      "key": "875-no-ice",
+      "shiny": "sheet"
+    },
+    "ekans": {
+      "key": "23",
+      "shiny": "sheet"
+    },
+    "eldegoss": {
+      "key": "830",
+      "shiny": "sheet"
+    },
+    "electabuzz": {
+      "key": "125",
+      "shiny": "sheet"
+    },
+    "electivire": {
+      "key": "466",
+      "shiny": "sheet"
+    },
+    "electrike": {
+      "key": "309",
+      "shiny": "sheet"
+    },
+    "electrode": {
+      "key": "101",
+      "shiny": "sheet"
+    },
+    "electrodehisui": {
+      "key": "6101",
+      "shiny": "sheet"
+    },
+    "elekid": {
+      "key": "239",
+      "shiny": "sheet"
+    },
+    "elgyem": {
+      "key": "605",
+      "shiny": "sheet"
+    },
+    "emboar": {
+      "key": "500",
+      "shiny": "sheet"
+    },
+    "emolga": {
+      "key": "587",
+      "shiny": "sheet"
+    },
+    "empoleon": {
+      "key": "395",
+      "shiny": "sheet"
+    },
+    "enamorus": {
+      "key": "905-incarnate",
+      "shiny": "sheet"
+    },
+    "enamorustherian": {
+      "key": "905-therian",
+      "shiny": "sheet"
+    },
+    "entei": {
+      "key": "244",
+      "shiny": "sheet"
+    },
+    "escavalier": {
+      "key": "589",
+      "shiny": "sheet"
+    },
+    "espathra": {
+      "key": "956",
+      "shiny": "sheet"
+    },
+    "espeon": {
+      "key": "196",
+      "shiny": "sheet"
+    },
+    "espurr": {
+      "key": "677",
+      "shiny": "sheet"
+    },
+    "eternatus": {
+      "key": "890",
+      "shiny": "sheet"
+    },
+    "eternatuseternamax": {
+      "key": "890-eternamax",
+      "shiny": "sheet"
+    },
+    "excadrill": {
+      "key": "530",
+      "shiny": "sheet"
+    },
+    "exeggcute": {
+      "key": "102",
+      "shiny": "sheet"
+    },
+    "exeggutor": {
+      "key": "103",
+      "shiny": "sheet"
+    },
+    "exeggutoralola": {
+      "key": "2103",
+      "shiny": "sheet"
+    },
+    "exploud": {
+      "key": "295",
+      "shiny": "sheet"
+    },
+    "falinks": {
+      "key": "870",
+      "shiny": "sheet"
+    },
+    "farfetchd": {
+      "key": "83",
+      "shiny": "sheet"
+    },
+    "farfetchdgalar": {
+      "key": "4083",
+      "shiny": "sheet"
+    },
+    "farigiraf": {
+      "key": "981",
+      "shiny": "sheet"
+    },
+    "fearow": {
+      "key": "22",
+      "shiny": "sheet"
+    },
+    "feebas": {
+      "key": "349",
+      "shiny": "sheet"
+    },
+    "fennekin": {
+      "key": "653",
+      "shiny": "sheet"
+    },
+    "feraligatr": {
+      "key": "160",
+      "shiny": "sheet"
+    },
+    "ferroseed": {
+      "key": "597",
+      "shiny": "sheet"
+    },
+    "ferrothorn": {
+      "key": "598",
+      "shiny": "sheet"
+    },
+    "fezandipiti": {
+      "key": "1016",
+      "shiny": "sheet"
+    },
+    "fidough": {
+      "key": "926",
+      "shiny": "sheet"
+    },
+    "finizen": {
+      "key": "963",
+      "shiny": "sheet"
+    },
+    "finneon": {
+      "key": "456",
+      "shiny": "sheet",
+      "femaleKey": "female/456",
+      "femaleShiny": "sheet"
+    },
+    "flaaffy": {
+      "key": "180",
+      "shiny": "sheet"
+    },
+    "flabebe": {
+      "key": "669-red",
+      "shiny": "sheet"
+    },
+    "flamigo": {
+      "key": "973",
+      "shiny": "sheet"
+    },
+    "flapple": {
+      "key": "841",
+      "shiny": "sheet"
+    },
+    "flapplegmax": {
+      "key": "841-gigantamax",
+      "shiny": "sheet"
+    },
+    "flareon": {
+      "key": "136",
+      "shiny": "sheet"
+    },
+    "fletchinder": {
+      "key": "662",
+      "shiny": "sheet"
+    },
+    "fletchling": {
+      "key": "661",
+      "shiny": "sheet"
+    },
+    "flittle": {
+      "key": "955",
+      "shiny": "sheet"
+    },
+    "floatzel": {
+      "key": "419",
+      "shiny": "sheet",
+      "femaleKey": "female/419",
+      "femaleShiny": "sheet"
+    },
+    "floette": {
+      "key": "670-red",
+      "shiny": "sheet"
+    },
+    "floetteeternal": {
+      "key": "2670",
+      "shiny": "sheet"
+    },
+    "floragato": {
+      "key": "907",
+      "shiny": "sheet"
+    },
+    "florges": {
+      "key": "671-red",
+      "shiny": "sheet"
+    },
+    "fluttermane": {
+      "key": "987",
+      "shiny": "sheet"
+    },
+    "flygon": {
+      "key": "330",
+      "shiny": "sheet"
+    },
+    "fomantis": {
+      "key": "753",
+      "shiny": "sheet"
+    },
+    "foongus": {
+      "key": "590",
+      "shiny": "sheet"
+    },
+    "forretress": {
+      "key": "205",
+      "shiny": "sheet"
+    },
+    "fraxure": {
+      "key": "611",
+      "shiny": "sheet"
+    },
+    "frigibax": {
+      "key": "996",
+      "shiny": "sheet"
+    },
+    "frillish": {
+      "key": "592",
+      "shiny": "sheet",
+      "femaleKey": "female/592",
+      "femaleShiny": "sheet"
+    },
+    "froakie": {
+      "key": "656",
+      "shiny": "sheet"
+    },
+    "frogadier": {
+      "key": "657",
+      "shiny": "sheet"
+    },
+    "froslass": {
+      "key": "478",
+      "shiny": "sheet"
+    },
+    "frosmoth": {
+      "key": "873",
+      "shiny": "sheet"
+    },
+    "fuecoco": {
+      "key": "909",
+      "shiny": "sheet"
+    },
+    "furfrou": {
+      "key": "676",
+      "shiny": "sheet"
+    },
+    "furret": {
+      "key": "162",
+      "shiny": "sheet"
+    },
+    "gabite": {
+      "key": "444",
+      "shiny": "sheet",
+      "femaleKey": "female/444",
+      "femaleShiny": "sheet"
+    },
+    "gallade": {
+      "key": "475",
+      "shiny": "sheet"
+    },
+    "gallademega": {
+      "key": "475-mega",
+      "shiny": "sheet"
+    },
+    "galvantula": {
+      "key": "596",
+      "shiny": "sheet"
+    },
+    "garbodor": {
+      "key": "569",
+      "shiny": "sheet"
+    },
+    "garbodorgmax": {
+      "key": "569-gigantamax",
+      "shiny": "sheet"
+    },
+    "garchomp": {
+      "key": "445",
+      "shiny": "sheet",
+      "femaleKey": "female/445",
+      "femaleShiny": "sheet"
+    },
+    "garchompmega": {
+      "key": "445-mega",
+      "shiny": "sheet"
+    },
+    "gardevoir": {
+      "key": "282",
+      "shiny": "sheet"
+    },
+    "gardevoirmega": {
+      "key": "282-mega",
+      "shiny": "sheet"
+    },
+    "garganacl": {
+      "key": "934",
+      "shiny": "sheet"
+    },
+    "gastly": {
+      "key": "92",
+      "shiny": "sheet"
+    },
+    "gastrodon": {
+      "key": "423-west",
+      "shiny": "sheet"
+    },
+    "genesect": {
+      "key": "649",
+      "shiny": "sheet"
+    },
+    "genesectburn": {
+      "key": "649-burn",
+      "shiny": "sheet"
+    },
+    "genesectchill": {
+      "key": "649-chill",
+      "shiny": "sheet"
+    },
+    "genesectdouse": {
+      "key": "649-douse",
+      "shiny": "sheet"
+    },
+    "genesectshock": {
+      "key": "649-shock",
+      "shiny": "sheet"
+    },
+    "gengar": {
+      "key": "94",
+      "shiny": "sheet"
+    },
+    "gengargmax": {
+      "key": "94-gigantamax",
+      "shiny": "sheet"
+    },
+    "gengarmega": {
+      "key": "94-mega",
+      "shiny": "sheet"
+    },
+    "geodude": {
+      "key": "74",
+      "shiny": "sheet"
+    },
+    "geodudealola": {
+      "key": "2074",
+      "shiny": "sheet"
+    },
+    "gholdengo": {
+      "key": "1000",
+      "shiny": "sheet"
+    },
+    "gible": {
+      "key": "443",
+      "shiny": "sheet",
+      "femaleKey": "female/443",
+      "femaleShiny": "sheet"
+    },
+    "gigalith": {
+      "key": "526",
+      "shiny": "sheet"
+    },
+    "gimmighoul": {
+      "key": "999",
+      "shiny": "sheet"
+    },
+    "gimmighoulroaming": {
+      "key": "999-roaming",
+      "shiny": "sheet"
+    },
+    "girafarig": {
+      "key": "203",
+      "shiny": "sheet",
+      "femaleKey": "female/203",
+      "femaleShiny": "sheet"
+    },
+    "giratina": {
+      "key": "487-altered",
+      "shiny": "sheet"
+    },
+    "giratinaorigin": {
+      "key": "487-origin",
+      "shiny": "sheet"
+    },
+    "glaceon": {
+      "key": "471",
+      "shiny": "sheet"
+    },
+    "glalie": {
+      "key": "362",
+      "shiny": "sheet"
+    },
+    "glaliemega": {
+      "key": "362-mega",
+      "shiny": "sheet"
+    },
+    "glameow": {
+      "key": "431",
+      "shiny": "sheet"
+    },
+    "glastrier": {
+      "key": "896",
+      "shiny": "sheet"
+    },
+    "gligar": {
+      "key": "207",
+      "shiny": "sheet",
+      "femaleKey": "female/207",
+      "femaleShiny": "sheet"
+    },
+    "glimmet": {
+      "key": "969",
+      "shiny": "sheet"
+    },
+    "glimmora": {
+      "key": "970",
+      "shiny": "sheet"
+    },
+    "gliscor": {
+      "key": "472",
+      "shiny": "sheet"
+    },
+    "gloom": {
+      "key": "44",
+      "shiny": "sheet",
+      "femaleKey": "female/44",
+      "femaleShiny": "sheet"
+    },
+    "gogoat": {
+      "key": "673",
+      "shiny": "sheet"
+    },
+    "golbat": {
+      "key": "42",
+      "shiny": "sheet",
+      "femaleKey": "female/42",
+      "femaleShiny": "sheet"
+    },
+    "goldeen": {
+      "key": "118",
+      "shiny": "sheet",
+      "femaleKey": "female/118",
+      "femaleShiny": "sheet"
+    },
+    "golduck": {
+      "key": "55",
+      "shiny": "sheet"
+    },
+    "golem": {
+      "key": "76",
+      "shiny": "sheet"
+    },
+    "golemalola": {
+      "key": "2076",
+      "shiny": "sheet"
+    },
+    "golett": {
+      "key": "622",
+      "shiny": "sheet"
+    },
+    "golisopod": {
+      "key": "768",
+      "shiny": "sheet"
+    },
+    "golurk": {
+      "key": "623",
+      "shiny": "sheet"
+    },
+    "goodra": {
+      "key": "706",
+      "shiny": "sheet"
+    },
+    "goodrahisui": {
+      "key": "6706",
+      "shiny": "sheet"
+    },
+    "goomy": {
+      "key": "704",
+      "shiny": "sheet"
+    },
+    "gorebyss": {
+      "key": "368",
+      "shiny": "sheet"
+    },
+    "gossifleur": {
+      "key": "829",
+      "shiny": "sheet"
+    },
+    "gothita": {
+      "key": "574",
+      "shiny": "sheet"
+    },
+    "gothitelle": {
+      "key": "576",
+      "shiny": "sheet"
+    },
+    "gothorita": {
+      "key": "575",
+      "shiny": "sheet"
+    },
+    "gougingfire": {
+      "key": "1020",
+      "shiny": "sheet"
+    },
+    "gourgeist": {
+      "key": "711",
+      "shiny": "sheet"
+    },
+    "gourgeistlarge": {
+      "key": "711-large",
+      "shiny": "sheet"
+    },
+    "gourgeistsmall": {
+      "key": "711-small",
+      "shiny": "sheet"
+    },
+    "gourgeistsuper": {
+      "key": "711-jumbo",
+      "shiny": "sheet"
+    },
+    "grafaiai": {
+      "key": "945",
+      "shiny": "sheet"
+    },
+    "granbull": {
+      "key": "210",
+      "shiny": "sheet"
+    },
+    "grapploct": {
+      "key": "853",
+      "shiny": "sheet"
+    },
+    "graveler": {
+      "key": "75",
+      "shiny": "sheet"
+    },
+    "graveleralola": {
+      "key": "2075",
+      "shiny": "sheet"
+    },
+    "greattusk": {
+      "key": "984",
+      "shiny": "sheet"
+    },
+    "greavard": {
+      "key": "971",
+      "shiny": "sheet"
+    },
+    "greedent": {
+      "key": "820",
+      "shiny": "sheet"
+    },
+    "greninja": {
+      "key": "658",
+      "shiny": "sheet"
+    },
+    "greninjaash": {
+      "key": "2658",
+      "shiny": "sheet"
+    },
+    "greninjabond": {
+      "key": "2658",
+      "shiny": "sheet"
+    },
+    "grimer": {
+      "key": "88",
+      "shiny": "sheet"
+    },
+    "grimeralola": {
+      "key": "2088",
+      "shiny": "sheet"
+    },
+    "grimmsnarl": {
+      "key": "861",
+      "shiny": "sheet"
+    },
+    "grimmsnarlgmax": {
+      "key": "861-gigantamax",
+      "shiny": "sheet"
+    },
+    "grookey": {
+      "key": "810",
+      "shiny": "sheet"
+    },
+    "grotle": {
+      "key": "388",
+      "shiny": "sheet"
+    },
+    "groudon": {
+      "key": "383",
+      "shiny": "sheet"
+    },
+    "groudonprimal": {
+      "key": "383-primal",
+      "shiny": "sheet"
+    },
+    "grovyle": {
+      "key": "253",
+      "shiny": "sheet"
+    },
+    "growlithe": {
+      "key": "58",
+      "shiny": "sheet"
+    },
+    "growlithehisui": {
+      "key": "6058",
+      "shiny": "sheet"
+    },
+    "grubbin": {
+      "key": "736",
+      "shiny": "sheet"
+    },
+    "grumpig": {
+      "key": "326",
+      "shiny": "sheet"
+    },
+    "gulpin": {
+      "key": "316",
+      "shiny": "sheet",
+      "femaleKey": "female/316",
+      "femaleShiny": "sheet"
+    },
+    "gumshoos": {
+      "key": "735",
+      "shiny": "sheet"
+    },
+    "gurdurr": {
+      "key": "533",
+      "shiny": "sheet"
+    },
+    "guzzlord": {
+      "key": "799",
+      "shiny": "sheet"
+    },
+    "gyarados": {
+      "key": "130",
+      "shiny": "sheet",
+      "femaleKey": "female/130",
+      "femaleShiny": "sheet"
+    },
+    "gyaradosmega": {
+      "key": "130-mega",
+      "shiny": "sheet"
+    },
+    "hakamoo": {
+      "key": "783",
+      "shiny": "sheet"
+    },
+    "happiny": {
+      "key": "440",
+      "shiny": "sheet"
+    },
+    "hariyama": {
+      "key": "297",
+      "shiny": "sheet"
+    },
+    "hatenna": {
+      "key": "856",
+      "shiny": "sheet"
+    },
+    "hatterene": {
+      "key": "858",
+      "shiny": "sheet"
+    },
+    "hatterenegmax": {
+      "key": "858-gigantamax",
+      "shiny": "sheet"
+    },
+    "hattrem": {
+      "key": "857",
+      "shiny": "sheet"
+    },
+    "haunter": {
+      "key": "93",
+      "shiny": "sheet"
+    },
+    "hawlucha": {
+      "key": "701",
+      "shiny": "sheet"
+    },
+    "haxorus": {
+      "key": "612",
+      "shiny": "sheet"
+    },
+    "heatmor": {
+      "key": "631",
+      "shiny": "sheet"
+    },
+    "heatran": {
+      "key": "485",
+      "shiny": "sheet"
+    },
+    "heliolisk": {
+      "key": "695",
+      "shiny": "sheet"
+    },
+    "helioptile": {
+      "key": "694",
+      "shiny": "sheet"
+    },
+    "heracross": {
+      "key": "214",
+      "shiny": "sheet",
+      "femaleKey": "female/214",
+      "femaleShiny": "sheet"
+    },
+    "heracrossmega": {
+      "key": "214-mega",
+      "shiny": "sheet"
+    },
+    "herdier": {
+      "key": "507",
+      "shiny": "sheet"
+    },
+    "hippopotas": {
+      "key": "449",
+      "shiny": "sheet",
+      "femaleKey": "female/449",
+      "femaleShiny": "sheet"
+    },
+    "hippowdon": {
+      "key": "450",
+      "shiny": "sheet",
+      "femaleKey": "female/450",
+      "femaleShiny": "sheet"
+    },
+    "hitmonchan": {
+      "key": "107",
+      "shiny": "sheet"
+    },
+    "hitmonlee": {
+      "key": "106",
+      "shiny": "sheet"
+    },
+    "hitmontop": {
+      "key": "237",
+      "shiny": "sheet"
+    },
+    "honchkrow": {
+      "key": "430",
+      "shiny": "sheet"
+    },
+    "honedge": {
+      "key": "679",
+      "shiny": "sheet"
+    },
+    "hooh": {
+      "key": "250",
+      "shiny": "sheet"
+    },
+    "hoopa": {
+      "key": "720",
+      "shiny": "sheet"
+    },
+    "hoopaunbound": {
+      "key": "720-unbound",
+      "shiny": "sheet"
+    },
+    "hoothoot": {
+      "key": "163",
+      "shiny": "sheet"
+    },
+    "hoppip": {
+      "key": "187",
+      "shiny": "sheet"
+    },
+    "horsea": {
+      "key": "116",
+      "shiny": "sheet"
+    },
+    "houndoom": {
+      "key": "229",
+      "shiny": "sheet",
+      "femaleKey": "female/229",
+      "femaleShiny": "sheet"
+    },
+    "houndoommega": {
+      "key": "229-mega",
+      "shiny": "sheet"
+    },
+    "houndour": {
+      "key": "228",
+      "shiny": "sheet"
+    },
+    "houndstone": {
+      "key": "972",
+      "shiny": "sheet"
+    },
+    "huntail": {
+      "key": "367",
+      "shiny": "sheet"
+    },
+    "hydrapple": {
+      "key": "1019",
+      "shiny": "sheet"
+    },
+    "hydreigon": {
+      "key": "635",
+      "shiny": "sheet"
+    },
+    "hypno": {
+      "key": "97",
+      "shiny": "sheet",
+      "femaleKey": "female/97",
+      "femaleShiny": "sheet"
+    },
+    "igglybuff": {
+      "key": "174",
+      "shiny": "sheet"
+    },
+    "illumise": {
+      "key": "314",
+      "shiny": "sheet"
+    },
+    "impidimp": {
+      "key": "859",
+      "shiny": "sheet"
+    },
+    "incineroar": {
+      "key": "727",
+      "shiny": "sheet"
+    },
+    "indeedee": {
+      "key": "876",
+      "shiny": "sheet"
+    },
+    "indeedeef": {
+      "key": "876-female",
+      "shiny": "sheet"
+    },
+    "infernape": {
+      "key": "392",
+      "shiny": "sheet"
+    },
+    "inkay": {
+      "key": "686",
+      "shiny": "sheet"
+    },
+    "inteleon": {
+      "key": "818",
+      "shiny": "sheet"
+    },
+    "inteleongmax": {
+      "key": "818-gigantamax",
+      "shiny": "sheet"
+    },
+    "ironboulder": {
+      "key": "1022",
+      "shiny": "sheet"
+    },
+    "ironbundle": {
+      "key": "991",
+      "shiny": "sheet"
+    },
+    "ironcrown": {
+      "key": "1023",
+      "shiny": "sheet"
+    },
+    "ironhands": {
+      "key": "992",
+      "shiny": "sheet"
+    },
+    "ironjugulis": {
+      "key": "993",
+      "shiny": "sheet"
+    },
+    "ironleaves": {
+      "key": "1010",
+      "shiny": "sheet"
+    },
+    "ironmoth": {
+      "key": "994",
+      "shiny": "sheet"
+    },
+    "ironthorns": {
+      "key": "995",
+      "shiny": "sheet"
+    },
+    "irontreads": {
+      "key": "990",
+      "shiny": "sheet"
+    },
+    "ironvaliant": {
+      "key": "1006",
+      "shiny": "sheet"
+    },
+    "ivysaur": {
+      "key": "2",
+      "shiny": "sheet"
+    },
+    "jangmoo": {
+      "key": "782",
+      "shiny": "sheet"
+    },
+    "jellicent": {
+      "key": "593",
+      "shiny": "sheet",
+      "femaleKey": "female/593",
+      "femaleShiny": "sheet"
+    },
+    "jigglypuff": {
+      "key": "39",
+      "shiny": "sheet"
+    },
+    "jirachi": {
+      "key": "385",
+      "shiny": "sheet"
+    },
+    "jolteon": {
+      "key": "135",
+      "shiny": "sheet"
+    },
+    "joltik": {
+      "key": "595",
+      "shiny": "sheet"
+    },
+    "jumpluff": {
+      "key": "189",
+      "shiny": "sheet"
+    },
+    "jynx": {
+      "key": "124",
+      "shiny": "sheet"
+    },
+    "kabuto": {
+      "key": "140",
+      "shiny": "sheet"
+    },
+    "kabutops": {
+      "key": "141",
+      "shiny": "sheet"
+    },
+    "kadabra": {
+      "key": "64",
+      "shiny": "sheet",
+      "femaleKey": "female/64",
+      "femaleShiny": "sheet"
+    },
+    "kakuna": {
+      "key": "14",
+      "shiny": "sheet"
+    },
+    "kangaskhan": {
+      "key": "115",
+      "shiny": "sheet"
+    },
+    "kangaskhanmega": {
+      "key": "115-mega",
+      "shiny": "sheet"
+    },
+    "karrablast": {
+      "key": "588",
+      "shiny": "sheet"
+    },
+    "kartana": {
+      "key": "798",
+      "shiny": "sheet"
+    },
+    "kecleon": {
+      "key": "352",
+      "shiny": "sheet"
+    },
+    "keldeo": {
+      "key": "647-ordinary",
+      "shiny": "sheet"
+    },
+    "keldeoresolute": {
+      "key": "647-resolute",
+      "shiny": "sheet"
+    },
+    "kilowattrel": {
+      "key": "941",
+      "shiny": "sheet"
+    },
+    "kingambit": {
+      "key": "983",
+      "shiny": "sheet"
+    },
+    "kingdra": {
+      "key": "230",
+      "shiny": "sheet"
+    },
+    "kingler": {
+      "key": "99",
+      "shiny": "sheet"
+    },
+    "kinglergmax": {
+      "key": "99-gigantamax",
+      "shiny": "sheet"
+    },
+    "kirlia": {
+      "key": "281",
+      "shiny": "sheet"
+    },
+    "klang": {
+      "key": "600",
+      "shiny": "sheet"
+    },
+    "klawf": {
+      "key": "950",
+      "shiny": "sheet"
+    },
+    "kleavor": {
+      "key": "900",
+      "shiny": "sheet"
+    },
+    "klefki": {
+      "key": "707",
+      "shiny": "sheet"
+    },
+    "klink": {
+      "key": "599",
+      "shiny": "sheet"
+    },
+    "klinklang": {
+      "key": "601",
+      "shiny": "sheet"
+    },
+    "koffing": {
+      "key": "109",
+      "shiny": "sheet"
+    },
+    "komala": {
+      "key": "775",
+      "shiny": "sheet"
+    },
+    "kommoo": {
+      "key": "784",
+      "shiny": "sheet"
+    },
+    "koraidon": {
+      "key": "1007-apex-build",
+      "shiny": "sheet"
+    },
+    "krabby": {
+      "key": "98",
+      "shiny": "sheet"
+    },
+    "kricketot": {
+      "key": "401",
+      "shiny": "sheet",
+      "femaleKey": "female/401",
+      "femaleShiny": "sheet"
+    },
+    "kricketune": {
+      "key": "402",
+      "shiny": "sheet",
+      "femaleKey": "female/402",
+      "femaleShiny": "sheet"
+    },
+    "krokorok": {
+      "key": "552",
+      "shiny": "sheet"
+    },
+    "krookodile": {
+      "key": "553",
+      "shiny": "sheet"
+    },
+    "kubfu": {
+      "key": "891",
+      "shiny": "sheet"
+    },
+    "kyogre": {
+      "key": "382",
+      "shiny": "sheet"
+    },
+    "kyogreprimal": {
+      "key": "382-primal",
+      "shiny": "sheet"
+    },
+    "kyurem": {
+      "key": "646",
+      "shiny": "sheet"
+    },
+    "kyuremblack": {
+      "key": "646-black",
+      "shiny": "sheet"
+    },
+    "kyuremwhite": {
+      "key": "646-white",
+      "shiny": "sheet"
+    },
+    "lairon": {
+      "key": "305",
+      "shiny": "sheet"
+    },
+    "lampent": {
+      "key": "608",
+      "shiny": "sheet"
+    },
+    "landorus": {
+      "key": "645-incarnate",
+      "shiny": "sheet"
+    },
+    "landorustherian": {
+      "key": "645-therian",
+      "shiny": "sheet"
+    },
+    "lanturn": {
+      "key": "171",
+      "shiny": "sheet"
+    },
+    "lapras": {
+      "key": "131",
+      "shiny": "sheet"
+    },
+    "laprasgmax": {
+      "key": "131-gigantamax",
+      "shiny": "sheet"
+    },
+    "larvesta": {
+      "key": "636",
+      "shiny": "sheet"
+    },
+    "larvitar": {
+      "key": "246",
+      "shiny": "sheet"
+    },
+    "latias": {
+      "key": "380",
+      "shiny": "sheet"
+    },
+    "latiasmega": {
+      "key": "380-mega",
+      "shiny": "sheet"
+    },
+    "latios": {
+      "key": "381",
+      "shiny": "sheet"
+    },
+    "latiosmega": {
+      "key": "381-mega",
+      "shiny": "sheet"
+    },
+    "leafeon": {
+      "key": "470",
+      "shiny": "sheet"
+    },
+    "leavanny": {
+      "key": "542",
+      "shiny": "sheet"
+    },
+    "lechonk": {
+      "key": "915",
+      "shiny": "sheet"
+    },
+    "ledian": {
+      "key": "166",
+      "shiny": "sheet",
+      "femaleKey": "female/166",
+      "femaleShiny": "sheet"
+    },
+    "ledyba": {
+      "key": "165",
+      "shiny": "sheet",
+      "femaleKey": "female/165",
+      "femaleShiny": "sheet"
+    },
+    "lickilicky": {
+      "key": "463",
+      "shiny": "sheet"
+    },
+    "lickitung": {
+      "key": "108",
+      "shiny": "sheet"
+    },
+    "liepard": {
+      "key": "510",
+      "shiny": "sheet"
+    },
+    "lileep": {
+      "key": "345",
+      "shiny": "sheet"
+    },
+    "lilligant": {
+      "key": "549",
+      "shiny": "sheet"
+    },
+    "lilliganthisui": {
+      "key": "6549",
+      "shiny": "sheet"
+    },
+    "lillipup": {
+      "key": "506",
+      "shiny": "sheet"
+    },
+    "linoone": {
+      "key": "264",
+      "shiny": "sheet"
+    },
+    "linoonegalar": {
+      "key": "4264",
+      "shiny": "sheet"
+    },
+    "litleo": {
+      "key": "667",
+      "shiny": "sheet"
+    },
+    "litten": {
+      "key": "725",
+      "shiny": "sheet"
+    },
+    "litwick": {
+      "key": "607",
+      "shiny": "sheet"
+    },
+    "lokix": {
+      "key": "920",
+      "shiny": "sheet"
+    },
+    "lombre": {
+      "key": "271",
+      "shiny": "sheet"
+    },
+    "lopunny": {
+      "key": "428",
+      "shiny": "sheet"
+    },
+    "lopunnymega": {
+      "key": "428-mega",
+      "shiny": "sheet"
+    },
+    "lotad": {
+      "key": "270",
+      "shiny": "sheet"
+    },
+    "loudred": {
+      "key": "294",
+      "shiny": "sheet"
+    },
+    "lucario": {
+      "key": "448",
+      "shiny": "sheet"
+    },
+    "lucariomega": {
+      "key": "448-mega",
+      "shiny": "sheet"
+    },
+    "ludicolo": {
+      "key": "272",
+      "shiny": "sheet",
+      "femaleKey": "female/272",
+      "femaleShiny": "sheet"
+    },
+    "lugia": {
+      "key": "249",
+      "shiny": "sheet"
+    },
+    "lumineon": {
+      "key": "457",
+      "shiny": "sheet",
+      "femaleKey": "female/457",
+      "femaleShiny": "sheet"
+    },
+    "lunala": {
+      "key": "792",
+      "shiny": "sheet"
+    },
+    "lunatone": {
+      "key": "337",
+      "shiny": "sheet"
+    },
+    "lurantis": {
+      "key": "754",
+      "shiny": "sheet"
+    },
+    "luvdisc": {
+      "key": "370",
+      "shiny": "sheet"
+    },
+    "luxio": {
+      "key": "404",
+      "shiny": "sheet",
+      "femaleKey": "female/404",
+      "femaleShiny": "sheet"
+    },
+    "luxray": {
+      "key": "405",
+      "shiny": "sheet",
+      "femaleKey": "female/405",
+      "femaleShiny": "sheet"
+    },
+    "lycanroc": {
+      "key": "745",
+      "shiny": "sheet"
+    },
+    "lycanrocdusk": {
+      "key": "745-dusk",
+      "shiny": "sheet"
+    },
+    "lycanrocmidnight": {
+      "key": "745-midnight",
+      "shiny": "sheet"
+    },
+    "mabosstiff": {
+      "key": "943",
+      "shiny": "sheet"
+    },
+    "machamp": {
+      "key": "68",
+      "shiny": "sheet"
+    },
+    "machampgmax": {
+      "key": "68-gigantamax",
+      "shiny": "sheet"
+    },
+    "machoke": {
+      "key": "67",
+      "shiny": "sheet"
+    },
+    "machop": {
+      "key": "66",
+      "shiny": "sheet"
+    },
+    "magby": {
+      "key": "240",
+      "shiny": "sheet"
+    },
+    "magcargo": {
+      "key": "219",
+      "shiny": "sheet"
+    },
+    "magearna": {
+      "key": "801",
+      "shiny": "sheet"
+    },
+    "magearnaoriginal": {
+      "key": "801-original",
+      "shiny": "sheet"
+    },
+    "magikarp": {
+      "key": "129",
+      "shiny": "sheet",
+      "femaleKey": "female/129",
+      "femaleShiny": "sheet"
+    },
+    "magmar": {
+      "key": "126",
+      "shiny": "sheet"
+    },
+    "magmortar": {
+      "key": "467",
+      "shiny": "sheet"
+    },
+    "magnemite": {
+      "key": "81",
+      "shiny": "sheet"
+    },
+    "magneton": {
+      "key": "82",
+      "shiny": "sheet"
+    },
+    "magnezone": {
+      "key": "462",
+      "shiny": "sheet"
+    },
+    "makuhita": {
+      "key": "296",
+      "shiny": "sheet"
+    },
+    "malamar": {
+      "key": "687",
+      "shiny": "sheet"
+    },
+    "mamoswine": {
+      "key": "473",
+      "shiny": "sheet",
+      "femaleKey": "female/473",
+      "femaleShiny": "sheet"
+    },
+    "manaphy": {
+      "key": "490",
+      "shiny": "sheet"
+    },
+    "mandibuzz": {
+      "key": "630",
+      "shiny": "sheet"
+    },
+    "manectric": {
+      "key": "310",
+      "shiny": "sheet"
+    },
+    "manectricmega": {
+      "key": "310-mega",
+      "shiny": "sheet"
+    },
+    "mankey": {
+      "key": "56",
+      "shiny": "sheet"
+    },
+    "mantine": {
+      "key": "226",
+      "shiny": "sheet"
+    },
+    "mantyke": {
+      "key": "458",
+      "shiny": "sheet"
+    },
+    "maractus": {
+      "key": "556",
+      "shiny": "sheet"
+    },
+    "mareanie": {
+      "key": "747",
+      "shiny": "sheet"
+    },
+    "mareep": {
+      "key": "179",
+      "shiny": "sheet"
+    },
+    "marill": {
+      "key": "183",
+      "shiny": "sheet"
+    },
+    "marowak": {
+      "key": "105",
+      "shiny": "sheet"
+    },
+    "marowakalola": {
+      "key": "2105",
+      "shiny": "sheet"
+    },
+    "marshadow": {
+      "key": "802",
+      "shiny": "sheet"
+    },
+    "marshtomp": {
+      "key": "259",
+      "shiny": "sheet"
+    },
+    "maschiff": {
+      "key": "942",
+      "shiny": "sheet"
+    },
+    "masquerain": {
+      "key": "284",
+      "shiny": "sheet"
+    },
+    "maushold": {
+      "key": "925-three",
+      "shiny": "sheet"
+    },
+    "mausholdfour": {
+      "key": "925-four",
+      "shiny": "sheet"
+    },
+    "mawile": {
+      "key": "303",
+      "shiny": "sheet"
+    },
+    "mawilemega": {
+      "key": "303-mega",
+      "shiny": "sheet"
+    },
+    "medicham": {
+      "key": "308",
+      "shiny": "sheet",
+      "femaleKey": "female/308",
+      "femaleShiny": "sheet"
+    },
+    "medichammega": {
+      "key": "308-mega",
+      "shiny": "sheet"
+    },
+    "meditite": {
+      "key": "307",
+      "shiny": "sheet",
+      "femaleKey": "female/307",
+      "femaleShiny": "sheet"
+    },
+    "meganium": {
+      "key": "154",
+      "shiny": "sheet",
+      "femaleKey": "female/154",
+      "femaleShiny": "sheet"
+    },
+    "melmetal": {
+      "key": "809",
+      "shiny": "sheet"
+    },
+    "melmetalgmax": {
+      "key": "809-gigantamax",
+      "shiny": "sheet"
+    },
+    "meloetta": {
+      "key": "648-aria",
+      "shiny": "sheet"
+    },
+    "meloettapirouette": {
+      "key": "648-pirouette",
+      "shiny": "sheet"
+    },
+    "meltan": {
+      "key": "808",
+      "shiny": "sheet"
+    },
+    "meowscarada": {
+      "key": "908",
+      "shiny": "sheet"
+    },
+    "meowstic": {
+      "key": "678",
+      "shiny": "sheet"
+    },
+    "meowsticf": {
+      "key": "678-female",
+      "shiny": "sheet"
+    },
+    "meowth": {
+      "key": "52",
+      "shiny": "sheet"
+    },
+    "meowthalola": {
+      "key": "2052",
+      "shiny": "sheet"
+    },
+    "meowthgalar": {
+      "key": "4052",
+      "shiny": "sheet"
+    },
+    "meowthgmax": {
+      "key": "52-gigantamax",
+      "shiny": "sheet"
+    },
+    "mesprit": {
+      "key": "481",
+      "shiny": "sheet"
+    },
+    "metagross": {
+      "key": "376",
+      "shiny": "sheet"
+    },
+    "metagrossmega": {
+      "key": "376-mega",
+      "shiny": "sheet"
+    },
+    "metang": {
+      "key": "375",
+      "shiny": "sheet"
+    },
+    "metapod": {
+      "key": "11",
+      "shiny": "sheet"
+    },
+    "mew": {
+      "key": "151",
+      "shiny": "sheet"
+    },
+    "mewtwo": {
+      "key": "150",
+      "shiny": "sheet"
+    },
+    "mewtwomegax": {
+      "key": "150-mega-x",
+      "shiny": "sheet"
+    },
+    "mewtwomegay": {
+      "key": "150-mega-y",
+      "shiny": "sheet"
+    },
+    "mienfoo": {
+      "key": "619",
+      "shiny": "sheet"
+    },
+    "mienshao": {
+      "key": "620",
+      "shiny": "sheet"
+    },
+    "mightyena": {
+      "key": "262",
+      "shiny": "sheet"
+    },
+    "milcery": {
+      "key": "868",
+      "shiny": "sheet"
+    },
+    "milotic": {
+      "key": "350",
+      "shiny": "sheet",
+      "femaleKey": "female/350",
+      "femaleShiny": "sheet"
+    },
+    "miltank": {
+      "key": "241",
+      "shiny": "sheet"
+    },
+    "mimejr": {
+      "key": "439",
+      "shiny": "sheet"
+    },
+    "mimikyu": {
+      "key": "778-disguised",
+      "shiny": "sheet"
+    },
+    "mimikyubusted": {
+      "key": "778-busted",
+      "shiny": "sheet"
+    },
+    "minccino": {
+      "key": "572",
+      "shiny": "sheet"
+    },
+    "minior": {
+      "key": "774",
+      "shiny": "sheet"
+    },
+    "miniormeteor": {
+      "key": "774-red-meteor",
+      "shiny": "sheet"
+    },
+    "minun": {
+      "key": "312",
+      "shiny": "sheet"
+    },
+    "miraidon": {
+      "key": "1008-ultimate-mode",
+      "shiny": "sheet"
+    },
+    "misdreavus": {
+      "key": "200",
+      "shiny": "sheet"
+    },
+    "mismagius": {
+      "key": "429",
+      "shiny": "sheet"
+    },
+    "moltres": {
+      "key": "146",
+      "shiny": "sheet"
+    },
+    "moltresgalar": {
+      "key": "4146",
+      "shiny": "sheet"
+    },
+    "monferno": {
+      "key": "391",
+      "shiny": "sheet"
+    },
+    "morelull": {
+      "key": "755",
+      "shiny": "sheet"
+    },
+    "morgrem": {
+      "key": "860",
+      "shiny": "sheet"
+    },
+    "morpeko": {
+      "key": "877",
+      "shiny": "sheet"
+    },
+    "morpekohangry": {
+      "key": "877-hangry",
+      "shiny": "sheet"
+    },
+    "mothim": {
+      "key": "414",
+      "shiny": "sheet"
+    },
+    "mrmime": {
+      "key": "122",
+      "shiny": "sheet"
+    },
+    "mrmimegalar": {
+      "key": "4122",
+      "shiny": "sheet"
+    },
+    "mrrime": {
+      "key": "866",
+      "shiny": "sheet"
+    },
+    "mudbray": {
+      "key": "749",
+      "shiny": "sheet"
+    },
+    "mudkip": {
+      "key": "258",
+      "shiny": "sheet"
+    },
+    "mudsdale": {
+      "key": "750",
+      "shiny": "sheet"
+    },
+    "muk": {
+      "key": "89",
+      "shiny": "sheet"
+    },
+    "mukalola": {
+      "key": "2089",
+      "shiny": "sheet"
+    },
+    "munchlax": {
+      "key": "446",
+      "shiny": "sheet"
+    },
+    "munkidori": {
+      "key": "1015",
+      "shiny": "sheet"
+    },
+    "munna": {
+      "key": "517",
+      "shiny": "sheet"
+    },
+    "murkrow": {
+      "key": "198",
+      "shiny": "sheet",
+      "femaleKey": "female/198",
+      "femaleShiny": "sheet"
+    },
+    "musharna": {
+      "key": "518",
+      "shiny": "sheet"
+    },
+    "nacli": {
+      "key": "932",
+      "shiny": "sheet"
+    },
+    "naclstack": {
+      "key": "933",
+      "shiny": "sheet"
+    },
+    "naganadel": {
+      "key": "804",
+      "shiny": "sheet"
+    },
+    "natu": {
+      "key": "177",
+      "shiny": "sheet"
+    },
+    "necrozma": {
+      "key": "800",
+      "shiny": "sheet"
+    },
+    "necrozmadawnwings": {
+      "key": "800-dawn-wings",
+      "shiny": "sheet"
+    },
+    "necrozmaduskmane": {
+      "key": "800-dusk-mane",
+      "shiny": "sheet"
+    },
+    "necrozmaultra": {
+      "key": "800-ultra",
+      "shiny": "sheet"
+    },
+    "nickit": {
+      "key": "827",
+      "shiny": "sheet"
+    },
+    "nidoking": {
+      "key": "34",
+      "shiny": "sheet"
+    },
+    "nidoqueen": {
+      "key": "31",
+      "shiny": "sheet"
+    },
+    "nidoranf": {
+      "key": "29",
+      "shiny": "sheet"
+    },
+    "nidoranm": {
+      "key": "32",
+      "shiny": "sheet"
+    },
+    "nidorina": {
+      "key": "30",
+      "shiny": "sheet"
+    },
+    "nidorino": {
+      "key": "33",
+      "shiny": "sheet"
+    },
+    "nihilego": {
+      "key": "793",
+      "shiny": "sheet"
+    },
+    "nincada": {
+      "key": "290",
+      "shiny": "sheet"
+    },
+    "ninetales": {
+      "key": "38",
+      "shiny": "sheet"
+    },
+    "ninetalesalola": {
+      "key": "2038",
+      "shiny": "sheet"
+    },
+    "ninjask": {
+      "key": "291",
+      "shiny": "sheet"
+    },
+    "noctowl": {
+      "key": "164",
+      "shiny": "sheet"
+    },
+    "noibat": {
+      "key": "714",
+      "shiny": "sheet"
+    },
+    "noivern": {
+      "key": "715",
+      "shiny": "sheet"
+    },
+    "nosepass": {
+      "key": "299",
+      "shiny": "sheet"
+    },
+    "numel": {
+      "key": "322",
+      "shiny": "sheet",
+      "femaleKey": "female/322",
+      "femaleShiny": "sheet"
+    },
+    "nuzleaf": {
+      "key": "274",
+      "shiny": "sheet",
+      "femaleKey": "female/274",
+      "femaleShiny": "sheet"
+    },
+    "nymble": {
+      "key": "919",
+      "shiny": "sheet"
+    },
+    "obstagoon": {
+      "key": "862",
+      "shiny": "sheet"
+    },
+    "octillery": {
+      "key": "224",
+      "shiny": "sheet",
+      "femaleKey": "female/224",
+      "femaleShiny": "sheet"
+    },
+    "oddish": {
+      "key": "43",
+      "shiny": "sheet"
+    },
+    "ogerpon": {
+      "key": "1017-teal-mask",
+      "shiny": "sheet"
+    },
+    "ogerponcornerstone": {
+      "key": "1017-cornerstone-mask",
+      "shiny": "sheet"
+    },
+    "ogerponcornerstonetera": {
+      "key": "1017-cornerstone-mask-tera",
+      "shiny": "sheet"
+    },
+    "ogerponhearthflame": {
+      "key": "1017-hearthflame-mask",
+      "shiny": "sheet"
+    },
+    "ogerponhearthflametera": {
+      "key": "1017-hearthflame-mask-tera",
+      "shiny": "sheet"
+    },
+    "ogerpontealtera": {
+      "key": "1017-teal-mask-tera",
+      "shiny": "sheet"
+    },
+    "ogerponwellspring": {
+      "key": "1017-wellspring-mask",
+      "shiny": "sheet"
+    },
+    "ogerponwellspringtera": {
+      "key": "1017-wellspring-mask-tera",
+      "shiny": "sheet"
+    },
+    "oinkologne": {
+      "key": "916",
+      "shiny": "sheet"
+    },
+    "oinkolognef": {
+      "key": "916-female",
+      "shiny": "sheet"
+    },
+    "okidogi": {
+      "key": "1014",
+      "shiny": "sheet"
+    },
+    "omanyte": {
+      "key": "138",
+      "shiny": "sheet"
+    },
+    "omastar": {
+      "key": "139",
+      "shiny": "sheet"
+    },
+    "onix": {
+      "key": "95",
+      "shiny": "sheet"
+    },
+    "oranguru": {
+      "key": "765",
+      "shiny": "sheet"
+    },
+    "orbeetle": {
+      "key": "826",
+      "shiny": "sheet"
+    },
+    "orbeetlegmax": {
+      "key": "826-gigantamax",
+      "shiny": "sheet"
+    },
+    "oricorio": {
+      "key": "741",
+      "shiny": "sheet"
+    },
+    "oricoriopau": {
+      "key": "741-pau",
+      "shiny": "sheet"
+    },
+    "oricoriopompom": {
+      "key": "741-pompom",
+      "shiny": "sheet"
+    },
+    "oricoriosensu": {
+      "key": "741-sensu",
+      "shiny": "sheet"
+    },
+    "orthworm": {
+      "key": "968",
+      "shiny": "sheet"
+    },
+    "oshawott": {
+      "key": "501",
+      "shiny": "sheet"
+    },
+    "overqwil": {
+      "key": "904",
+      "shiny": "sheet"
+    },
+    "pachirisu": {
+      "key": "417",
+      "shiny": "sheet",
+      "femaleKey": "female/417",
+      "femaleShiny": "sheet"
+    },
+    "palafin": {
+      "key": "964-zero",
+      "shiny": "sheet"
+    },
+    "palafinhero": {
+      "key": "964-hero",
+      "shiny": "sheet"
+    },
+    "palkia": {
+      "key": "484",
+      "shiny": "sheet"
+    },
+    "palkiaorigin": {
+      "key": "484-origin",
+      "shiny": "sheet"
+    },
+    "palossand": {
+      "key": "770",
+      "shiny": "sheet"
+    },
+    "palpitoad": {
+      "key": "536",
+      "shiny": "sheet"
+    },
+    "pancham": {
+      "key": "674",
+      "shiny": "sheet"
+    },
+    "pangoro": {
+      "key": "675",
+      "shiny": "sheet"
+    },
+    "panpour": {
+      "key": "515",
+      "shiny": "sheet"
+    },
+    "pansage": {
+      "key": "511",
+      "shiny": "sheet"
+    },
+    "pansear": {
+      "key": "513",
+      "shiny": "sheet"
+    },
+    "paras": {
+      "key": "46",
+      "shiny": "sheet"
+    },
+    "parasect": {
+      "key": "47",
+      "shiny": "sheet"
+    },
+    "passimian": {
+      "key": "766",
+      "shiny": "sheet"
+    },
+    "patrat": {
+      "key": "504",
+      "shiny": "sheet"
+    },
+    "pawmi": {
+      "key": "921",
+      "shiny": "sheet"
+    },
+    "pawmo": {
+      "key": "922",
+      "shiny": "sheet"
+    },
+    "pawmot": {
+      "key": "923",
+      "shiny": "sheet"
+    },
+    "pawniard": {
+      "key": "624",
+      "shiny": "sheet"
+    },
+    "pecharunt": {
+      "key": "1025",
+      "shiny": "sheet"
+    },
+    "pelipper": {
+      "key": "279",
+      "shiny": "sheet"
+    },
+    "perrserker": {
+      "key": "863",
+      "shiny": "sheet"
+    },
+    "persian": {
+      "key": "53",
+      "shiny": "sheet"
+    },
+    "persianalola": {
+      "key": "2053",
+      "shiny": "sheet"
+    },
+    "petilil": {
+      "key": "548",
+      "shiny": "sheet"
+    },
+    "phanpy": {
+      "key": "231",
+      "shiny": "sheet"
+    },
+    "phantump": {
+      "key": "708",
+      "shiny": "sheet"
+    },
+    "pheromosa": {
+      "key": "795",
+      "shiny": "sheet"
+    },
+    "phione": {
+      "key": "489",
+      "shiny": "sheet"
+    },
+    "pichu": {
+      "key": "172",
+      "shiny": "sheet"
+    },
+    "pichuspikyeared": {
+      "key": "172-spiky",
+      "shiny": "sheet"
+    },
+    "pidgeot": {
+      "key": "18",
+      "shiny": "sheet"
+    },
+    "pidgeotmega": {
+      "key": "18-mega",
+      "shiny": "sheet"
+    },
+    "pidgeotto": {
+      "key": "17",
+      "shiny": "sheet"
+    },
+    "pidgey": {
+      "key": "16",
+      "shiny": "sheet"
+    },
+    "pidove": {
+      "key": "519",
+      "shiny": "sheet"
+    },
+    "pignite": {
+      "key": "499",
+      "shiny": "sheet"
+    },
+    "pikachu": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachualola": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachubelle": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachucosplay": {
+      "key": "25-cosplay",
+      "shiny": "sheet",
+      "femaleKey": "female/25-cosplay",
+      "femaleShiny": "sheet"
+    },
+    "pikachugmax": {
+      "key": "25-gigantamax",
+      "shiny": "sheet"
+    },
+    "pikachuhoenn": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachukalos": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachulibre": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachuoriginal": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachupartner": {
+      "key": "25-partner",
+      "shiny": "sheet",
+      "femaleKey": "female/25-partner",
+      "femaleShiny": "sheet"
+    },
+    "pikachuphd": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachupopstar": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachurockstar": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachusinnoh": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachuunova": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikachuworld": {
+      "key": "25",
+      "shiny": "sheet",
+      "femaleKey": "female/25",
+      "femaleShiny": "sheet"
+    },
+    "pikipek": {
+      "key": "731",
+      "shiny": "sheet"
+    },
+    "piloswine": {
+      "key": "221",
+      "shiny": "sheet",
+      "femaleKey": "female/221",
+      "femaleShiny": "sheet"
+    },
+    "pincurchin": {
+      "key": "871",
+      "shiny": "sheet"
+    },
+    "pineco": {
+      "key": "204",
+      "shiny": "sheet"
+    },
+    "pinsir": {
+      "key": "127",
+      "shiny": "sheet"
+    },
+    "pinsirmega": {
+      "key": "127-mega",
+      "shiny": "sheet"
+    },
+    "piplup": {
+      "key": "393",
+      "shiny": "sheet"
+    },
+    "plusle": {
+      "key": "311",
+      "shiny": "sheet"
+    },
+    "poipole": {
+      "key": "803",
+      "shiny": "sheet"
+    },
+    "politoed": {
+      "key": "186",
+      "shiny": "sheet",
+      "femaleKey": "female/186",
+      "femaleShiny": "sheet"
+    },
+    "poliwag": {
+      "key": "60",
+      "shiny": "sheet"
+    },
+    "poliwhirl": {
+      "key": "61",
+      "shiny": "sheet"
+    },
+    "poliwrath": {
+      "key": "62",
+      "shiny": "sheet"
+    },
+    "poltchageist": {
+      "key": "1012-counterfeit",
+      "shiny": "sheet"
+    },
+    "poltchageistartisan": {
+      "key": "1012-counterfeit",
+      "shiny": "sheet"
+    },
+    "polteageist": {
+      "key": "855",
+      "shiny": "sheet"
+    },
+    "polteageistantique": {
+      "key": "855",
+      "shiny": "sheet"
+    },
+    "ponyta": {
+      "key": "77",
+      "shiny": "sheet"
+    },
+    "ponytagalar": {
+      "key": "4077",
+      "shiny": "sheet"
+    },
+    "poochyena": {
+      "key": "261",
+      "shiny": "sheet"
+    },
+    "popplio": {
+      "key": "728",
+      "shiny": "sheet"
+    },
+    "porygon": {
+      "key": "137",
+      "shiny": "sheet"
+    },
+    "porygon2": {
+      "key": "233",
+      "shiny": "sheet"
+    },
+    "porygonz": {
+      "key": "474",
+      "shiny": "sheet"
+    },
+    "primarina": {
+      "key": "730",
+      "shiny": "sheet"
+    },
+    "primeape": {
+      "key": "57",
+      "shiny": "sheet"
+    },
+    "prinplup": {
+      "key": "394",
+      "shiny": "sheet"
+    },
+    "probopass": {
+      "key": "476",
+      "shiny": "sheet"
+    },
+    "psyduck": {
+      "key": "54",
+      "shiny": "sheet"
+    },
+    "pumpkaboo": {
+      "key": "710",
+      "shiny": "sheet"
+    },
+    "pumpkaboolarge": {
+      "key": "710-large",
+      "shiny": "sheet"
+    },
+    "pumpkaboosmall": {
+      "key": "710-small",
+      "shiny": "sheet"
+    },
+    "pumpkaboosuper": {
+      "key": "710-jumbo",
+      "shiny": "sheet"
+    },
+    "pupitar": {
+      "key": "247",
+      "shiny": "sheet"
+    },
+    "purrloin": {
+      "key": "509",
+      "shiny": "sheet"
+    },
+    "purugly": {
+      "key": "432",
+      "shiny": "sheet"
+    },
+    "pyroar": {
+      "key": "668",
+      "shiny": "sheet",
+      "femaleKey": "female/668",
+      "femaleShiny": "sheet"
+    },
+    "pyukumuku": {
+      "key": "771",
+      "shiny": "sheet"
+    },
+    "quagsire": {
+      "key": "195",
+      "shiny": "sheet",
+      "femaleKey": "female/195",
+      "femaleShiny": "sheet"
+    },
+    "quaquaval": {
+      "key": "914",
+      "shiny": "sheet"
+    },
+    "quaxly": {
+      "key": "912",
+      "shiny": "sheet"
+    },
+    "quaxwell": {
+      "key": "913",
+      "shiny": "sheet"
+    },
+    "quilava": {
+      "key": "156",
+      "shiny": "sheet"
+    },
+    "quilladin": {
+      "key": "651",
+      "shiny": "sheet"
+    },
+    "qwilfish": {
+      "key": "211",
+      "shiny": "sheet"
+    },
+    "qwilfishhisui": {
+      "key": "6211",
+      "shiny": "sheet"
+    },
+    "raboot": {
+      "key": "814",
+      "shiny": "sheet"
+    },
+    "rabsca": {
+      "key": "954",
+      "shiny": "sheet"
+    },
+    "ragingbolt": {
+      "key": "1021",
+      "shiny": "sheet"
+    },
+    "raichu": {
+      "key": "26",
+      "shiny": "sheet",
+      "femaleKey": "female/26",
+      "femaleShiny": "sheet"
+    },
+    "raichualola": {
+      "key": "2026",
+      "shiny": "sheet"
+    },
+    "raikou": {
+      "key": "243",
+      "shiny": "sheet"
+    },
+    "ralts": {
+      "key": "280",
+      "shiny": "sheet"
+    },
+    "rampardos": {
+      "key": "409",
+      "shiny": "sheet"
+    },
+    "rapidash": {
+      "key": "78",
+      "shiny": "sheet"
+    },
+    "rapidashgalar": {
+      "key": "4078",
+      "shiny": "sheet"
+    },
+    "raticate": {
+      "key": "20",
+      "shiny": "sheet",
+      "femaleKey": "female/20",
+      "femaleShiny": "sheet"
+    },
+    "raticatealola": {
+      "key": "2020",
+      "shiny": "sheet"
+    },
+    "rattata": {
+      "key": "19",
+      "shiny": "sheet",
+      "femaleKey": "female/19",
+      "femaleShiny": "sheet"
+    },
+    "rattataalola": {
+      "key": "2019",
+      "shiny": "sheet"
+    },
+    "rayquaza": {
+      "key": "384",
+      "shiny": "sheet"
+    },
+    "rayquazamega": {
+      "key": "384-mega",
+      "shiny": "sheet"
+    },
+    "regice": {
+      "key": "378",
+      "shiny": "sheet"
+    },
+    "regidrago": {
+      "key": "895",
+      "shiny": "sheet"
+    },
+    "regieleki": {
+      "key": "894",
+      "shiny": "sheet"
+    },
+    "regigigas": {
+      "key": "486",
+      "shiny": "sheet"
+    },
+    "regirock": {
+      "key": "377",
+      "shiny": "sheet"
+    },
+    "registeel": {
+      "key": "379",
+      "shiny": "sheet"
+    },
+    "relicanth": {
+      "key": "369",
+      "shiny": "sheet",
+      "femaleKey": "female/369",
+      "femaleShiny": "sheet"
+    },
+    "rellor": {
+      "key": "953",
+      "shiny": "sheet"
+    },
+    "remoraid": {
+      "key": "223",
+      "shiny": "sheet"
+    },
+    "reshiram": {
+      "key": "643",
+      "shiny": "sheet"
+    },
+    "reuniclus": {
+      "key": "579",
+      "shiny": "sheet"
+    },
+    "revavroom": {
+      "key": "966",
+      "shiny": "sheet"
+    },
+    "rhydon": {
+      "key": "112",
+      "shiny": "sheet",
+      "femaleKey": "female/112",
+      "femaleShiny": "sheet"
+    },
+    "rhyhorn": {
+      "key": "111",
+      "shiny": "sheet",
+      "femaleKey": "female/111",
+      "femaleShiny": "sheet"
+    },
+    "rhyperior": {
+      "key": "464",
+      "shiny": "sheet",
+      "femaleKey": "female/464",
+      "femaleShiny": "sheet"
+    },
+    "ribombee": {
+      "key": "743",
+      "shiny": "sheet"
+    },
+    "rillaboom": {
+      "key": "812",
+      "shiny": "sheet"
+    },
+    "rillaboomgmax": {
+      "key": "812-gigantamax",
+      "shiny": "sheet"
+    },
+    "riolu": {
+      "key": "447",
+      "shiny": "sheet"
+    },
+    "roaringmoon": {
+      "key": "1005",
+      "shiny": "sheet"
+    },
+    "rockruff": {
+      "key": "744",
+      "shiny": "sheet"
+    },
+    "rockruffdusk": {
+      "key": "744",
+      "shiny": "sheet"
+    },
+    "roggenrola": {
+      "key": "524",
+      "shiny": "sheet"
+    },
+    "rolycoly": {
+      "key": "837",
+      "shiny": "sheet"
+    },
+    "rookidee": {
+      "key": "821",
+      "shiny": "sheet"
+    },
+    "roselia": {
+      "key": "315",
+      "shiny": "sheet",
+      "femaleKey": "female/315",
+      "femaleShiny": "sheet"
+    },
+    "roserade": {
+      "key": "407",
+      "shiny": "sheet",
+      "femaleKey": "female/407",
+      "femaleShiny": "sheet"
+    },
+    "rotom": {
+      "key": "479",
+      "shiny": "sheet"
+    },
+    "rotomfan": {
+      "key": "479-fan",
+      "shiny": "sheet"
+    },
+    "rotomfrost": {
+      "key": "479-frost",
+      "shiny": "sheet"
+    },
+    "rotomheat": {
+      "key": "479-heat",
+      "shiny": "sheet"
+    },
+    "rotommow": {
+      "key": "479-mow",
+      "shiny": "sheet"
+    },
+    "rotomwash": {
+      "key": "479-wash",
+      "shiny": "sheet"
+    },
+    "rowlet": {
+      "key": "722",
+      "shiny": "sheet"
+    },
+    "rufflet": {
+      "key": "627",
+      "shiny": "sheet"
+    },
+    "runerigus": {
+      "key": "867",
+      "shiny": "sheet"
+    },
+    "sableye": {
+      "key": "302",
+      "shiny": "sheet"
+    },
+    "sableyemega": {
+      "key": "302-mega",
+      "shiny": "sheet"
+    },
+    "salamence": {
+      "key": "373",
+      "shiny": "sheet"
+    },
+    "salamencemega": {
+      "key": "373-mega",
+      "shiny": "sheet"
+    },
+    "salandit": {
+      "key": "757",
+      "shiny": "sheet"
+    },
+    "salazzle": {
+      "key": "758",
+      "shiny": "sheet"
+    },
+    "samurott": {
+      "key": "503",
+      "shiny": "sheet"
+    },
+    "samurotthisui": {
+      "key": "6503",
+      "shiny": "sheet"
+    },
+    "sandaconda": {
+      "key": "844",
+      "shiny": "sheet"
+    },
+    "sandacondagmax": {
+      "key": "844-gigantamax",
+      "shiny": "sheet"
+    },
+    "sandile": {
+      "key": "551",
+      "shiny": "sheet"
+    },
+    "sandshrew": {
+      "key": "27",
+      "shiny": "sheet"
+    },
+    "sandshrewalola": {
+      "key": "2027",
+      "shiny": "sheet"
+    },
+    "sandslash": {
+      "key": "28",
+      "shiny": "sheet"
+    },
+    "sandslashalola": {
+      "key": "2028",
+      "shiny": "sheet"
+    },
+    "sandygast": {
+      "key": "769",
+      "shiny": "sheet"
+    },
+    "sandyshocks": {
+      "key": "989",
+      "shiny": "sheet"
+    },
+    "sawk": {
+      "key": "539",
+      "shiny": "sheet"
+    },
+    "sawsbuck": {
+      "key": "586-spring",
+      "shiny": "sheet"
+    },
+    "scatterbug": {
+      "key": "664",
+      "shiny": "sheet"
+    },
+    "sceptile": {
+      "key": "254",
+      "shiny": "sheet"
+    },
+    "sceptilemega": {
+      "key": "254-mega",
+      "shiny": "sheet"
+    },
+    "scizor": {
+      "key": "212",
+      "shiny": "sheet",
+      "femaleKey": "female/212",
+      "femaleShiny": "sheet"
+    },
+    "scizormega": {
+      "key": "212-mega",
+      "shiny": "sheet"
+    },
+    "scolipede": {
+      "key": "545",
+      "shiny": "sheet"
+    },
+    "scorbunny": {
+      "key": "813",
+      "shiny": "sheet"
+    },
+    "scovillain": {
+      "key": "952",
+      "shiny": "sheet"
+    },
+    "scrafty": {
+      "key": "560",
+      "shiny": "sheet"
+    },
+    "scraggy": {
+      "key": "559",
+      "shiny": "sheet"
+    },
+    "screamtail": {
+      "key": "985",
+      "shiny": "sheet"
+    },
+    "scyther": {
+      "key": "123",
+      "shiny": "sheet",
+      "femaleKey": "female/123",
+      "femaleShiny": "sheet"
+    },
+    "seadra": {
+      "key": "117",
+      "shiny": "sheet"
+    },
+    "seaking": {
+      "key": "119",
+      "shiny": "sheet",
+      "femaleKey": "female/119",
+      "femaleShiny": "sheet"
+    },
+    "sealeo": {
+      "key": "364",
+      "shiny": "sheet"
+    },
+    "seedot": {
+      "key": "273",
+      "shiny": "sheet"
+    },
+    "seel": {
+      "key": "86",
+      "shiny": "sheet"
+    },
+    "seismitoad": {
+      "key": "537",
+      "shiny": "sheet"
+    },
+    "sentret": {
+      "key": "161",
+      "shiny": "sheet"
+    },
+    "serperior": {
+      "key": "497",
+      "shiny": "sheet"
+    },
+    "servine": {
+      "key": "496",
+      "shiny": "sheet"
+    },
+    "seviper": {
+      "key": "336",
+      "shiny": "sheet"
+    },
+    "sewaddle": {
+      "key": "540",
+      "shiny": "sheet"
+    },
+    "sharpedo": {
+      "key": "319",
+      "shiny": "sheet"
+    },
+    "sharpedomega": {
+      "key": "319-mega",
+      "shiny": "sheet"
+    },
+    "shaymin": {
+      "key": "492-land",
+      "shiny": "sheet"
+    },
+    "shayminsky": {
+      "key": "492-sky",
+      "shiny": "sheet"
+    },
+    "shedinja": {
+      "key": "292",
+      "shiny": "sheet"
+    },
+    "shelgon": {
+      "key": "372",
+      "shiny": "sheet"
+    },
+    "shellder": {
+      "key": "90",
+      "shiny": "sheet"
+    },
+    "shellos": {
+      "key": "422-west",
+      "shiny": "sheet"
+    },
+    "shelmet": {
+      "key": "616",
+      "shiny": "sheet"
+    },
+    "shieldon": {
+      "key": "410",
+      "shiny": "sheet"
+    },
+    "shiftry": {
+      "key": "275",
+      "shiny": "sheet",
+      "femaleKey": "female/275",
+      "femaleShiny": "sheet"
+    },
+    "shiinotic": {
+      "key": "756",
+      "shiny": "sheet"
+    },
+    "shinx": {
+      "key": "403",
+      "shiny": "sheet",
+      "femaleKey": "female/403",
+      "femaleShiny": "sheet"
+    },
+    "shroodle": {
+      "key": "944",
+      "shiny": "sheet"
+    },
+    "shroomish": {
+      "key": "285",
+      "shiny": "sheet"
+    },
+    "shuckle": {
+      "key": "213",
+      "shiny": "sheet"
+    },
+    "shuppet": {
+      "key": "353",
+      "shiny": "sheet"
+    },
+    "sigilyph": {
+      "key": "561",
+      "shiny": "sheet"
+    },
+    "silcoon": {
+      "key": "266",
+      "shiny": "sheet"
+    },
+    "silicobra": {
+      "key": "843",
+      "shiny": "sheet"
+    },
+    "silvally": {
+      "key": "773",
+      "shiny": "sheet"
+    },
+    "silvallybug": {
+      "key": "773-bug",
+      "shiny": "sheet"
+    },
+    "silvallydark": {
+      "key": "773-dark",
+      "shiny": "sheet"
+    },
+    "silvallydragon": {
+      "key": "773-dragon",
+      "shiny": "sheet"
+    },
+    "silvallyelectric": {
+      "key": "773-electric",
+      "shiny": "sheet"
+    },
+    "silvallyfairy": {
+      "key": "773-fairy",
+      "shiny": "sheet"
+    },
+    "silvallyfighting": {
+      "key": "773-fighting",
+      "shiny": "sheet"
+    },
+    "silvallyfire": {
+      "key": "773-fire",
+      "shiny": "sheet"
+    },
+    "silvallyflying": {
+      "key": "773-flying",
+      "shiny": "sheet"
+    },
+    "silvallyghost": {
+      "key": "773-ghost",
+      "shiny": "sheet"
+    },
+    "silvallygrass": {
+      "key": "773-grass",
+      "shiny": "sheet"
+    },
+    "silvallyground": {
+      "key": "773-ground",
+      "shiny": "sheet"
+    },
+    "silvallyice": {
+      "key": "773-ice",
+      "shiny": "sheet"
+    },
+    "silvallypoison": {
+      "key": "773-poison",
+      "shiny": "sheet"
+    },
+    "silvallypsychic": {
+      "key": "773-psychic",
+      "shiny": "sheet"
+    },
+    "silvallyrock": {
+      "key": "773-rock",
+      "shiny": "sheet"
+    },
+    "silvallysteel": {
+      "key": "773-steel",
+      "shiny": "sheet"
+    },
+    "silvallywater": {
+      "key": "773-water",
+      "shiny": "sheet"
+    },
+    "simipour": {
+      "key": "516",
+      "shiny": "sheet"
+    },
+    "simisage": {
+      "key": "512",
+      "shiny": "sheet"
+    },
+    "simisear": {
+      "key": "514",
+      "shiny": "sheet"
+    },
+    "sinistcha": {
+      "key": "1013-unremarkable",
+      "shiny": "sheet"
+    },
+    "sinistchamasterpiece": {
+      "key": "1013-unremarkable",
+      "shiny": "sheet"
+    },
+    "sinistea": {
+      "key": "854",
+      "shiny": "sheet"
+    },
+    "sinisteaantique": {
+      "key": "854",
+      "shiny": "sheet"
+    },
+    "sirfetchd": {
+      "key": "865",
+      "shiny": "sheet"
+    },
+    "sizzlipede": {
+      "key": "850",
+      "shiny": "sheet"
+    },
+    "skarmory": {
+      "key": "227",
+      "shiny": "sheet"
+    },
+    "skeledirge": {
+      "key": "911",
+      "shiny": "sheet"
+    },
+    "skiddo": {
+      "key": "672",
+      "shiny": "sheet"
+    },
+    "skiploom": {
+      "key": "188",
+      "shiny": "sheet"
+    },
+    "skitty": {
+      "key": "300",
+      "shiny": "sheet"
+    },
+    "skorupi": {
+      "key": "451",
+      "shiny": "sheet"
+    },
+    "skrelp": {
+      "key": "690",
+      "shiny": "sheet"
+    },
+    "skuntank": {
+      "key": "435",
+      "shiny": "sheet"
+    },
+    "skwovet": {
+      "key": "819",
+      "shiny": "sheet"
+    },
+    "slaking": {
+      "key": "289",
+      "shiny": "sheet"
+    },
+    "slakoth": {
+      "key": "287",
+      "shiny": "sheet"
+    },
+    "sliggoo": {
+      "key": "705",
+      "shiny": "sheet"
+    },
+    "sliggoohisui": {
+      "key": "6705",
+      "shiny": "sheet"
+    },
+    "slitherwing": {
+      "key": "988",
+      "shiny": "sheet"
+    },
+    "slowbro": {
+      "key": "80",
+      "shiny": "sheet"
+    },
+    "slowbrogalar": {
+      "key": "4080",
+      "shiny": "sheet"
+    },
+    "slowbromega": {
+      "key": "80-mega",
+      "shiny": "sheet"
+    },
+    "slowking": {
+      "key": "199",
+      "shiny": "sheet"
+    },
+    "slowkinggalar": {
+      "key": "4199",
+      "shiny": "sheet"
+    },
+    "slowpoke": {
+      "key": "79",
+      "shiny": "sheet"
+    },
+    "slowpokegalar": {
+      "key": "4079",
+      "shiny": "sheet"
+    },
+    "slugma": {
+      "key": "218",
+      "shiny": "sheet"
+    },
+    "slurpuff": {
+      "key": "685",
+      "shiny": "sheet"
+    },
+    "smeargle": {
+      "key": "235",
+      "shiny": "sheet"
+    },
+    "smoliv": {
+      "key": "928",
+      "shiny": "sheet"
+    },
+    "smoochum": {
+      "key": "238",
+      "shiny": "sheet"
+    },
+    "sneasel": {
+      "key": "215",
+      "shiny": "sheet",
+      "femaleKey": "female/215",
+      "femaleShiny": "sheet"
+    },
+    "sneaselhisui": {
+      "key": "6215",
+      "shiny": "sheet",
+      "femaleKey": "female/6215",
+      "femaleShiny": "sheet"
+    },
+    "sneasler": {
+      "key": "903",
+      "shiny": "sheet"
+    },
+    "snivy": {
+      "key": "495",
+      "shiny": "sheet"
+    },
+    "snom": {
+      "key": "872",
+      "shiny": "sheet"
+    },
+    "snorlax": {
+      "key": "143",
+      "shiny": "sheet"
+    },
+    "snorlaxgmax": {
+      "key": "143-gigantamax",
+      "shiny": "sheet"
+    },
+    "snorunt": {
+      "key": "361",
+      "shiny": "sheet"
+    },
+    "snover": {
+      "key": "459",
+      "shiny": "sheet",
+      "femaleKey": "female/459",
+      "femaleShiny": "sheet"
+    },
+    "snubbull": {
+      "key": "209",
+      "shiny": "sheet"
+    },
+    "sobble": {
+      "key": "816",
+      "shiny": "sheet"
+    },
+    "solgaleo": {
+      "key": "791",
+      "shiny": "sheet"
+    },
+    "solosis": {
+      "key": "577",
+      "shiny": "sheet"
+    },
+    "solrock": {
+      "key": "338",
+      "shiny": "sheet"
+    },
+    "spearow": {
+      "key": "21",
+      "shiny": "sheet"
+    },
+    "spectrier": {
+      "key": "897",
+      "shiny": "sheet"
+    },
+    "spewpa": {
+      "key": "665",
+      "shiny": "sheet"
+    },
+    "spheal": {
+      "key": "363",
+      "shiny": "sheet"
+    },
+    "spidops": {
+      "key": "918",
+      "shiny": "sheet"
+    },
+    "spinarak": {
+      "key": "167",
+      "shiny": "sheet"
+    },
+    "spinda": {
+      "key": "327",
+      "shiny": "sheet"
+    },
+    "spiritomb": {
+      "key": "442",
+      "shiny": "sheet"
+    },
+    "spoink": {
+      "key": "325",
+      "shiny": "sheet"
+    },
+    "sprigatito": {
+      "key": "906",
+      "shiny": "sheet"
+    },
+    "spritzee": {
+      "key": "682",
+      "shiny": "sheet"
+    },
+    "squawkabilly": {
+      "key": "931-green-plumage",
+      "shiny": "sheet"
+    },
+    "squawkabillyblue": {
+      "key": "931-blue-plumage",
+      "shiny": "sheet"
+    },
+    "squawkabillywhite": {
+      "key": "931-white-plumage",
+      "shiny": "sheet"
+    },
+    "squawkabillyyellow": {
+      "key": "931-yellow-plumage",
+      "shiny": "sheet"
+    },
+    "squirtle": {
+      "key": "7",
+      "shiny": "sheet"
+    },
+    "stakataka": {
+      "key": "805",
+      "shiny": "sheet"
+    },
+    "stantler": {
+      "key": "234",
+      "shiny": "sheet"
+    },
+    "staraptor": {
+      "key": "398",
+      "shiny": "sheet",
+      "femaleKey": "female/398",
+      "femaleShiny": "sheet"
+    },
+    "staravia": {
+      "key": "397",
+      "shiny": "sheet",
+      "femaleKey": "female/397",
+      "femaleShiny": "sheet"
+    },
+    "starly": {
+      "key": "396",
+      "shiny": "sheet",
+      "femaleKey": "female/396",
+      "femaleShiny": "sheet"
+    },
+    "starmie": {
+      "key": "121",
+      "shiny": "sheet"
+    },
+    "staryu": {
+      "key": "120",
+      "shiny": "sheet"
+    },
+    "steelix": {
+      "key": "208",
+      "shiny": "sheet",
+      "femaleKey": "female/208",
+      "femaleShiny": "sheet"
+    },
+    "steelixmega": {
+      "key": "208-mega",
+      "shiny": "sheet"
+    },
+    "steenee": {
+      "key": "762",
+      "shiny": "sheet"
+    },
+    "stonjourner": {
+      "key": "874",
+      "shiny": "sheet"
+    },
+    "stoutland": {
+      "key": "508",
+      "shiny": "sheet"
+    },
+    "stufful": {
+      "key": "759",
+      "shiny": "sheet"
+    },
+    "stunfisk": {
+      "key": "618",
+      "shiny": "sheet"
+    },
+    "stunfiskgalar": {
+      "key": "4618",
+      "shiny": "sheet"
+    },
+    "stunky": {
+      "key": "434",
+      "shiny": "sheet"
+    },
+    "sudowoodo": {
+      "key": "185",
+      "shiny": "sheet",
+      "femaleKey": "female/185",
+      "femaleShiny": "sheet"
+    },
+    "suicune": {
+      "key": "245",
+      "shiny": "sheet"
+    },
+    "sunflora": {
+      "key": "192",
+      "shiny": "sheet"
+    },
+    "sunkern": {
+      "key": "191",
+      "shiny": "sheet"
+    },
+    "surskit": {
+      "key": "283",
+      "shiny": "sheet"
+    },
+    "swablu": {
+      "key": "333",
+      "shiny": "sheet"
+    },
+    "swadloon": {
+      "key": "541",
+      "shiny": "sheet"
+    },
+    "swalot": {
+      "key": "317",
+      "shiny": "sheet",
+      "femaleKey": "female/317",
+      "femaleShiny": "sheet"
+    },
+    "swampert": {
+      "key": "260",
+      "shiny": "sheet"
+    },
+    "swampertmega": {
+      "key": "260-mega",
+      "shiny": "sheet"
+    },
+    "swanna": {
+      "key": "581",
+      "shiny": "sheet"
+    },
+    "swellow": {
+      "key": "277",
+      "shiny": "sheet"
+    },
+    "swinub": {
+      "key": "220",
+      "shiny": "sheet"
+    },
+    "swirlix": {
+      "key": "684",
+      "shiny": "sheet"
+    },
+    "swoobat": {
+      "key": "528",
+      "shiny": "sheet"
+    },
+    "sylveon": {
+      "key": "700",
+      "shiny": "sheet"
+    },
+    "tadbulb": {
+      "key": "938",
+      "shiny": "sheet"
+    },
+    "taillow": {
+      "key": "276",
+      "shiny": "sheet"
+    },
+    "talonflame": {
+      "key": "663",
+      "shiny": "sheet"
+    },
+    "tandemaus": {
+      "key": "924",
+      "shiny": "sheet"
+    },
+    "tangela": {
+      "key": "114",
+      "shiny": "sheet"
+    },
+    "tangrowth": {
+      "key": "465",
+      "shiny": "sheet",
+      "femaleKey": "female/465",
+      "femaleShiny": "sheet"
+    },
+    "tapubulu": {
+      "key": "787",
+      "shiny": "sheet"
+    },
+    "tapufini": {
+      "key": "788",
+      "shiny": "sheet"
+    },
+    "tapukoko": {
+      "key": "785",
+      "shiny": "sheet"
+    },
+    "tapulele": {
+      "key": "786",
+      "shiny": "sheet"
+    },
+    "tarountula": {
+      "key": "917",
+      "shiny": "sheet"
+    },
+    "tatsugiri": {
+      "key": "978-curly",
+      "shiny": "sheet"
+    },
+    "tatsugiridroopy": {
+      "key": "978-droopy",
+      "shiny": "sheet"
+    },
+    "tatsugiristretchy": {
+      "key": "978-stretchy",
+      "shiny": "sheet"
+    },
+    "tauros": {
+      "key": "128",
+      "shiny": "sheet"
+    },
+    "taurospaldeaaqua": {
+      "key": "8128-aqua",
+      "shiny": "sheet"
+    },
+    "taurospaldeablaze": {
+      "key": "8128-blaze",
+      "shiny": "sheet"
+    },
+    "taurospaldeacombat": {
+      "key": "8128",
+      "shiny": "sheet"
+    },
+    "teddiursa": {
+      "key": "216",
+      "shiny": "sheet"
+    },
+    "tentacool": {
+      "key": "72",
+      "shiny": "sheet"
+    },
+    "tentacruel": {
+      "key": "73",
+      "shiny": "sheet"
+    },
+    "tepig": {
+      "key": "498",
+      "shiny": "sheet"
+    },
+    "terapagos": {
+      "key": "1024",
+      "shiny": "sheet"
+    },
+    "terapagosstellar": {
+      "key": "1024-stellar",
+      "shiny": "sheet"
+    },
+    "terapagosterastal": {
+      "key": "1024-terastal",
+      "shiny": "sheet"
+    },
+    "terrakion": {
+      "key": "639",
+      "shiny": "sheet"
+    },
+    "thievul": {
+      "key": "828",
+      "shiny": "sheet"
+    },
+    "throh": {
+      "key": "538",
+      "shiny": "sheet"
+    },
+    "thundurus": {
+      "key": "642-incarnate",
+      "shiny": "sheet"
+    },
+    "thundurustherian": {
+      "key": "642-therian",
+      "shiny": "sheet"
+    },
+    "thwackey": {
+      "key": "811",
+      "shiny": "sheet"
+    },
+    "timburr": {
+      "key": "532",
+      "shiny": "sheet"
+    },
+    "tinglu": {
+      "key": "1003",
+      "shiny": "sheet"
+    },
+    "tinkatink": {
+      "key": "957",
+      "shiny": "sheet"
+    },
+    "tinkaton": {
+      "key": "959",
+      "shiny": "sheet"
+    },
+    "tinkatuff": {
+      "key": "958",
+      "shiny": "sheet"
+    },
+    "tirtouga": {
+      "key": "564",
+      "shiny": "sheet"
+    },
+    "toedscool": {
+      "key": "948",
+      "shiny": "sheet"
+    },
+    "toedscruel": {
+      "key": "949",
+      "shiny": "sheet"
+    },
+    "togedemaru": {
+      "key": "777",
+      "shiny": "sheet"
+    },
+    "togekiss": {
+      "key": "468",
+      "shiny": "sheet"
+    },
+    "togepi": {
+      "key": "175",
+      "shiny": "sheet"
+    },
+    "togetic": {
+      "key": "176",
+      "shiny": "sheet"
+    },
+    "torchic": {
+      "key": "255",
+      "shiny": "sheet",
+      "femaleKey": "female/255",
+      "femaleShiny": "sheet"
+    },
+    "torkoal": {
+      "key": "324",
+      "shiny": "sheet"
+    },
+    "tornadus": {
+      "key": "641-incarnate",
+      "shiny": "sheet"
+    },
+    "tornadustherian": {
+      "key": "641-therian",
+      "shiny": "sheet"
+    },
+    "torracat": {
+      "key": "726",
+      "shiny": "sheet"
+    },
+    "torterra": {
+      "key": "389",
+      "shiny": "sheet"
+    },
+    "totodile": {
+      "key": "158",
+      "shiny": "sheet"
+    },
+    "toucannon": {
+      "key": "733",
+      "shiny": "sheet"
+    },
+    "toxapex": {
+      "key": "748",
+      "shiny": "sheet"
+    },
+    "toxel": {
+      "key": "848",
+      "shiny": "sheet"
+    },
+    "toxicroak": {
+      "key": "454",
+      "shiny": "sheet",
+      "femaleKey": "female/454",
+      "femaleShiny": "sheet"
+    },
+    "toxtricity": {
+      "key": "849",
+      "shiny": "sheet"
+    },
+    "toxtricitygmax": {
+      "key": "849-gigantamax",
+      "shiny": "sheet"
+    },
+    "toxtricitylowkey": {
+      "key": "849-lowkey",
+      "shiny": "sheet"
+    },
+    "toxtricitylowkeygmax": {
+      "key": "849-gigantamax",
+      "shiny": "sheet"
+    },
+    "tranquill": {
+      "key": "520",
+      "shiny": "sheet"
+    },
+    "trapinch": {
+      "key": "328",
+      "shiny": "sheet"
+    },
+    "treecko": {
+      "key": "252",
+      "shiny": "sheet"
+    },
+    "trevenant": {
+      "key": "709",
+      "shiny": "sheet"
+    },
+    "tropius": {
+      "key": "357",
+      "shiny": "sheet"
+    },
+    "trubbish": {
+      "key": "568",
+      "shiny": "sheet"
+    },
+    "trumbeak": {
+      "key": "732",
+      "shiny": "sheet"
+    },
+    "tsareena": {
+      "key": "763",
+      "shiny": "sheet"
+    },
+    "turtonator": {
+      "key": "776",
+      "shiny": "sheet"
+    },
+    "turtwig": {
+      "key": "387",
+      "shiny": "sheet"
+    },
+    "tympole": {
+      "key": "535",
+      "shiny": "sheet"
+    },
+    "tynamo": {
+      "key": "602",
+      "shiny": "sheet"
+    },
+    "typenull": {
+      "key": "772",
+      "shiny": "sheet"
+    },
+    "typhlosion": {
+      "key": "157",
+      "shiny": "sheet"
+    },
+    "typhlosionhisui": {
+      "key": "6157",
+      "shiny": "sheet"
+    },
+    "tyranitar": {
+      "key": "248",
+      "shiny": "sheet"
+    },
+    "tyranitarmega": {
+      "key": "248-mega",
+      "shiny": "sheet"
+    },
+    "tyrantrum": {
+      "key": "697",
+      "shiny": "sheet"
+    },
+    "tyrogue": {
+      "key": "236",
+      "shiny": "sheet"
+    },
+    "tyrunt": {
+      "key": "696",
+      "shiny": "sheet"
+    },
+    "umbreon": {
+      "key": "197",
+      "shiny": "sheet"
+    },
+    "unfezant": {
+      "key": "521",
+      "shiny": "sheet",
+      "femaleKey": "female/521",
+      "femaleShiny": "sheet"
+    },
+    "unown": {
+      "key": "201-a",
+      "shiny": "sheet"
+    },
+    "ursaluna": {
+      "key": "901",
+      "shiny": "sheet"
+    },
+    "ursalunabloodmoon": {
+      "key": "8901",
+      "shiny": "sheet"
+    },
+    "ursaring": {
+      "key": "217",
+      "shiny": "sheet",
+      "femaleKey": "female/217",
+      "femaleShiny": "sheet"
+    },
+    "urshifu": {
+      "key": "892",
+      "shiny": "sheet"
+    },
+    "urshifugmax": {
+      "key": "892-gigantamax-single",
+      "shiny": "sheet"
+    },
+    "urshifurapidstrike": {
+      "key": "892-rapid-strike",
+      "shiny": "sheet"
+    },
+    "urshifurapidstrikegmax": {
+      "key": "892-gigantamax-rapid",
+      "shiny": "sheet"
+    },
+    "uxie": {
+      "key": "480",
+      "shiny": "sheet"
+    },
+    "vanillish": {
+      "key": "583",
+      "shiny": "sheet"
+    },
+    "vanillite": {
+      "key": "582",
+      "shiny": "sheet"
+    },
+    "vanilluxe": {
+      "key": "584",
+      "shiny": "sheet"
+    },
+    "vaporeon": {
+      "key": "134",
+      "shiny": "sheet"
+    },
+    "varoom": {
+      "key": "965",
+      "shiny": "sheet"
+    },
+    "veluza": {
+      "key": "976",
+      "shiny": "sheet"
+    },
+    "venipede": {
+      "key": "543",
+      "shiny": "sheet"
+    },
+    "venomoth": {
+      "key": "49",
+      "shiny": "sheet"
+    },
+    "venonat": {
+      "key": "48",
+      "shiny": "sheet"
+    },
+    "venusaur": {
+      "key": "3",
+      "shiny": "sheet",
+      "femaleKey": "female/3",
+      "femaleShiny": "sheet"
+    },
+    "venusaurgmax": {
+      "key": "3-gigantamax",
+      "shiny": "sheet"
+    },
+    "venusaurmega": {
+      "key": "3-mega",
+      "shiny": "sheet"
+    },
+    "vespiquen": {
+      "key": "416",
+      "shiny": "sheet"
+    },
+    "vibrava": {
+      "key": "329",
+      "shiny": "sheet"
+    },
+    "victini": {
+      "key": "494",
+      "shiny": "sheet"
+    },
+    "victreebel": {
+      "key": "71",
+      "shiny": "sheet"
+    },
+    "vigoroth": {
+      "key": "288",
+      "shiny": "sheet"
+    },
+    "vikavolt": {
+      "key": "738",
+      "shiny": "sheet"
+    },
+    "vileplume": {
+      "key": "45",
+      "shiny": "sheet",
+      "femaleKey": "female/45",
+      "femaleShiny": "sheet"
+    },
+    "virizion": {
+      "key": "640",
+      "shiny": "sheet"
+    },
+    "vivillon": {
+      "key": "666-meadow",
+      "shiny": "sheet"
+    },
+    "vivillonfancy": {
+      "key": "666-fancy",
+      "shiny": "sheet"
+    },
+    "vivillonpokeball": {
+      "key": "666-poke-ball",
+      "shiny": "sheet"
+    },
+    "volbeat": {
+      "key": "313",
+      "shiny": "sheet"
+    },
+    "volcanion": {
+      "key": "721",
+      "shiny": "sheet"
+    },
+    "volcarona": {
+      "key": "637",
+      "shiny": "sheet"
+    },
+    "voltorb": {
+      "key": "100",
+      "shiny": "sheet"
+    },
+    "voltorbhisui": {
+      "key": "6100",
+      "shiny": "sheet"
+    },
+    "vullaby": {
+      "key": "629",
+      "shiny": "sheet"
+    },
+    "vulpix": {
+      "key": "37",
+      "shiny": "sheet"
+    },
+    "vulpixalola": {
+      "key": "2037",
+      "shiny": "sheet"
+    },
+    "wailmer": {
+      "key": "320",
+      "shiny": "sheet"
+    },
+    "wailord": {
+      "key": "321",
+      "shiny": "sheet"
+    },
+    "walkingwake": {
+      "key": "1009",
+      "shiny": "sheet"
+    },
+    "walrein": {
+      "key": "365",
+      "shiny": "sheet"
+    },
+    "wartortle": {
+      "key": "8",
+      "shiny": "sheet"
+    },
+    "watchog": {
+      "key": "505",
+      "shiny": "sheet"
+    },
+    "wattrel": {
+      "key": "940",
+      "shiny": "sheet"
+    },
+    "weavile": {
+      "key": "461",
+      "shiny": "sheet",
+      "femaleKey": "female/461",
+      "femaleShiny": "sheet"
+    },
+    "weedle": {
+      "key": "13",
+      "shiny": "sheet"
+    },
+    "weepinbell": {
+      "key": "70",
+      "shiny": "sheet"
+    },
+    "weezing": {
+      "key": "110",
+      "shiny": "sheet"
+    },
+    "weezinggalar": {
+      "key": "4110",
+      "shiny": "sheet"
+    },
+    "whimsicott": {
+      "key": "547",
+      "shiny": "sheet"
+    },
+    "whirlipede": {
+      "key": "544",
+      "shiny": "sheet"
+    },
+    "whiscash": {
+      "key": "340",
+      "shiny": "sheet"
+    },
+    "whismur": {
+      "key": "293",
+      "shiny": "sheet"
+    },
+    "wigglytuff": {
+      "key": "40",
+      "shiny": "sheet"
+    },
+    "wiglett": {
+      "key": "960",
+      "shiny": "sheet"
+    },
+    "wimpod": {
+      "key": "767",
+      "shiny": "sheet"
+    },
+    "wingull": {
+      "key": "278",
+      "shiny": "sheet"
+    },
+    "wishiwashi": {
+      "key": "746",
+      "shiny": "sheet"
+    },
+    "wishiwashischool": {
+      "key": "746-school",
+      "shiny": "sheet"
+    },
+    "wobbuffet": {
+      "key": "202",
+      "shiny": "sheet",
+      "femaleKey": "female/202",
+      "femaleShiny": "sheet"
+    },
+    "wochien": {
+      "key": "1001",
+      "shiny": "sheet"
+    },
+    "woobat": {
+      "key": "527",
+      "shiny": "sheet"
+    },
+    "wooloo": {
+      "key": "831",
+      "shiny": "sheet"
+    },
+    "wooper": {
+      "key": "194",
+      "shiny": "sheet",
+      "femaleKey": "female/194",
+      "femaleShiny": "sheet"
+    },
+    "wooperpaldea": {
+      "key": "8194",
+      "shiny": "sheet"
+    },
+    "wormadam": {
+      "key": "413-plant",
+      "shiny": "sheet"
+    },
+    "wormadamsandy": {
+      "key": "413-sandy",
+      "shiny": "sheet"
+    },
+    "wormadamtrash": {
+      "key": "413-trash",
+      "shiny": "sheet"
+    },
+    "wugtrio": {
+      "key": "961",
+      "shiny": "sheet"
+    },
+    "wurmple": {
+      "key": "265",
+      "shiny": "sheet"
+    },
+    "wynaut": {
+      "key": "360",
+      "shiny": "sheet"
+    },
+    "wyrdeer": {
+      "key": "899",
+      "shiny": "sheet"
+    },
+    "xatu": {
+      "key": "178",
+      "shiny": "sheet",
+      "femaleKey": "female/178",
+      "femaleShiny": "sheet"
+    },
+    "xerneas": {
+      "key": "716-neutral",
+      "shiny": "sheet"
+    },
+    "xurkitree": {
+      "key": "796",
+      "shiny": "sheet"
+    },
+    "yamask": {
+      "key": "562",
+      "shiny": "sheet"
+    },
+    "yamaskgalar": {
+      "key": "4562",
+      "shiny": "sheet"
+    },
+    "yamper": {
+      "key": "835",
+      "shiny": "sheet"
+    },
+    "yanma": {
+      "key": "193",
+      "shiny": "sheet"
+    },
+    "yanmega": {
+      "key": "469",
+      "shiny": "sheet"
+    },
+    "yungoos": {
+      "key": "734",
+      "shiny": "sheet"
+    },
+    "yveltal": {
+      "key": "717",
+      "shiny": "sheet"
+    },
+    "zacian": {
+      "key": "888",
+      "shiny": "sheet"
+    },
+    "zaciancrowned": {
+      "key": "888-crowned",
+      "shiny": "sheet"
+    },
+    "zamazenta": {
+      "key": "889",
+      "shiny": "sheet"
+    },
+    "zamazentacrowned": {
+      "key": "889-crowned",
+      "shiny": "sheet"
+    },
+    "zangoose": {
+      "key": "335",
+      "shiny": "sheet"
+    },
+    "zapdos": {
+      "key": "145",
+      "shiny": "sheet"
+    },
+    "zapdosgalar": {
+      "key": "4145",
+      "shiny": "sheet"
+    },
+    "zarude": {
+      "key": "893",
+      "shiny": "sheet"
+    },
+    "zarudedada": {
+      "key": "893-dada",
+      "shiny": "sheet"
+    },
+    "zebstrika": {
+      "key": "523",
+      "shiny": "sheet"
+    },
+    "zekrom": {
+      "key": "644",
+      "shiny": "sheet"
+    },
+    "zeraora": {
+      "key": "807",
+      "shiny": "sheet"
+    },
+    "zigzagoon": {
+      "key": "263",
+      "shiny": "sheet"
+    },
+    "zigzagoongalar": {
+      "key": "4263",
+      "shiny": "sheet"
+    },
+    "zoroark": {
+      "key": "571",
+      "shiny": "sheet"
+    },
+    "zoroarkhisui": {
+      "key": "6571",
+      "shiny": "sheet"
+    },
+    "zorua": {
+      "key": "570",
+      "shiny": "sheet"
+    },
+    "zoruahisui": {
+      "key": "6570",
+      "shiny": "sheet"
+    },
+    "zubat": {
+      "key": "41",
+      "shiny": "sheet",
+      "femaleKey": "female/41",
+      "femaleShiny": "sheet"
+    },
+    "zweilous": {
+      "key": "634",
+      "shiny": "sheet"
+    },
+    "zygarde": {
+      "key": "718",
+      "shiny": "sheet"
+    },
+    "zygarde10": {
+      "key": "718-10",
+      "shiny": "sheet"
+    },
+    "zygardecomplete": {
+      "key": "718-complete",
+      "shiny": "sheet"
+    }
+  }
+}

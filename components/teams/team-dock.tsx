@@ -380,7 +380,13 @@ function DraftRosterList({
           <li key={index} className="space-y-2 rounded-lg border border-border bg-background px-2 py-1.5">
             <div className="flex min-h-14 items-center gap-2">
               {pokemon ? (
-                <TeamSlotSprite sprites={pokemon.sprites} shiny={shiny} name={pokemon.displayName} />
+                <TeamSlotSprite
+                  pokemonId={pokemon.id}
+                  sprites={pokemon.sprites}
+                  shiny={shiny}
+                  female={slot.status === "draft" ? slot.pokemon.draft.gender === "F" : slot.set.gender === "F"}
+                  name={pokemon.displayName}
+                />
               ) : (
                 <span className="size-12 shrink-0" aria-hidden="true" />
               )}
@@ -514,9 +520,11 @@ function RosterSlot({
       <GripVertical aria-hidden="true" className="size-4 shrink-0 cursor-grab text-muted-foreground" />
       {pokemon ? (
         <TeamSlotSprite
-          key={`${pokemon.id}-${set.shiny ? "shiny" : "plain"}`}
+          key={`${pokemon.id}-${set.shiny ? "shiny" : "plain"}-${set.gender ?? ""}`}
+          pokemonId={pokemon.id}
           sprites={pokemon.sprites}
           shiny={set.shiny}
+          female={set.gender === "F"}
           name={pokemon.displayName}
         />
       ) : (

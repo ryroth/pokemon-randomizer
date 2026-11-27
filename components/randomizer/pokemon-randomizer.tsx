@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import Image from "next/image";
+import { AnimatedPokemon } from "@/components/art/animated-pokemon";
 import Link from "next/link";
 import { Shuffle } from "lucide-react";
 import { AbilityConfigForm } from "@/components/randomizer/ability-config";
@@ -612,6 +612,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
         selectionKey={selectedPokemon?.id}
         dittoImages={dittoImages}
         pokemonImages={selectedPokemonImages}
+        shiny={selectedPokemon ? (viewedRoll?.shinyPokemonIds?.includes(selectedPokemon.id) ?? false) : false}
       />
       <header className="hero-panel max-w-3xl space-y-3">
         <h1 className="text-3xl font-semibold tracking-tight">{heading}</h1>
@@ -1123,6 +1124,7 @@ export function PokemonRandomizer({ pokemon, abilities, moves, items }: PokemonR
                 selected={selectedPokemon}
                 options={selectedEvolutionChoices}
                 battlePokemonId={chosenBattlePokemonId}
+                shiny={battleShiny}
                 onChoose={(pokemonId) => {
                   clearExtraErrors();
                   setSession(chooseEvolvedPokemon(session, selectedPokemon, pokemonId));
@@ -1303,13 +1305,13 @@ function BattlePokemonSummary({
     >
       <div className="flex items-start gap-4">
         <div className="relative size-28 shrink-0">
-          {imageSrc ? (
-            <Image src={imageSrc} alt="" fill sizes="112px" className="object-contain" />
-          ) : (
-            <div className="flex size-28 items-center justify-center rounded-xl border border-dashed border-border text-xl text-muted-foreground">
-              {pokemon.displayName.slice(0, 1)}
-            </div>
-          )}
+          <AnimatedPokemon
+            pokemonId={pokemon.id}
+            name={pokemon.displayName}
+            shiny={shiny}
+            fallbackSrc={imageSrc}
+            className="absolute inset-0"
+          />
         </div>
         <div className="min-w-0 space-y-2">
           <p className="font-medium">{pokemon.displayName}</p>
