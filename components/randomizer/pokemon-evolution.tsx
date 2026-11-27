@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { AnimatedPokemon } from "@/components/art/animated-pokemon";
 import { pokemonImage } from "@/lib/art/pokemonImage";
 import { BaseStatLine } from "@/components/randomizer/base-stat-line";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,7 @@ interface PokemonEvolutionPickerProps {
   options: readonly PokemonForm[];
   battlePokemonId: string;
   onChoose: (pokemonId: string) => void;
+  shiny?: boolean;
 }
 
 export function PokemonEvolutionPicker({
@@ -21,6 +22,7 @@ export function PokemonEvolutionPicker({
   options,
   battlePokemonId,
   onChoose,
+  shiny = false,
 }: PokemonEvolutionPickerProps) {
   const choices = [selected, ...options];
 
@@ -56,7 +58,7 @@ export function PokemonEvolutionPicker({
           {choices.map((form) => {
             const chosen = form.id === battlePokemonId;
             const isKeep = form.id === selected.id;
-            const imageSrc = pokemonImage(form, false);
+            const imageSrc = pokemonImage(form, shiny);
 
             return (
               <li key={form.id}>
@@ -73,20 +75,14 @@ export function PokemonEvolutionPicker({
                     onClick={() => onChoose(form.id)}
                   >
                     <CardHeader>
-                      <div className="relative mx-auto aspect-square w-full max-w-[140px]">
-                        {imageSrc ? (
-                          <Image
-                            src={imageSrc}
-                            alt=""
-                            fill
-                            sizes="140px"
-                            className="object-contain"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border text-2xl text-muted-foreground">
-                            {form.displayName.slice(0, 1)}
-                          </div>
-                        )}
+                      <div className="mx-auto aspect-square w-full max-w-[180px]">
+                        <AnimatedPokemon
+                          pokemonId={form.id}
+                          name={form.displayName}
+                          shiny={shiny}
+                          fallbackSrc={imageSrc}
+                          className="size-full"
+                        />
                       </div>
                       <p className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
                         {EVOLUTION_STAGE_LABELS[form.evolutionStage]}

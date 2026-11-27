@@ -245,7 +245,15 @@ function DraftTeamCard({
             <li key={index} className="space-y-2 rounded-lg border border-border px-3 py-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2">
-                  {form ? <TeamSlotSprite sprites={form.sprites} shiny={shiny} name={form.displayName} /> : null}
+                  {form ? (
+                    <TeamSlotSprite
+                      pokemonId={form.id}
+                      sprites={form.sprites}
+                      shiny={shiny}
+                      female={slot.status === "draft" ? slot.pokemon.draft.gender === "F" : slot.set.gender === "F"}
+                      name={form.displayName}
+                    />
+                  ) : null}
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">
                       Slot {index + 1}. {name}
@@ -656,9 +664,11 @@ function SlotSprite({ set, catalog }: { set: SavedTeam["sets"][number]; catalog:
   }
   return (
     <TeamSlotSprite
-      key={`${pokemon.id}-${set.shiny ? "shiny" : "plain"}`}
+      key={`${pokemon.id}-${set.shiny ? "shiny" : "plain"}-${set.gender ?? ""}`}
+      pokemonId={pokemon.id}
       sprites={pokemon.sprites}
       shiny={set.shiny}
+      female={set.gender === "F"}
       name={pokemon.displayName}
     />
   );

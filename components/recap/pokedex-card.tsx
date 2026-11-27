@@ -30,7 +30,7 @@ export function PokedexCard({
 }) {
   const editable = edit !== undefined;
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
-  const stageLabel = `${entry.shiny ? "Shiny artwork" : "Artwork"} of ${entry.speciesName}`;
+  const stageLabel = `${entry.shiny ? "Shiny sprite" : "Sprite"} of ${entry.speciesName}`;
   const displayName = entry.nickname ?? entry.speciesName;
 
   async function copySet() {
@@ -57,7 +57,13 @@ export function PokedexCard({
               <div className="relative flex h-80 items-center justify-center overflow-hidden rounded-lg bg-[#163f86] sm:h-96">
                 <PokeBallWatermark />
                 <div className="relative z-10 flex h-full w-full items-center justify-center pb-16">
-                  <ModelArtwork src={entry.imageUrl} name={entry.speciesName} shiny={entry.shiny} />
+                  <ModelArtwork
+                    pokemonId={entry.pokemonId}
+                    src={entry.imageUrl}
+                    name={entry.speciesName}
+                    shiny={entry.shiny}
+                    female={entry.gender === "F"}
+                  />
                 </div>
                 <div className="absolute inset-x-3 bottom-3 z-20 flex items-center justify-between gap-3 rounded-lg bg-[#0c2f6e]/95 px-3 py-2">
                   <div className="flex min-w-0 items-center gap-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { AnimatedPokemon } from "@/components/art/animated-pokemon";
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -261,20 +261,14 @@ export function PokemonResults({
                 >
                   <CardHeader>
                     {showPicture ? (
-                      <div className="relative mx-auto aspect-square w-full max-w-[180px]">
-                        {imageSrc ? (
-                          <Image
-                            src={imageSrc}
-                            alt=""
-                            fill
-                            sizes="180px"
-                            className="object-contain"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border text-2xl text-muted-foreground">
-                            {showName ? form.displayName.slice(0, 1) : null}
-                          </div>
-                        )}
+                      <div className="mx-auto aspect-square w-full max-w-[180px]">
+                        <AnimatedPokemon
+                          pokemonId={form.id}
+                          name={showName ? form.displayName : ""}
+                          shiny={shiny}
+                          fallbackSrc={imageSrc}
+                          className="size-full"
+                        />
                       </div>
                     ) : null}
                     {headerBits.length > 0 || showBst || showBall ? (

@@ -3,10 +3,10 @@ import type { PokemonSprites } from "@/lib/types/pokemon";
 const SPRITE_ID = /\/sprites\/pokemon\/(?:shiny\/)?(\d+)\.png$/;
 
 /**
- * Every Pokémon is shown as one still picture, never an animation. Official artwork is the
- * newest and most consistent set, so it comes first. Pokémon HOME (derived from the sprite id)
- * and the small game sprite only stand in when a file fails to load. A shiny Pokémon tries every
- * shiny picture before it ever falls back to a regular-colored one.
+ * Still pictures used when a PokéRogue sprite atlas is missing. Official artwork is the newest
+ * and most consistent set, so it comes first. Pokémon HOME (derived from the sprite id) and the
+ * small game sprite only stand in when a file fails to load. A shiny Pokémon tries every shiny
+ * picture before it ever falls back to a regular-colored one.
  */
 export function pokemonImageCandidates(sprites: PokemonSprites, shiny: boolean): string[] {
   const idSource = shiny ? (sprites.spriteShiny ?? sprites.sprite) : sprites.sprite;

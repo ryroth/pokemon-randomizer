@@ -295,7 +295,11 @@ export function SetBuilder({ pokemon, abilities, moves, items, natures }: SetBui
         />
 
         <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4">
-          <PokemonPortrait pokemon={battlePokemon} shiny={session.draft.shiny} />
+          <PokemonPortrait
+            pokemon={battlePokemon}
+            shiny={session.draft.shiny}
+            female={session.draft.gender === "F"}
+          />
           <div className="min-w-0 space-y-1">
             <p className="font-medium">{battlePokemon.displayName}</p>
             <p className="flex flex-wrap gap-1.5">
@@ -670,7 +674,7 @@ function ShinyField({
         </label>
       </div>
       <p className="text-sm text-muted-foreground">
-        Shiny changes the artwork only. You can mark any Pokémon shiny here, including one the
+        Shiny changes the sprite only. You can mark any Pokémon shiny here, including one the
         randomizer did not roll as shiny. The shiny chance on the Randomizer page only affects new rolls.
       </p>
     </fieldset>

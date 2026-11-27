@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { loadPokemonSheet } from "@/components/art/load-sprite-sheet";
 import {
   MORPH_SIZE,
   fallbackDittoIcon,
@@ -8,6 +9,7 @@ import {
   prepareMorph,
 } from "@/lib/art/dittoMorph";
 import { buildFaceIcon, fitStillPicture, type FaceIcon } from "@/lib/art/faceIcon";
+import { drawAtlasFrame } from "@/lib/art/pokerogueSprite";
 
 const FRAME_MS = 80;
 const WORK_SIZE = 128;
@@ -18,21 +20,23 @@ interface DittoFaviconProps {
   selectionKey: string | undefined;
   /** Pictures of Ditto to try, best first. */
   dittoImages: readonly string[];
-  /** Pictures of the selected Pokémon to try, best first. */
+  /** Pictures of the selected Pokémon to try, best first. Used when its sprite does not load. */
   pokemonImages: readonly string[];
+  /** The selected Pokémon is shiny, so the tab uses the shiny sprite. */
+  shiny?: boolean;
 }
 
 /**
- * The tab icon is Ditto. When the user selects a Pokémon it turns into that Pokémon's official artwork,
+ * The tab icon is Ditto. When the user selects a Pokémon it turns into that Pokémon's sprite,
  * then goes back to Ditto. It renders nothing.
  * Reduced motion keeps the still icon.
  */
-export function DittoFavicon({ selectionKey, dittoImages, pokemonImages }: DittoFaviconProps) {
+export function DittoFavicon({ selectionKey, dittoImages, pokemonImages, shiny = false }: DittoFaviconProps) {
   const initialKey = useRef(selectionKey);
-  const inputs = useRef({ dittoImages, pokemonImages });
+  const inputs = useRef({ dittoImages, pokemonImages, shiny });
 
   useEffect(() => {
-    inputs.current = { dittoImages, pokemonImages };
+    inputs.current = { dittoImages, pokemonImages, shiny };
   });
 
   useEffect(() => {
@@ -56,10 +60,10 @@ export function DittoFavicon({ selectionKey, dittoImages, pokemonImages }: Ditto
     };
 
     void (async () => {
-      const { dittoImages: dittoUrls, pokemonImages: pokemonUrls } = inputs.current;
+      const { dittoImages: dittoUrls, pokemonImages: pokemonUrls, shiny: shinySprite } = inputs.current;
       const [ditto, selected] = await Promise.all([
-        loadIcon(dittoUrls, "ditto"),
-        loadIcon(pokemonUrls, "artwork"),
+        loadSpriteFace("ditto", false).then((icon) => icon ?? loadIcon(dittoUrls, "ditto")),
+        loadSpriteFace(selectionKey, shinySprite).then((icon) => icon ?? loadIcon(pokemonUrls, "artwork")),
       ]);
       if (cancelled || selected === null) {
         return;
@@ -166,6 +170,27 @@ async function loadIcon(sources: readonly string[], kind: "ditto" | "artwork"): 
     return kind === "ditto" ? buildFaceIcon(pixels, "whole") : fitStillPicture(pixels);
   }
   return null;
+}
+
+/** The first frame of a PokéRogue sprite, fitted the same way as a still picture. */
+async function loadSpriteFace(pokemonId: string, shiny: boolean): Promise<FaceIcon | null> {
+  const sheet = await loadPokemonSheet(pokemonId, shiny, false);
+  const frame = sheet?.frames[0];
+  const image = frame ? sheet?.images.get(frame.image) : undefined;
+  if (!sheet || !frame || !image) {
+    return null;
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = sheet.bounds.w;
+  canvas.height = sheet.bounds.h;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) {
+    return null;
+  }
+  context.imageSmoothingEnabled = false;
+  drawAtlasFrame(context, image, frame);
+  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+  return fitStillPicture({ data, width: canvas.width, height: canvas.height });
 }
 
 function loadImage(url: string): Promise<HTMLImageElement | null> {

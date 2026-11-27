@@ -151,15 +151,15 @@ test.describe("Pokédex entries from every generation", () => {
 });
 
 test.describe("recap artwork", () => {
-  test("shows still official artwork, never a 3D model or animation", async ({ page }) => {
+  test("shows the PokéRogue sprite, never a 3D model", async ({ page }) => {
     await seedTeam(page);
     await page.goto("/teams");
     await page.getByRole("button", { name: "View recap, slot 1" }).click();
 
-    const artwork = page.getByRole("img", { name: "Artwork of Swampert" });
+    const artwork = page.getByRole("img", { name: "Sprite of Swampert" });
     await expect(artwork).toBeVisible({ timeout: 20_000 });
-    await expect(artwork).toHaveAttribute("src", /official-artwork|home/);
-    await expect(artwork).not.toHaveAttribute("src", /\.gif/);
+    await expect(artwork).toHaveAttribute("data-sprite-key", "260");
+    await expect(artwork).toHaveAttribute("data-sprite-state", "ready");
     await expect(page.locator("model-viewer")).toHaveCount(0);
   });
 });

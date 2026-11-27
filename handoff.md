@@ -20,7 +20,7 @@ Do not rebuild the app from scratch. Do not re-run Phase 0 discovery unless arch
 | Item | Value |
 | --- | --- |
 | Phase complete on `master` | **Phase 8 — Polish**, the **Battle Laboratory overhaul** (design Phases 1–5, Round 2, and the follow-ups below), the **Pokémon world theme** (backdrops and logo titles), the **tester feedback round** (PR #10) and its follow-ups through the **Ditto tab icon** (PR #13), **tester feedback part 2** (PR #14), **form learnsets and required held items** (PR #15), **battle-only forms and restored moves** (PR #16), **Hidden Power typecheck** (PR #17), then two direct commits: **Struggle stays out of move pools** (`b49faff`) and **before-Pokémon pools generate once** (`2d7edc2`), then **draft a team of six, level 100, and custom typing** (PR #18), then **extra Pokémon filters and guessing cards** (PR #19), then **the battle card on later randomizers, a fresh Start randomizing, and a default of 3 Pokémon** (PR #20), then **several unbuilt teams, building in any order, and importing an unbuilt Pokémon or team** (PR #21) |
-| Current work | None. Start the next feature from up-to-date `master`. Catalog **2.6.1** |
+| Current work | None. PokéRogue animated sprites are on `master` (see **PokéRogue sprites**). Start the next feature from up-to-date `master`. Catalog **2.6.1** |
 | Next phase | Later features only if the user asks (learnset-only pools, competitive pools, a six-Pokémon randomizer, accounts, weather, status, stat stages, AI, online play, doubles) |
 | Current branch locally | `master` |
 | Latest on `master` | PR #21 — several unbuilt teams, building them in any order, and importing an unbuilt Pokémon or team. Run `git log -1` to confirm |
@@ -38,7 +38,7 @@ Quality gates: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`,
 
 ## First action for the next agent
 
-1. Read this file and `AGENTS.md`. Stay on `master` until a new branch is asked for. Do **not** recreate or rebuild Phases 1–8 or the Battle Laboratory overhaul.
+1. Read this file and `AGENTS.md`. Stay on `master` until a new branch is asked for. Do **not** recreate or rebuild Phases 1–8, the Battle Laboratory overhaul, or the PokéRogue sprite player.
 2. Phase 8 and the overhaul are merged. Do not start learnset-only pools, competitive pools, accounts, or a six-Pokémon randomizer (one Generate that returns six) unless asked. Drafting one Pokémon at a time onto more than one team of six is implemented. Unbuilt teammates can be viewed and built in any order, and a Showdown paste can be imported before it is a finished set (PR #21).
 3. Saved teams are in scope, including that draft roster. Accounts, share URLs, a database, and a six-Pokémon randomizer are not.
 4. A minimal generation 9 damage check and singles battle are already on `master`. Do not expand them unless the user asks. `reference/pokemon-showdown/` is a local reference clone. Do not import it.
@@ -93,6 +93,7 @@ npm run import:learnsets         # data/generated/learnsets.json
 npm run import:form-items        # data/generated/form-items.json — item an Other form or Mega must hold
 npm run import:hidden-abilities  # data/generated/hidden-abilities.json
 npm run import:art               # still artwork and held-item icons for anything the catalog lacks: pokemon-art.json, item-icons.json
+npm run import:pokerogue-sprites # PokéRogue atlas ids → data/generated/pokerogue-sprites.json
 npm run import:genera            # PokéAPI English genus → data/generated/genera.json
 npm run import:dex-entries       # every English Pokédex entry by generation → data/generated/dex-entries.json
 npm run import:type-chart        # Showdown type chart → data/generated/type-chart.json
@@ -211,15 +212,15 @@ lib/stats/battleStat.ts     Gen 3+ battle stat formula
 lib/session/                 sessionStorage for RandomizerSession
 lib/validation/              EV/IV/nature/ability/moves/item/tera/gender/level/shiny/happiness/set (`REQUIRED_MOVE_COUNT = 4`, `MAX_EV_TOTAL = 508`)
 lib/showdown/exportSet.ts    One set, and a team paste with a blank line between sets
-lib/recap/                   Recap entries (still artwork, item icon, Showdown text)
-lib/art/                     pokemonImage: newest still artwork, shiny artwork for shiny Pokémon
+lib/recap/                   Recap entries (sprite fallback picture, item icon, Showdown text)
+lib/art/                     PokéRogue atlas player (`pokerogueSprite.ts`) and `pokemonImage` still fallback
 lib/teams/                   Team box, localStorage, Showdown team paste, HOME sprite URLs
 scripts/import/              Repeatable PokéAPI + @pkmn/dex snapshot, learnsets, form items, Hidden Abilities, model index, genera, and `world-art.ts` (backdrops)
 lib/world/                   Which backdrop each route shows (`sceneForPath`, `sceneImages`)
 components/layout/scene-backdrop.tsx  The two decorative backdrop layers
 public/world/                Compressed official backdrops and `sources.json` (generated, committed)
 app/fonts/                   pokemon-solid.ttf (fan-made logo lettering, see the world-theme section)
-data/generated/              catalog.json (~4.7MB, version 2.6.1), learnsets.json, form-items.json, hidden-abilities.json, join-report.json, pokemon-art.json, item-icons.json, genera.json
+data/generated/              catalog.json (~4.7MB, version 2.6.1), learnsets.json, form-items.json, hidden-abilities.json, join-report.json, pokemon-art.json, item-icons.json, genera.json, pokerogue-sprites.json
 data/cache/pokeapi/          Gitignored HTTP cache
 tests/unit/                  Domain tests (Vitest), including `tests/unit/ui/type-colors.test.ts`
 tests/e2e/builder.spec.ts    Builder, recap, and saved-team flow (Playwright)
@@ -321,7 +322,7 @@ Continue to builder opens `/builder` with the same session. The battle Pokémon,
 
 `/recap` shows one Pokédex-style card for the finalized set. The summary Name line is the nickname, or the species name when there is no nickname. The line under the species name on the 3D name plate is the official English genus from `genera.json` (`npm run import:genera`). There is no separate Species row. Copy to Showdown copies `exportShowdownSet`. Next Randomizer calls `startNextRandomizer()` (`createInitialSession()`) and opens `/randomizer`. It clears rolls, extras, the draft, and `finalizedSet`. It does not clear teams.
 
-**Art is still. There are no 3D models, GLBs, sprite animations, or GIFs for Pokémon anywhere.** `pokemonImage(pokemon, shiny)` in `lib/art/pokemonImage.ts` returns the newest official artwork (shiny artwork for a shiny Pokémon, never regular colors), then HOME, then a sprite as a last resort. The Builder portrait, Recap, Teams, result cards, and evolution choices all use it. `npm run import:art` (`scripts/import/art.ts`) fills every form that the main import left without artwork or shiny artwork (PokéAPI official-artwork or HOME, then Pokémon Showdown `home`/`home-shiny`, then the base form) into `data/generated/pokemon-art.json`, and finds held-item icons (PokéAPI, then Serebii `itemdex/sprites`) into `data/generated/item-icons.json`. `loadGeneratedCatalog` overlays both, and `Item.iconUrl` feeds `ItemIcon`. 494 of 507 items have an icon. The 13 old Gen 2 items without one (berry, bitterberry, burntberry, goldberry, iceberry, mail, mintberry, miracleberry, mysteryberry, pinkbow, polkadotbow, przcureberry, psncureberry) show a generic package icon. The loading screen's pixel sprites and the CSS Pokéball reveal are page chrome, not Pokémon art, and were kept.
+**Pokémon pictures are PokéRogue sprite animations.** See **PokéRogue sprites** below. `pokemonImage(pokemon, shiny)` in `lib/art/pokemonImage.ts` is only the still fallback when an atlas is missing. `npm run import:art` (`scripts/import/art.ts`) fills every form that the main import left without artwork or shiny artwork (PokéAPI official-artwork or HOME, then Pokémon Showdown `home`/`home-shiny`, then the base form) into `data/generated/pokemon-art.json`, and finds held-item icons (PokéAPI, then Serebii `itemdex/sprites`) into `data/generated/item-icons.json`. `loadGeneratedCatalog` overlays both, and `Item.iconUrl` feeds `ItemIcon`. 494 of 507 items have an icon. The 13 old Gen 2 items without one (berry, bitterberry, burntberry, goldberry, iceberry, mail, mintberry, miracleberry, mysteryberry, pinkbow, polkadotbow, przcureberry, psncureberry) show a generic package icon. The loading screen's pixel sprites and the CSS Pokéball reveal are page chrome, not Pokémon art, and were kept.
 
 `/teams` lists every saved team. From the recap the user can copy the set, save it into the next open slot of the team being viewed, or save it as slot 1 of a new team. The name field in that section is the team on screen (`Team name`, committed on blur or when saving onto that team via `saveSetToActiveTeam`). It is not a name for the next team that does not exist yet. “Save to a new team” still creates the next team under the default name when a team is already open. With no teams yet, the field is “New team name” and that button uses it. Other teams stay intact. There is no limit on the number of teams. Each team holds 6 Pokémon, packed from the front. A team name is at most 24 characters. The Teams page and the line under the dock heading show it. The dock landmark stays “Team”. A Pokémon can be copied onto another team by dragging (`text/plain` is `teamId:index`) or “Copy to a team”. Copying onto the same team is refused. A drag that is only a slot index is not a cross-team drop. Edit on a slot, or Edit on a part of that slot’s recap, opens the Builder for that saved set and writes valid changes back onto the slot.
 
@@ -381,7 +382,7 @@ Source: `Downloads/Final Master Design Overhaul Prompt.md`. Decisions: one phase
     - Level and Happiness use `components/builder/number-input.tsx` (local text state, so the box can be cleared and retyped; valid numbers commit as typed and the last good value returns on blur). A plain controlled input would snap back because `SessionProvider` applies `applyBuilderDefaults` on every render.
     - Regional and other forms are on by default (`formTypes`); Mega, Primal, and Gigantamax stay off.
     - Starting a build for a different Pokémon resets Tera type, gender, shiny, and nickname (`freshTraining`), see Shiny rolls.
-    - **Shiny display:** every picture uses `pokemonImage(pokemon, shiny)`: shiny artwork first for a shiny Pokémon, so Basculegion and every other form show the right colors (`tests/unit/art/pokemonImage.test.ts`).
+    - **Shiny display:** a shiny Pokémon uses the PokéRogue shiny sheet. `pokemonImage(pokemon, shiny)` is only the still fallback (`tests/unit/art/pokerogueSprite.test.ts`, `tests/unit/art/pokemonImage.test.ts`).
     - Teams art for a shiny set: `lib/teams/sprites.ts` candidates are HOME shiny, shiny sprite, shiny artwork, artwork, sprite.
 
 ## Pokémon world theme (merged, PR #9)
@@ -439,9 +440,17 @@ Definition of done: implementation + TypeScript + tests + lint + edge/error hand
 
 ---
 
+## PokéRogue sprites
+
+On-screen Pokémon use PokéRogue's front-sprite atlases, not still official artwork. `AnimatedPokemon` (`components/art/animated-pokemon.tsx`) plays frames `0001` through `0400` at 10 fps and loops. Reduced motion holds the first frame. A shiny Pokémon uses the shiny sheet. A female Pokémon uses the female sheet when PokéRogue has one. A missing atlas falls back to `pokemonImage`. There are no GIFs or 3D models.
+
+The id map is `data/generated/pokerogue-sprites.json`, from `npm run import:pokerogue-sprites` (`scripts/import/pokerogue-sprites.ts`, `lib/art/pokerogueSprite.ts`). The asset commit is `7df23d074034605974aed50b3b4c6e631d9d6a6c` in `pagefaultgames/pokerogue-assets`. The footer credits PokéRogue by Pagefault Games. Do not copy PokéRogue's renderer. Do not import that repository into the app.
+
+Generated cards and evolution choices draw the sprite in a 180px square (`size-full` on the canvas, `image-rendering: pixelated`), so the bitmap scales up and stays crisp. The Builder portrait is `size-36`, the Recap card is `h-64 w-64` (`sm:h-72 sm:w-72`), and team slots are `size-12`. Selecting a Pokémon on `/randomizer` morphs the tab icon to the first frame of that sprite, then back to Ditto. Forms with no sheet of their own (cap Pikachu, antique Polteageist, and similar) use the base species sprite.
+
 ## Suggested first message in a continuation chat
 
-> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. Phases 1–8, the Battle Laboratory overhaul, tester feedback through part 2, form learnsets with required held items, battle-only forms with restored moves, the Struggle exclusion, the before-Pokémon pool lock, the draft team of six, level 100, custom typing and base stats, the Format Explorer, the damage check, and the minimal singles battle are on `master` (PR #18). Do not start learnset-only pools, competitive pools, accounts, a six-Pokémon randomizer, weather, status, stat stages, AI, online play, or doubles unless I ask. Do not commit unless I ask.
+> Continue the Pokémon Randomizer. Read `handoff.md` and `AGENTS.md`. You are on `master`. PokéRogue animated sprites are already on every Pokémon picture, including the larger crisp sprites on generated cards and evolution choices. Do not replace them with still artwork. Phases 1–8, the Battle Laboratory overhaul, tester feedback, form learnsets, battle-only forms, the draft team of six, and several unbuilt teams (PR #21) are on `master`. Online battle rooms stay on `feat/online-battle-rooms` and are not on `master`. Do not start learnset-only pools, competitive pools, accounts, a six-Pokémon randomizer, weather, status, stat stages, AI, online play, or doubles unless I ask. Do not commit unless I ask.
 
 ## Tester feedback round (merged in PR #10)
 

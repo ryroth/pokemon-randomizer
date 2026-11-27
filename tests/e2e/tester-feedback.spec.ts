@@ -49,11 +49,11 @@ test("Shiny sits right under the Nickname, above the picture and the rest of the
   expect(shiny!.y).toBeLessThan(moves!.y);
 
   // The picture changes in the same view when Shiny changes.
-  const picture = page.getByRole("region", { name: /^Artwork of / });
+  const picture = page.getByRole("region", { name: /^Sprite of / });
   await expect(picture).toBeVisible();
   await page.getByRole("group", { name: "Shiny" }).getByRole("radio", { name: "Yes" }).check();
-  await expect(page.getByRole("region", { name: /^Shiny artwork of / })).toBeVisible();
-  const box = await page.getByRole("region", { name: /^Shiny artwork of / }).boundingBox();
+  await expect(page.getByRole("region", { name: /^Shiny sprite of / })).toBeVisible();
+  const box = await page.getByRole("region", { name: /^Shiny sprite of / }).boundingBox();
   const viewport = page.viewportSize();
   expect(box!.y).toBeLessThan(viewport!.height);
 });
